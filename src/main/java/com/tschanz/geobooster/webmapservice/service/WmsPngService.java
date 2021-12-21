@@ -8,6 +8,9 @@ import com.tschanz.geobooster.maptile.model.MapTile;
 import com.tschanz.geobooster.maptile.model.MapTileLine;
 import com.tschanz.geobooster.maptile.model.MapTilePoint;
 import com.tschanz.geobooster.maptile.service.MapTileService;
+import com.tschanz.geobooster.netz.model.HaltestelleVersion;
+import com.tschanz.geobooster.netz.model.TarifkanteVersion;
+import com.tschanz.geobooster.netz.model.VerkehrskanteVersion;
 import com.tschanz.geobooster.netz.service.HaltestelleRepo;
 import com.tschanz.geobooster.netz.service.TarifkanteRepo;
 import com.tschanz.geobooster.netz.service.VerkehrskanteRepo;
@@ -19,12 +22,18 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @Service
 @RequiredArgsConstructor
 public class WmsPngService {
+    private static final String LAYER_HALTESTELLEN = "novap:HALTESTELLEN";
+    private static final String LAYER_VERKEHRSKANTEN = "novap:VERKEHRSKANTEN";
+    private static final String LAYER_TARIFKANTEN = "novap:TARIFKANTEN";
     private static final Logger logger = LogManager.getLogger(WmsPngService.class);
 
     private final HaltestelleRepo haltestelleRepo;
@@ -46,17 +55,26 @@ public class WmsPngService {
             CoordinateConverter.convertToEpsg4326(bbox.getMaxCoordinate()).getLongitude()
         ));
 
-        logger.info("reading haltestellen...");
-        var hstVersions = this.haltestelleRepo.readHaltestellenVersions(date, bbox);
-        logger.info("done.");
+        List<HaltestelleVersion> hstVersions = Collections.emptyList();
+        if (mapRequest.getLayers().contains(LAYER_HALTESTELLEN)) {
+            logger.info("reading haltestellen...");
+            hstVersions = this.haltestelleRepo.readHaltestellenVersions(date, bbox);
+            logger.info("done.");
+        }
 
-        logger.info("reading verkehrskanten...");
-        var vkVersions = this.verkehrskanteRepo.readVerkehrskanteVersions(date, bbox);
-        logger.info("done.");
+        List<VerkehrskanteVersion> vkVersions = Collections.emptyList();
+        if (mapRequest.getLayers().contains(LAYER_VERKEHRSKANTEN)) {
+            logger.info("reading verkehrskanten...");
+            vkVersions = this.verkehrskanteRepo.readVerkehrskanteVersions(date, bbox);
+            logger.info("done.");
+        }
 
-        logger.info("reading tarifkanten...");
-        var tkVersions = this.tarifkanteRepo.readTarifkanteVersions(date, bbox);
-        logger.info("done.");
+        List<TarifkanteVersion> tkVersions = Collections.emptyList();
+        if (mapRequest.getLayers().contains(LAYER_TARIFKANTEN)) {
+            logger.info("reading tarifkanten...");
+            tkVersions = this.tarifkanteRepo.readTarifkanteVersions(date, bbox);
+            logger.info("done.");
+        }
 
         // TMP: mem profiling
         /*System.out.println(GraphLayout.parseInstance(this.haltestelleRepo).toFootprint());
@@ -72,12 +90,20 @@ public class WmsPngService {
             ))
             .collect(Collectors.toList());
 
-        var mapTileLines = vkVersions.stream()
-            .map(vkV -> new MapTileLine(
-                CoordinateConverter.convertToEpsg3857(vkV.getStartCoordinate()),
-                CoordinateConverter.convertToEpsg3857(vkV.getEndCoordinate()),
-                GbLineStyle.tmpBlackLine
-            ))
+        var mapTileLines = Stream.concat(
+                vkVersions.stream()
+                    .map(vkV -> new MapTileLine(
+                        CoordinateConverter.convertToEpsg3857(vkV.getStartCoordinate()),
+                        CoordinateConverter.convertToEpsg3857(vkV.getEndCoordinate()),
+                        GbLineStyle.tmpBlackLine
+                    )),
+                tkVersions.stream()
+                    .map(tkV -> new MapTileLine(
+                        CoordinateConverter.convertToEpsg3857(tkV.getStartCoordinate()),
+                        CoordinateConverter.convertToEpsg3857(tkV.getEndCoordinate()),
+                        GbLineStyle.tmpBlueLine
+                    ))
+            )
             .collect(Collectors.toList());
 
         var tile = new MapTile(
