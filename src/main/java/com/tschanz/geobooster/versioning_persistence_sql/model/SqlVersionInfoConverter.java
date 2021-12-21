@@ -1,6 +1,7 @@
 package com.tschanz.geobooster.versioning_persistence_sql.model;
 
 import com.tschanz.geobooster.versioning.model.VersionInfo;
+import com.tschanz.geobooster.versioning.service.FlyWeightDateFactory;
 import lombok.SneakyThrows;
 
 import java.sql.ResultSet;
@@ -20,8 +21,8 @@ public class SqlVersionInfoConverter {
         return new VersionInfo<>(
             row.getLong(COL_ID),
             elementMap.get(row.getLong(COL_IDELEMENT)),
-            row.getDate(COL_GUELTIGVON).toLocalDate(),
-            row.getDate(COL_GUELTIGBIS).toLocalDate()
+            FlyWeightDateFactory.get(row.getDate(COL_GUELTIGVON).toLocalDate()),
+            FlyWeightDateFactory.get(row.getDate(COL_GUELTIGBIS).toLocalDate())
         );
     }
 }
