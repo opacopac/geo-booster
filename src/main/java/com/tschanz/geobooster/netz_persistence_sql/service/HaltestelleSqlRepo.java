@@ -5,34 +5,40 @@ import com.tschanz.geobooster.netz.model.HaltestelleVersion;
 import com.tschanz.geobooster.netz_persistence.service.HaltestellenPersistenceRepo;
 import com.tschanz.geobooster.netz_persistence_sql.model.SqlHaltestelleElementConverter;
 import com.tschanz.geobooster.netz_persistence_sql.model.SqlHaltestelleVersionConverter;
+import com.tschanz.geobooster.persistence_sql.service.SqlConnectionFactory;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 
-import java.sql.DriverManager;
-import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
 
 @Service
+@RequiredArgsConstructor
 public class HaltestelleSqlRepo implements HaltestellenPersistenceRepo {
+    private final SqlConnectionFactory connectionFactory;
+
+
     @Override
     @SneakyThrows
     public Map<Long, Haltestelle> readAllElements() {
-        var statement = this.getStatement();
+        var connection = this.connectionFactory.createConnection();
         var query = String.format(
             "SELECT %s FROM N_HALTESTELLE_E",
             String.join(",", SqlHaltestelleElementConverter.ALL_COLS)
         );
 
         var elementMap = new HashMap<Long, Haltestelle>();
-        if (statement.execute(query)) {
-            while (statement.getResultSet().next()) {
-                var element = SqlHaltestelleElementConverter.fromResultSet(statement.getResultSet());
+        if (connection.getStatement().execute(query)) {
+            while (connection.getStatement().getResultSet().next()) {
+                var resultSet = connection.getStatement().getResultSet();
+                var element = SqlHaltestelleElementConverter.fromResultSet(resultSet);
                 elementMap.put(element.getElementInfo().getId(), element);
             }
-            statement.close();
         }
+
+        connection.closeAll();
 
         return elementMap;
     }
@@ -41,32 +47,23 @@ public class HaltestelleSqlRepo implements HaltestellenPersistenceRepo {
     @Override
     @SneakyThrows
     public Map<Long, HaltestelleVersion> readAllVersions(Map<Long, Haltestelle> elementMap) {
-        var statement = this.getStatement();
+        var connection = this.connectionFactory.createConnection();
         var query = String.format(
             "SELECT %s FROM N_HALTESTELLE_V",
             String.join(",", SqlHaltestelleVersionConverter.ALL_COLS)
         );
 
         var versionMap = new HashMap<Long, HaltestelleVersion>();
-        if (statement.execute(query)) {
-            while (statement.getResultSet().next()) {
-                var version = SqlHaltestelleVersionConverter.fromResultSet(statement.getResultSet(), elementMap);
+        if (connection.getStatement().execute(query)) {
+            while (connection.getStatement().getResultSet().next()) {
+                var resultSet = connection.getStatement().getResultSet();
+                var version = SqlHaltestelleVersionConverter.fromResultSet(resultSet, elementMap);
                 versionMap.put(version.getVersionInfo().getId(), version);
             }
-            statement.close();
         }
 
+        connection.closeAll();
+
         return versionMap;
-    }
-
-
-    @SneakyThrows
-    // TODO
-    private Statement getStatement() {
-        return DriverManager.getConnection(
-            "jdbc:mysql://localhost:3306/test",
-            "geobooster",
-            "geobooster"
-        ).createStatement();
     }
 }

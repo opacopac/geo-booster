@@ -45,14 +45,15 @@ public class WmsPngService {
         logger.info("reading haltestellen...");
         var hstVersions = this.haltestellenRepo.readHaltestellenVersions(LocalDate.now(), mapRequest.getBbox());
         logger.info("done.");
-        //System.out.println(GraphLayout.parseInstance(this.haltestellenRepo.getHstElementMap()).toFootprint());
-        //System.out.println(GraphLayout.parseInstance(this.haltestellenRepo.getHstVersionMap()).toFootprint());
 
         logger.info("reading verkehrskanten...");
         var vkVersions = this.verkehrskantenRepo.readVerkehrskanteVersions(LocalDate.now(), mapRequest.getBbox());
         logger.info("done.");
-        //System.out.println(GraphLayout.parseInstance(this.verkehrskantenRepo.getVkElementMap()).toFootprint());
-        //System.out.println(GraphLayout.parseInstance(this.verkehrskantenRepo.getVkVersionMap()).toFootprint());
+
+        // TMP: mem profiling
+        //System.out.println(GraphLayout.parseInstance(this.haltestellenRepo).toFootprint());
+        //System.out.println(GraphLayout.parseInstance(this.verkehrskantenRepo).toFootprint());
+        //System.out.println(GraphLayout.parseInstance(this).toFootprint());
 
         logger.info("prepare map tile...");
         var mapTilePoints = hstVersions.stream()
