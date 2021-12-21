@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public interface VerkehrskantenRepo {
+public interface VerkehrskanteRepo {
     List<VerkehrskanteVersion> readVerkehrskanteVersions(LocalDate date, Extent extent);
 
     Map<Long, Verkehrskante> getVkElementMap();

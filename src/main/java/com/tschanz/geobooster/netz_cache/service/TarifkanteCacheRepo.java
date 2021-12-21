@@ -3,11 +3,11 @@ package com.tschanz.geobooster.netz_cache.service;
 
 import com.tschanz.geobooster.geofeature.model.Extent;
 import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
-import com.tschanz.geobooster.netz.model.Verkehrskante;
-import com.tschanz.geobooster.netz.model.VerkehrskanteVersion;
+import com.tschanz.geobooster.netz.model.Tarifkante;
+import com.tschanz.geobooster.netz.model.TarifkanteVersion;
 import com.tschanz.geobooster.netz.service.HaltestelleRepo;
-import com.tschanz.geobooster.netz.service.VerkehrskanteRepo;
-import com.tschanz.geobooster.netz_persistence.service.VerkehrskantePersistenceRepo;
+import com.tschanz.geobooster.netz.service.TarifkanteRepo;
+import com.tschanz.geobooster.netz_persistence.service.TarifkantePersistenceRepo;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,45 +21,45 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class VerkehrskanteCacheRepo implements VerkehrskanteRepo {
-    private static final Logger logger = LogManager.getLogger(VerkehrskanteCacheRepo.class);
+public class TarifkanteCacheRepo implements TarifkanteRepo {
+    private static final Logger logger = LogManager.getLogger(TarifkanteCacheRepo.class);
 
-    private final VerkehrskantePersistenceRepo vkPersistenceRepo;
+    private final TarifkantePersistenceRepo tkPersistenceRepo;
     private final HaltestelleRepo hstRepo;
-    private Map<Long, Verkehrskante> vkElementMap;
-    private Map<Long, VerkehrskanteVersion> vkVersionMap;
+    private Map<Long, Tarifkante> tkElementMap;
+    private Map<Long, TarifkanteVersion> tkVersionMap;
 
 
-    public Map<Long, Verkehrskante> getVkElementMap() {
-        if (this.vkElementMap == null) {
-            logger.info("loading all vk elements...");
-            this.vkElementMap = this.vkPersistenceRepo.readAllElements(this.hstRepo.getHstElementMap());
-            logger.info(String.format("cached %d vk elements.", this.vkElementMap.size()));
+    public Map<Long, Tarifkante> getTkElementMap() {
+        if (this.tkElementMap == null) {
+            logger.info("loading all tk elements...");
+            this.tkElementMap = this.tkPersistenceRepo.readAllElements(this.hstRepo.getHstElementMap());
+            logger.info(String.format("cached %d tk elements.", this.tkElementMap.size()));
         }
 
-        return this.vkElementMap;
+        return this.tkElementMap;
     }
 
 
-    public Map<Long, VerkehrskanteVersion> getVkVersionMap() {
-        if (this.vkVersionMap == null) {
-            logger.info("loading all vk versions...");
-            this.vkVersionMap = this.vkPersistenceRepo.readAllVersions(this.getVkElementMap());
-            logger.info(String.format("cached %d vk versions.", this.vkVersionMap.size()));
+    public Map<Long, TarifkanteVersion> getTkVersionMap() {
+        if (this.tkVersionMap == null) {
+            logger.info("loading all tk versions...");
+            this.tkVersionMap = this.tkPersistenceRepo.readAllVersions(this.getTkElementMap());
+            logger.info(String.format("cached %d tk versions.", this.tkVersionMap.size()));
         }
 
-        return this.vkVersionMap;
+        return this.tkVersionMap;
     }
 
 
     @Override
-    public List<VerkehrskanteVersion> readVerkehrskanteVersions(LocalDate date, Extent extent) {
+    public List<TarifkanteVersion> readTarifkanteVersions(LocalDate date, Extent extent) {
         var minLon = CoordinateConverter.convertToEpsg4326(extent.getMinCoordinate()).getLongitude();
         var minLat = CoordinateConverter.convertToEpsg4326(extent.getMinCoordinate()).getLatitude();
         var maxLon = CoordinateConverter.convertToEpsg4326(extent.getMaxCoordinate()).getLongitude();
         var maxLat = CoordinateConverter.convertToEpsg4326(extent.getMaxCoordinate()).getLatitude();
 
-        return this.getVkVersionMap().values()
+        return this.getTkVersionMap().values()
             .stream()
             .filter(hstv -> date.isEqual(hstv.getVersionInfo().getGueltigVon()) || date.isAfter(hstv.getVersionInfo().getGueltigVon()))
             .filter(hstv -> date.isEqual(hstv.getVersionInfo().getGueltigBis()) || date.isBefore(hstv.getVersionInfo().getGueltigBis()))

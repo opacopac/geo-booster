@@ -8,8 +8,9 @@ import com.tschanz.geobooster.maptile.model.MapTile;
 import com.tschanz.geobooster.maptile.model.MapTileLine;
 import com.tschanz.geobooster.maptile.model.MapTilePoint;
 import com.tschanz.geobooster.maptile.service.MapTileService;
-import com.tschanz.geobooster.netz.service.HaltestellenRepo;
-import com.tschanz.geobooster.netz.service.VerkehrskantenRepo;
+import com.tschanz.geobooster.netz.service.HaltestelleRepo;
+import com.tschanz.geobooster.netz.service.TarifkanteRepo;
+import com.tschanz.geobooster.netz.service.VerkehrskanteRepo;
 import com.tschanz.geobooster.webmapservice.model.GetMapRequest;
 import com.tschanz.geobooster.webmapservice.model.PngResponse;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.stream.Collectors;
 
 
@@ -27,33 +27,42 @@ import java.util.stream.Collectors;
 public class WmsPngService {
     private static final Logger logger = LogManager.getLogger(WmsPngService.class);
 
-    private final HaltestellenRepo haltestellenRepo;
-    private final VerkehrskantenRepo verkehrskantenRepo;
+    private final HaltestelleRepo haltestelleRepo;
+    private final VerkehrskanteRepo verkehrskanteRepo;
+    private final TarifkanteRepo tarifkanteRepo;
     private final MapTileService mapTileService;
     private final ImageService imageService;
 
 
     @SneakyThrows
     public PngResponse getResponse(GetMapRequest mapRequest) {
+        var date = mapRequest.getViewparams().getDate();
+        var bbox = mapRequest.getBbox();
+
         logger.info(String.format("request for bbox %s,%s %s,%s",
-            CoordinateConverter.convertToEpsg4326(mapRequest.getBbox().getMinCoordinate()).getLatitude(),
-            CoordinateConverter.convertToEpsg4326(mapRequest.getBbox().getMinCoordinate()).getLongitude(),
-            CoordinateConverter.convertToEpsg4326(mapRequest.getBbox().getMaxCoordinate()).getLatitude(),
-            CoordinateConverter.convertToEpsg4326(mapRequest.getBbox().getMaxCoordinate()).getLongitude()
+            CoordinateConverter.convertToEpsg4326(bbox.getMinCoordinate()).getLatitude(),
+            CoordinateConverter.convertToEpsg4326(bbox.getMinCoordinate()).getLongitude(),
+            CoordinateConverter.convertToEpsg4326(bbox.getMaxCoordinate()).getLatitude(),
+            CoordinateConverter.convertToEpsg4326(bbox.getMaxCoordinate()).getLongitude()
         ));
 
         logger.info("reading haltestellen...");
-        var hstVersions = this.haltestellenRepo.readHaltestellenVersions(LocalDate.now(), mapRequest.getBbox());
+        var hstVersions = this.haltestelleRepo.readHaltestellenVersions(date, bbox);
         logger.info("done.");
 
         logger.info("reading verkehrskanten...");
-        var vkVersions = this.verkehrskantenRepo.readVerkehrskanteVersions(LocalDate.now(), mapRequest.getBbox());
+        var vkVersions = this.verkehrskanteRepo.readVerkehrskanteVersions(date, bbox);
+        logger.info("done.");
+
+        logger.info("reading tarifkanten...");
+        var tkVersions = this.tarifkanteRepo.readTarifkanteVersions(date, bbox);
         logger.info("done.");
 
         // TMP: mem profiling
-        //System.out.println(GraphLayout.parseInstance(this.haltestellenRepo).toFootprint());
-        //System.out.println(GraphLayout.parseInstance(this.verkehrskantenRepo).toFootprint());
-        //System.out.println(GraphLayout.parseInstance(this).toFootprint());
+        /*System.out.println(GraphLayout.parseInstance(this.haltestelleRepo).toFootprint());
+        System.out.println(GraphLayout.parseInstance(this.verkehrskanteRepo).toFootprint());
+        System.out.println(GraphLayout.parseInstance(this.tarifkanteRepo).toFootprint());
+        System.out.println(GraphLayout.parseInstance(this).toFootprint());*/
 
         logger.info("prepare map tile...");
         var mapTilePoints = hstVersions.stream()
@@ -75,8 +84,8 @@ public class WmsPngService {
             mapRequest.getWidth(),
             mapRequest.getHeight(),
             mapRequest.isTransparent(),
-            CoordinateConverter.convertToEpsg3857(mapRequest.getBbox().getMinCoordinate()),
-            CoordinateConverter.convertToEpsg3857(mapRequest.getBbox().getMaxCoordinate()),
+            CoordinateConverter.convertToEpsg3857(bbox.getMinCoordinate()),
+            CoordinateConverter.convertToEpsg3857(bbox.getMaxCoordinate()),
             mapTilePoints,
             mapTileLines
         );

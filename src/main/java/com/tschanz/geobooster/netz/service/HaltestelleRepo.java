@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public interface HaltestellenRepo {
+public interface HaltestelleRepo {
     List<HaltestelleVersion> readHaltestellenVersions(LocalDate date, Extent extent);
 
     Map<Long, Haltestelle> getHstElementMap();

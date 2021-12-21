@@ -27,7 +27,7 @@ public class GetMapRequest {
     private final String styles;
     private final String format;
     private final boolean transparent;
-    private final String viewparams;
+    private final GetMapViewParams viewparams;
     private final int width;
     private final int height;
     private final String srs;
@@ -41,7 +41,7 @@ public class GetMapRequest {
             params.get(PARAM_STYLES),
             params.get(PARAM_FORMAT),
             Boolean.parseBoolean(params.get(PARAM_TRANSPARENT)),
-            params.get(PARAM_VIEWPARAMS),
+            GetMapViewParams.parse(params.get(PARAM_VIEWPARAMS)),
             Integer.parseInt(params.get(PARAM_WIDTH)),
             Integer.parseInt(params.get(PARAM_HEIGHT)),
             params.get(PARAM_SRS),

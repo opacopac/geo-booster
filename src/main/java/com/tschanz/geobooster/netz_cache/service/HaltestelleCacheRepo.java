@@ -5,7 +5,7 @@ import com.tschanz.geobooster.geofeature.model.Extent;
 import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
 import com.tschanz.geobooster.netz.model.Haltestelle;
 import com.tschanz.geobooster.netz.model.HaltestelleVersion;
-import com.tschanz.geobooster.netz.service.HaltestellenRepo;
+import com.tschanz.geobooster.netz.service.HaltestelleRepo;
 import com.tschanz.geobooster.netz_persistence.service.HaltestellenPersistenceRepo;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -20,8 +20,8 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class HaltestellenCacheRepo implements HaltestellenRepo {
-    private static final Logger logger = LogManager.getLogger(HaltestellenCacheRepo.class);
+public class HaltestelleCacheRepo implements HaltestelleRepo {
+    private static final Logger logger = LogManager.getLogger(HaltestelleCacheRepo.class);
 
     private final HaltestellenPersistenceRepo haltestellenPersistenceRepo;
     private Map<Long, Haltestelle> hstElementMap;

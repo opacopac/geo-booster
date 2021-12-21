@@ -17,7 +17,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class VehrkehrskanteSqlRepo implements VerkehrskantePersistenceRepo {
+public class VerkehrskanteSqlRepo implements VerkehrskantePersistenceRepo {
     private final SqlConnectionFactory connectionFactory;
 
 
