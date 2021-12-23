@@ -4,7 +4,7 @@ import com.tschanz.geobooster.GbDataSourceProperties;
 import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
 import com.tschanz.geobooster.webmapservice.model.GetMapRequest;
 import com.tschanz.geobooster.webmapservice.service.WmsPngService;
-import com.tschanz.geobooster.webmapservice.service.WmsUtf8GridService;
+import com.tschanz.geobooster.webmapservice.service.WmsUtfGridService;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,7 +29,7 @@ public class WmsController {
     private static final Logger logger = LogManager.getLogger(WmsController.class);
 
     private final GbDataSourceProperties gbProperties;
-    private final WmsUtf8GridService wmsUtf8GridService;
+    private final WmsUtfGridService wmsUtfGridService;
     private final WmsPngService wmsPngService;
 
 
@@ -60,18 +60,18 @@ public class WmsController {
         params = {"service=" + SERVICE_WMS, "request=" + REQ_GETMAP, "format=" + FORMAT_UTFGRID}
     )
     @ResponseBody
-    public String wmsGetMapUtf8GridHandler(@RequestParam Map<String,String> allParams) {
+    public String wmsGetMapUtfGridHandler(@RequestParam Map<String,String> allParams) {
         var mapRequest = GetMapRequest.fromParams(allParams);
 
-        logger.info(String.format("UTF8 grid request for bbox %s,%s %s,%s",
+        logger.info(String.format("UTF grid request for bbox %s,%s %s,%s",
             CoordinateConverter.convertToEpsg4326(mapRequest.getBbox().getMinCoordinate()).getLatitude(),
             CoordinateConverter.convertToEpsg4326(mapRequest.getBbox().getMinCoordinate()).getLongitude(),
             CoordinateConverter.convertToEpsg4326(mapRequest.getBbox().getMaxCoordinate()).getLatitude(),
             CoordinateConverter.convertToEpsg4326(mapRequest.getBbox().getMaxCoordinate()).getLongitude()
         ));
 
-        var utf8GridResponse = this.wmsUtf8GridService.getResponse(mapRequest);
+        var utfGridResponse = this.wmsUtfGridService.getResponse(mapRequest);
 
-        return "MEEP_UTF8_GRID";
+        return utfGridResponse.getText();
     }
 }

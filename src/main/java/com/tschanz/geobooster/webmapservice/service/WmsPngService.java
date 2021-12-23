@@ -31,9 +31,6 @@ import java.util.stream.Stream;
 @Service
 @RequiredArgsConstructor
 public class WmsPngService {
-    private static final String LAYER_HALTESTELLEN = "novap:HALTESTELLEN";
-    private static final String LAYER_VERKEHRSKANTEN = "novap:VERKEHRSKANTEN";
-    private static final String LAYER_TARIFKANTEN = "novap:TARIFKANTEN";
     private static final Logger logger = LogManager.getLogger(WmsPngService.class);
 
     private final HaltestelleRepo haltestelleRepo;
@@ -49,26 +46,17 @@ public class WmsPngService {
         var bbox = mapRequest.getBbox();
         var vmTypes = mapRequest.getViewparams().getTypes();
 
-        List<HaltestelleVersion> hstVersions = Collections.emptyList();
-        if (mapRequest.getLayers().contains(LAYER_HALTESTELLEN)) {
-            logger.info("reading haltestellen...");
-            hstVersions = this.haltestelleRepo.readVersions(date, bbox);
-            logger.info("done.");
-        }
+        List<HaltestelleVersion> hstVersions = mapRequest.getLayers().contains(GetMapRequest.LAYER_HALTESTELLEN)
+            ? this.haltestelleRepo.readVersions(date, bbox)
+            : Collections.emptyList();
 
-        List<VerkehrskanteVersion> vkVersions = Collections.emptyList();
-        if (mapRequest.getLayers().contains(LAYER_VERKEHRSKANTEN)) {
-            logger.info("reading verkehrskanten...");
-            vkVersions = this.verkehrskanteRepo.readVersions(date, bbox, vmTypes);
-            logger.info("done.");
-        }
+        List<VerkehrskanteVersion> vkVersions = mapRequest.getLayers().contains(GetMapRequest.LAYER_VERKEHRSKANTEN)
+            ? this.verkehrskanteRepo.readVersions(date, bbox, vmTypes)
+            : Collections.emptyList();
 
-        List<TarifkanteVersion> tkVersions = Collections.emptyList();
-        if (mapRequest.getLayers().contains(LAYER_TARIFKANTEN)) {
-            logger.info("reading tarifkanten...");
-            tkVersions = this.tarifkanteRepo.readVersions(date, bbox, vmTypes);
-            logger.info("done.");
-        }
+        List<TarifkanteVersion> tkVersions = mapRequest.getLayers().contains(GetMapRequest.LAYER_TARIFKANTEN)
+            ? this.tarifkanteRepo.readVersions(date, bbox, vmTypes)
+            : Collections.emptyList();
 
         // TMP: mem profiling
         /*System.out.println(GraphLayout.parseInstance(this.haltestelleRepo).toFootprint());

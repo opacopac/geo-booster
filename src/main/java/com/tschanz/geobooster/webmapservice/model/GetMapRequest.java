@@ -11,6 +11,9 @@ import java.util.Map;
 @Getter
 @RequiredArgsConstructor
 public class GetMapRequest {
+    public static final String LAYER_HALTESTELLEN = "novap:HALTESTELLEN";
+    public static final String LAYER_VERKEHRSKANTEN = "novap:VERKEHRSKANTEN";
+    public static final String LAYER_TARIFKANTEN = "novap:TARIFKANTEN";
     private static final String PARAM_VERSION = "version";
     private static final String PARAM_LAYERS = "layers";
     private static final String PARAM_STYLES = "styles";

@@ -14,17 +14,35 @@ public class TarifkanteVersion implements Version<Tarifkante> {
 
 
     public Epsg4326Coordinate getStartCoordinate() {
-        var hstElement = this.versionInfo.getElement().getHaltestelle1();
-        var hstVersion = hstElement.getElementInfo().getVersion(this.versionInfo.getGueltigVon());
-
-        return hstVersion.getCoordinate();
+        return this.getHaltestelle1Version().getCoordinate();
     }
 
 
     public Epsg4326Coordinate getEndCoordinate() {
-        var hstElement = this.versionInfo.getElement().getHaltestelle2();
-        var hstVersion = hstElement.getElementInfo().getVersion(this.versionInfo.getGueltigVon());
+        return this.getHaltestelle1Version().getCoordinate();
+    }
 
-        return hstVersion.getCoordinate();
+
+    public Haltestelle getHaltestelle1() {
+        return this.versionInfo.getElement().getHaltestelle1();
+    }
+
+
+    public Haltestelle getHaltestelle2() {
+        return this.versionInfo.getElement().getHaltestelle1();
+    }
+
+
+    public HaltestelleVersion getHaltestelle1Version() {
+        return this.getHaltestelle1()
+            .getElementInfo()
+            .getVersion(this.versionInfo.getGueltigVon());
+    }
+
+
+    public HaltestelleVersion getHaltestelle2Version() {
+        return this.getHaltestelle2()
+            .getElementInfo()
+            .getVersion(this.versionInfo.getGueltigVon());
     }
 }
