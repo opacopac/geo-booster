@@ -12,15 +12,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class GetMapViewParamsTests {
     @Test
     void test_mixed1() {
-        var viewparams = "TYPEN:'BAHN,BUS';;;DATE:'2021-12-12';REFRESH_COUNTER:1639825696749;";
+        var viewparams = "TYPEN:'BAHN'\\,'BUS';;;DATE:'2021-12-11';REFRESH_COUNTER:1640119429107;";
 
         var result = GetMapViewParams.parse(viewparams);
 
-        assertEquals(LocalDate.of(2021, 12, 12), result.getDate());
-        assertEquals(1639825696749L, result.getRefreshCounter());
+        assertEquals(LocalDate.of(2021, 12, 11), result.getDate());
+        assertEquals(1640119429107L, result.getRefreshCounter());
         assertEquals(2, result.getTypes().size());
         assertEquals("BAHN", result.getTypes().get(0));
         assertEquals("BUS", result.getTypes().get(1));
     }
 }
 
+//

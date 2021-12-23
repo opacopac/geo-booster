@@ -7,6 +7,7 @@ import com.tschanz.geobooster.netz.model.Verkehrskante;
 import com.tschanz.geobooster.netz.model.VerkehrskanteVersion;
 import com.tschanz.geobooster.netz.service.HaltestelleRepo;
 import com.tschanz.geobooster.netz.service.VerkehrskanteRepo;
+import com.tschanz.geobooster.netz.service.VerwaltungRepo;
 import com.tschanz.geobooster.netz_persistence.service.VerkehrskantePersistenceRepo;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -24,42 +25,43 @@ import java.util.stream.Collectors;
 public class VerkehrskanteCacheRepo implements VerkehrskanteRepo {
     private static final Logger logger = LogManager.getLogger(VerkehrskanteCacheRepo.class);
 
-    private final VerkehrskantePersistenceRepo vkPersistenceRepo;
     private final HaltestelleRepo hstRepo;
-    private Map<Long, Verkehrskante> vkElementMap;
-    private Map<Long, VerkehrskanteVersion> vkVersionMap;
+    private final VerwaltungRepo verwaltungRepo;
+    private final VerkehrskantePersistenceRepo vkPersistenceRepo;
+    private Map<Long, Verkehrskante> elementMap;
+    private Map<Long, VerkehrskanteVersion> versionMap;
 
 
-    public Map<Long, Verkehrskante> getVkElementMap() {
-        if (this.vkElementMap == null) {
+    public Map<Long, Verkehrskante> getElementMap() {
+        if (this.elementMap == null) {
             logger.info("loading all vk elements...");
-            this.vkElementMap = this.vkPersistenceRepo.readAllElements(this.hstRepo.getHstElementMap());
-            logger.info(String.format("cached %d vk elements.", this.vkElementMap.size()));
+            this.elementMap = this.vkPersistenceRepo.readAllElements(this.hstRepo.getElementMap());
+            logger.info(String.format("cached %d vk elements.", this.elementMap.size()));
         }
 
-        return this.vkElementMap;
+        return this.elementMap;
     }
 
 
-    public Map<Long, VerkehrskanteVersion> getVkVersionMap() {
-        if (this.vkVersionMap == null) {
+    public Map<Long, VerkehrskanteVersion> getVersionMap() {
+        if (this.versionMap == null) {
             logger.info("loading all vk versions...");
-            this.vkVersionMap = this.vkPersistenceRepo.readAllVersions(this.getVkElementMap());
-            logger.info(String.format("cached %d vk versions.", this.vkVersionMap.size()));
+            this.versionMap = this.vkPersistenceRepo.readAllVersions(this.getElementMap(), this.verwaltungRepo.getElementMap());
+            logger.info(String.format("cached %d vk versions.", this.versionMap.size()));
         }
 
-        return this.vkVersionMap;
+        return this.versionMap;
     }
 
 
     @Override
-    public List<VerkehrskanteVersion> readVerkehrskanteVersions(LocalDate date, Extent extent) {
+    public List<VerkehrskanteVersion> readVersions(LocalDate date, Extent extent) {
         var minLon = CoordinateConverter.convertToEpsg4326(extent.getMinCoordinate()).getLongitude();
         var minLat = CoordinateConverter.convertToEpsg4326(extent.getMinCoordinate()).getLatitude();
         var maxLon = CoordinateConverter.convertToEpsg4326(extent.getMaxCoordinate()).getLongitude();
         var maxLat = CoordinateConverter.convertToEpsg4326(extent.getMaxCoordinate()).getLatitude();
 
-        return this.getVkVersionMap().values()
+        return this.getVersionMap().values()
             .stream()
             .filter(hstv -> date.isEqual(hstv.getVersionInfo().getGueltigVon()) || date.isAfter(hstv.getVersionInfo().getGueltigVon()))
             .filter(hstv -> date.isEqual(hstv.getVersionInfo().getGueltigBis()) || date.isBefore(hstv.getVersionInfo().getGueltigBis()))

@@ -10,9 +10,9 @@ import java.util.Map;
 
 
 public interface TarifkanteRepo {
-    List<TarifkanteVersion> readTarifkanteVersions(LocalDate date, Extent extent);
+    List<TarifkanteVersion> readVersions(LocalDate date, Extent extent);
 
-    Map<Long, Tarifkante> getTkElementMap();
+    Map<Long, Tarifkante> getElementMap();
 
-    Map<Long, TarifkanteVersion> getTkVersionMap();
+    Map<Long, TarifkanteVersion> getVersionMap();
 }

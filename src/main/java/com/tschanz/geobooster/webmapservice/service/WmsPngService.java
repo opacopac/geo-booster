@@ -48,31 +48,24 @@ public class WmsPngService {
         var date = mapRequest.getViewparams().getDate();
         var bbox = mapRequest.getBbox();
 
-        logger.info(String.format("request for bbox %s,%s %s,%s",
-            CoordinateConverter.convertToEpsg4326(bbox.getMinCoordinate()).getLatitude(),
-            CoordinateConverter.convertToEpsg4326(bbox.getMinCoordinate()).getLongitude(),
-            CoordinateConverter.convertToEpsg4326(bbox.getMaxCoordinate()).getLatitude(),
-            CoordinateConverter.convertToEpsg4326(bbox.getMaxCoordinate()).getLongitude()
-        ));
-
         List<HaltestelleVersion> hstVersions = Collections.emptyList();
         if (mapRequest.getLayers().contains(LAYER_HALTESTELLEN)) {
             logger.info("reading haltestellen...");
-            hstVersions = this.haltestelleRepo.readHaltestellenVersions(date, bbox);
+            hstVersions = this.haltestelleRepo.readVersions(date, bbox);
             logger.info("done.");
         }
 
         List<VerkehrskanteVersion> vkVersions = Collections.emptyList();
         if (mapRequest.getLayers().contains(LAYER_VERKEHRSKANTEN)) {
             logger.info("reading verkehrskanten...");
-            vkVersions = this.verkehrskanteRepo.readVerkehrskanteVersions(date, bbox);
+            vkVersions = this.verkehrskanteRepo.readVersions(date, bbox);
             logger.info("done.");
         }
 
         List<TarifkanteVersion> tkVersions = Collections.emptyList();
         if (mapRequest.getLayers().contains(LAYER_TARIFKANTEN)) {
             logger.info("reading tarifkanten...");
-            tkVersions = this.tarifkanteRepo.readTarifkanteVersions(date, bbox);
+            tkVersions = this.tarifkanteRepo.readVersions(date, bbox);
             logger.info("done.");
         }
 

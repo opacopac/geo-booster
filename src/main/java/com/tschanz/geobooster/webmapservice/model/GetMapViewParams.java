@@ -16,7 +16,7 @@ public class GetMapViewParams {
     private static final String SUBPARAM_NAME_VALUE = ":";
     private static final String SUBPARAM_VALUE_QUOTES = "'";
     private static final String SUBPARAM_TYPES = "TYPEN";
-    private static final String SUBPARAM_TYPES_SEPARATOR = ",";
+    private static final String SUBPARAM_TYPES_SEPARATOR = "\\\\,";
     private static final String SUBPARAM_DATE = "DATE";
     private static final String SUBPARAM_REFRESHCOUNTER = "REFRESH_COUNTER";
 

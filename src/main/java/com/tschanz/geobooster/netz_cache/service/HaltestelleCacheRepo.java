@@ -24,40 +24,40 @@ public class HaltestelleCacheRepo implements HaltestelleRepo {
     private static final Logger logger = LogManager.getLogger(HaltestelleCacheRepo.class);
 
     private final HaltestellenPersistenceRepo haltestellenPersistenceRepo;
-    private Map<Long, Haltestelle> hstElementMap;
-    private Map<Long, HaltestelleVersion> hstVersionMap;
+    private Map<Long, Haltestelle> elementMap;
+    private Map<Long, HaltestelleVersion> versionMap;
 
 
-    public Map<Long, Haltestelle> getHstElementMap() {
-        if (this.hstElementMap == null) {
+    public Map<Long, Haltestelle> getElementMap() {
+        if (this.elementMap == null) {
             logger.info("loading all hst elements...");
-            this.hstElementMap = this.haltestellenPersistenceRepo.readAllElements();
-            logger.info(String.format("cached %d hst elements.", this.hstElementMap.size()));
+            this.elementMap = this.haltestellenPersistenceRepo.readAllElements();
+            logger.info(String.format("cached %d hst elements.", this.elementMap.size()));
         }
 
-        return this.hstElementMap;
+        return this.elementMap;
     }
 
 
-    public Map<Long, HaltestelleVersion> getHstVersionMap() {
-        if (this.hstVersionMap == null) {
+    public Map<Long, HaltestelleVersion> getVersionMap() {
+        if (this.versionMap == null) {
             logger.info("loading all hst versions...");
-            this.hstVersionMap = this.haltestellenPersistenceRepo.readAllVersions(this.getHstElementMap());
-            logger.info(String.format("cached %d hst versions.", this.hstVersionMap.size()));
+            this.versionMap = this.haltestellenPersistenceRepo.readAllVersions(this.getElementMap());
+            logger.info(String.format("cached %d hst versions.", this.versionMap.size()));
         }
 
-        return this.hstVersionMap;
+        return this.versionMap;
     }
 
 
     @Override
-    public List<HaltestelleVersion> readHaltestellenVersions(LocalDate date, Extent extent) {
+    public List<HaltestelleVersion> readVersions(LocalDate date, Extent extent) {
         var minLon = CoordinateConverter.convertToEpsg4326(extent.getMinCoordinate()).getLongitude();
         var minLat = CoordinateConverter.convertToEpsg4326(extent.getMinCoordinate()).getLatitude();
         var maxLon = CoordinateConverter.convertToEpsg4326(extent.getMaxCoordinate()).getLongitude();
         var maxLat = CoordinateConverter.convertToEpsg4326(extent.getMaxCoordinate()).getLatitude();
 
-        return this.getHstVersionMap().values()
+        return this.getVersionMap().values()
             .stream()
             .filter(hstv -> date.isEqual(hstv.getVersionInfo().getGueltigVon()) || date.isAfter(hstv.getVersionInfo().getGueltigVon()))
             .filter(hstv -> date.isEqual(hstv.getVersionInfo().getGueltigBis()) || date.isBefore(hstv.getVersionInfo().getGueltigBis()))

@@ -13,6 +13,7 @@ import java.sql.Statement;
 public class SqlConnection {
     private final Connection connection;
     private final Statement statement;
+    private final SqlDialect dialect;
 
 
     @SneakyThrows

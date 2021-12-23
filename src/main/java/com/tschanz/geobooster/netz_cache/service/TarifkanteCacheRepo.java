@@ -26,40 +26,40 @@ public class TarifkanteCacheRepo implements TarifkanteRepo {
 
     private final TarifkantePersistenceRepo tkPersistenceRepo;
     private final HaltestelleRepo hstRepo;
-    private Map<Long, Tarifkante> tkElementMap;
-    private Map<Long, TarifkanteVersion> tkVersionMap;
+    private Map<Long, Tarifkante> elementMap;
+    private Map<Long, TarifkanteVersion> versionMap;
 
 
-    public Map<Long, Tarifkante> getTkElementMap() {
-        if (this.tkElementMap == null) {
+    public Map<Long, Tarifkante> getElementMap() {
+        if (this.elementMap == null) {
             logger.info("loading all tk elements...");
-            this.tkElementMap = this.tkPersistenceRepo.readAllElements(this.hstRepo.getHstElementMap());
-            logger.info(String.format("cached %d tk elements.", this.tkElementMap.size()));
+            this.elementMap = this.tkPersistenceRepo.readAllElements(this.hstRepo.getElementMap());
+            logger.info(String.format("cached %d tk elements.", this.elementMap.size()));
         }
 
-        return this.tkElementMap;
+        return this.elementMap;
     }
 
 
-    public Map<Long, TarifkanteVersion> getTkVersionMap() {
-        if (this.tkVersionMap == null) {
+    public Map<Long, TarifkanteVersion> getVersionMap() {
+        if (this.versionMap == null) {
             logger.info("loading all tk versions...");
-            this.tkVersionMap = this.tkPersistenceRepo.readAllVersions(this.getTkElementMap());
-            logger.info(String.format("cached %d tk versions.", this.tkVersionMap.size()));
+            this.versionMap = this.tkPersistenceRepo.readAllVersions(this.getElementMap());
+            logger.info(String.format("cached %d tk versions.", this.versionMap.size()));
         }
 
-        return this.tkVersionMap;
+        return this.versionMap;
     }
 
 
     @Override
-    public List<TarifkanteVersion> readTarifkanteVersions(LocalDate date, Extent extent) {
+    public List<TarifkanteVersion> readVersions(LocalDate date, Extent extent) {
         var minLon = CoordinateConverter.convertToEpsg4326(extent.getMinCoordinate()).getLongitude();
         var minLat = CoordinateConverter.convertToEpsg4326(extent.getMinCoordinate()).getLatitude();
         var maxLon = CoordinateConverter.convertToEpsg4326(extent.getMaxCoordinate()).getLongitude();
         var maxLat = CoordinateConverter.convertToEpsg4326(extent.getMaxCoordinate()).getLatitude();
 
-        return this.getTkVersionMap().values()
+        return this.getVersionMap().values()
             .stream()
             .filter(hstv -> date.isEqual(hstv.getVersionInfo().getGueltigVon()) || date.isAfter(hstv.getVersionInfo().getGueltigVon()))
             .filter(hstv -> date.isEqual(hstv.getVersionInfo().getGueltigBis()) || date.isBefore(hstv.getVersionInfo().getGueltigBis()))
