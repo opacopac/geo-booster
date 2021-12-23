@@ -47,6 +47,7 @@ public class WmsPngService {
     public PngResponse getResponse(GetMapRequest mapRequest) {
         var date = mapRequest.getViewparams().getDate();
         var bbox = mapRequest.getBbox();
+        var vmTypes = mapRequest.getViewparams().getTypes();
 
         List<HaltestelleVersion> hstVersions = Collections.emptyList();
         if (mapRequest.getLayers().contains(LAYER_HALTESTELLEN)) {
@@ -58,14 +59,14 @@ public class WmsPngService {
         List<VerkehrskanteVersion> vkVersions = Collections.emptyList();
         if (mapRequest.getLayers().contains(LAYER_VERKEHRSKANTEN)) {
             logger.info("reading verkehrskanten...");
-            vkVersions = this.verkehrskanteRepo.readVersions(date, bbox);
+            vkVersions = this.verkehrskanteRepo.readVersions(date, bbox, vmTypes);
             logger.info("done.");
         }
 
         List<TarifkanteVersion> tkVersions = Collections.emptyList();
         if (mapRequest.getLayers().contains(LAYER_TARIFKANTEN)) {
             logger.info("reading tarifkanten...");
-            tkVersions = this.tarifkanteRepo.readVersions(date, bbox);
+            tkVersions = this.tarifkanteRepo.readVersions(date, bbox, vmTypes);
             logger.info("done.");
         }
 
@@ -83,10 +84,8 @@ public class WmsPngService {
             ))
             .collect(Collectors.toList());
 
-        var vmTypes = mapRequest.getViewparams().getTypes();
         var mapTileLines = Stream.concat(
                 vkVersions.stream()
-                    .filter(vkV -> vkV.hasOneOfVmTypes(vmTypes))
                     .map(vkV -> new MapTileLine(
                         CoordinateConverter.convertToEpsg3857(vkV.getStartCoordinate()),
                         CoordinateConverter.convertToEpsg3857(vkV.getEndCoordinate()),

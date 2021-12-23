@@ -5,6 +5,7 @@ import com.tschanz.geobooster.geofeature.model.Extent;
 import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
 import com.tschanz.geobooster.netz.model.Verkehrskante;
 import com.tschanz.geobooster.netz.model.VerkehrskanteVersion;
+import com.tschanz.geobooster.netz.model.VerkehrsmittelTyp;
 import com.tschanz.geobooster.netz.service.HaltestelleRepo;
 import com.tschanz.geobooster.netz.service.VerkehrskanteRepo;
 import com.tschanz.geobooster.netz.service.VerwaltungRepo;
@@ -55,7 +56,7 @@ public class VerkehrskanteCacheRepo implements VerkehrskanteRepo {
 
 
     @Override
-    public List<VerkehrskanteVersion> readVersions(LocalDate date, Extent extent) {
+    public List<VerkehrskanteVersion> readVersions(LocalDate date, Extent extent, List<VerkehrsmittelTyp> vmTypes) {
         var minLon = CoordinateConverter.convertToEpsg4326(extent.getMinCoordinate()).getLongitude();
         var minLat = CoordinateConverter.convertToEpsg4326(extent.getMinCoordinate()).getLatitude();
         var maxLon = CoordinateConverter.convertToEpsg4326(extent.getMaxCoordinate()).getLongitude();
@@ -63,8 +64,9 @@ public class VerkehrskanteCacheRepo implements VerkehrskanteRepo {
 
         return this.getVersionMap().values()
             .stream()
-            .filter(hstv -> date.isEqual(hstv.getVersionInfo().getGueltigVon()) || date.isAfter(hstv.getVersionInfo().getGueltigVon()))
-            .filter(hstv -> date.isEqual(hstv.getVersionInfo().getGueltigBis()) || date.isBefore(hstv.getVersionInfo().getGueltigBis()))
+            .filter(vkV -> date.isEqual(vkV.getVersionInfo().getGueltigVon()) || date.isAfter(vkV.getVersionInfo().getGueltigVon()))
+            .filter(vkV -> date.isEqual(vkV.getVersionInfo().getGueltigBis()) || date.isBefore(vkV.getVersionInfo().getGueltigBis()))
+            .filter(vkV -> vkV.hasOneOfVmTypes(vmTypes))
             //.filter(hstv -> hstv.getLng() >= minLon && hstv.getLng() <= maxLon)
             //.filter(hstv -> hstv.getLat() >= minLat && hstv.getLat() <= maxLat)
             .collect(Collectors.toList());
