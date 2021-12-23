@@ -17,4 +17,6 @@ public class GbDataSourceProperties implements SqlRepoProperties {
     private String url;
     private String username;
     private String password;
+    private String schema;
+    private String sqldialect;
 }

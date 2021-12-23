@@ -4,4 +4,6 @@ public interface SqlRepoProperties {
     String getUrl();
     String getUsername();
     String getPassword();
+    String getSchema();
+    String getSqldialect();
 }
