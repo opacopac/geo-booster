@@ -1,4 +1,4 @@
-package com.tschanz.geobooster.common.service;
+package com.tschanz.geobooster.util.service;
 
 
 import java.util.Arrays;

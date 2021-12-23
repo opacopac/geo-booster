@@ -1,4 +1,4 @@
-package com.tschanz.geobooster.common.model;
+package com.tschanz.geobooster.util.model;
 
 import java.time.Instant;
 

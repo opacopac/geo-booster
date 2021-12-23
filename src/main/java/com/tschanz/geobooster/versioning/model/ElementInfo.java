@@ -1,6 +1,6 @@
 package com.tschanz.geobooster.versioning.model;
 
-import com.tschanz.geobooster.common.service.DateHelper;
+import com.tschanz.geobooster.util.service.DateHelper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

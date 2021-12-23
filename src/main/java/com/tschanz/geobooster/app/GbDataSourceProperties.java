@@ -1,4 +1,4 @@
-package com.tschanz.geobooster;
+package com.tschanz.geobooster.app;
 
 import com.tschanz.geobooster.persistence_sql.model.SqlRepoProperties;
 import lombok.Getter;

@@ -1,12 +1,12 @@
 package com.tschanz.geobooster.netz_persistence_sql.service;
 
-import com.tschanz.geobooster.common.model.Timer;
 import com.tschanz.geobooster.netz.model.Haltestelle;
 import com.tschanz.geobooster.netz.model.HaltestelleVersion;
 import com.tschanz.geobooster.netz_persistence.service.HaltestellenPersistenceRepo;
 import com.tschanz.geobooster.netz_persistence_sql.model.SqlHaltestelleElementConverter;
 import com.tschanz.geobooster.netz_persistence_sql.model.SqlHaltestelleVersionConverter;
 import com.tschanz.geobooster.persistence_sql.service.SqlConnectionFactory;
+import com.tschanz.geobooster.util.model.Timer;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.logging.log4j.LogManager;

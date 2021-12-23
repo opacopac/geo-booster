@@ -1,6 +1,5 @@
 package com.tschanz.geobooster.netz_persistence_sql.service;
 
-import com.tschanz.geobooster.common.model.Timer;
 import com.tschanz.geobooster.netz.model.Verkehrskante;
 import com.tschanz.geobooster.netz.model.VerkehrskanteAuspraegung;
 import com.tschanz.geobooster.netz.model.VerkehrskanteAuspraegungVersion;
@@ -9,6 +8,7 @@ import com.tschanz.geobooster.netz_persistence.service.VerkehrskanteAuspraegungP
 import com.tschanz.geobooster.netz_persistence_sql.model.SqlVerkehrskanteAuspraegungElementConverter;
 import com.tschanz.geobooster.netz_persistence_sql.model.SqlVerkehrskanteAuspraegungVersionConverter;
 import com.tschanz.geobooster.persistence_sql.service.SqlConnectionFactory;
+import com.tschanz.geobooster.util.model.Timer;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.logging.log4j.LogManager;

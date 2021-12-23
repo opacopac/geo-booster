@@ -1,8 +1,8 @@
 package com.tschanz.geobooster.netz_persistence_sql.model;
 
-import com.tschanz.geobooster.common.service.ArrayHelper;
 import com.tschanz.geobooster.netz.model.Betreiber;
 import com.tschanz.geobooster.netz.model.Verwaltung;
+import com.tschanz.geobooster.util.service.ArrayHelper;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlElementInfoConverter;
 import lombok.SneakyThrows;
 
