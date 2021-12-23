@@ -1,5 +1,6 @@
 package com.tschanz.geobooster.webmapservice.model;
 
+import com.tschanz.geobooster.netz.model.VerkehrsmittelTyp;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -7,6 +8,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Getter
@@ -20,13 +22,13 @@ public class GetMapViewParams {
     private static final String SUBPARAM_DATE = "DATE";
     private static final String SUBPARAM_REFRESHCOUNTER = "REFRESH_COUNTER";
 
-    private final List<String> types;
+    private final List<VerkehrsmittelTyp> types;
     private final LocalDate date;
     private final long refreshCounter;
 
 
     public static GetMapViewParams parse(String value) {
-        List<String> types = Collections.emptyList();
+        List<VerkehrsmittelTyp> types = Collections.emptyList();
         LocalDate date = null;
         long refreshCounter = 0;
 
@@ -39,7 +41,8 @@ public class GetMapViewParams {
 
             switch (name_value[0]) {
                 case SUBPARAM_TYPES:
-                    types = Arrays.asList(stripQuotes(name_value[1]).split(SUBPARAM_TYPES_SEPARATOR));
+                    var typeNames = Arrays.asList(stripQuotes(name_value[1]).split(SUBPARAM_TYPES_SEPARATOR));
+                    types = typeNames.stream().map(VerkehrsmittelTyp::valueOf).collect(Collectors.toList());
                     break;
                 case SUBPARAM_DATE:
                     date = LocalDate.parse(stripQuotes(name_value[1]));

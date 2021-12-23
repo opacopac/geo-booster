@@ -40,4 +40,14 @@ public class VerkehrskanteVersion implements Version<Verkehrskante> {
 
         return hstVersion.getCoordinate();
     }
+
+
+    public List<VerkehrsmittelTyp> getVmTypes() {
+        return VerkehrsmittelTyp.getVmTypes(this.vmTypeBitmask);
+    }
+
+
+    public boolean hasOneOfVmTypes(List<VerkehrsmittelTyp> vmTypes) {
+        return (VerkehrsmittelTyp.getBitMask(vmTypes) & this.vmTypeBitmask) > 0;
+    }
 }

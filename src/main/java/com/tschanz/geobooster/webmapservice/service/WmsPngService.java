@@ -83,8 +83,10 @@ public class WmsPngService {
             ))
             .collect(Collectors.toList());
 
+        var vmTypes = mapRequest.getViewparams().getTypes();
         var mapTileLines = Stream.concat(
                 vkVersions.stream()
+                    .filter(vkV -> vkV.hasOneOfVmTypes(vmTypes))
                     .map(vkV -> new MapTileLine(
                         CoordinateConverter.convertToEpsg3857(vkV.getStartCoordinate()),
                         CoordinateConverter.convertToEpsg3857(vkV.getEndCoordinate()),
