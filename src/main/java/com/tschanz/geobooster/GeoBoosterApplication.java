@@ -1,4 +1,4 @@
-package com.tschanz.geobooster.app;
+package com.tschanz.geobooster;
 
 import lombok.SneakyThrows;
 import org.springframework.boot.SpringApplication;
