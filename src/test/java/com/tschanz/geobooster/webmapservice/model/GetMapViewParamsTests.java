@@ -1,5 +1,6 @@
 package com.tschanz.geobooster.webmapservice.model;
 
+import com.tschanz.geobooster.netz.model.VerkehrsmittelTyp;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -19,9 +20,7 @@ class GetMapViewParamsTests {
         assertEquals(LocalDate.of(2021, 12, 11), result.getDate());
         assertEquals(1640119429107L, result.getRefreshCounter());
         assertEquals(2, result.getTypes().size());
-        assertEquals("BAHN", result.getTypes().get(0));
-        assertEquals("BUS", result.getTypes().get(1));
+        assertEquals(VerkehrsmittelTyp.BAHN, result.getTypes().get(0));
+        assertEquals(VerkehrsmittelTyp.BUS, result.getTypes().get(1));
     }
 }
-
-//

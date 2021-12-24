@@ -33,7 +33,7 @@ public class UtfGrid {
             list.add(new KeyValue<>(i + 1, pointItems.get(i)));
         }
 
-        var offset = list.size();
+        var offset = list.size() + 1;
         for (var i = 0; i < lineItems.size(); i++) {
             list.add(new KeyValue<>(i + offset, lineItems.get(i)));
         }
