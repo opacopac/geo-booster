@@ -30,4 +30,10 @@ public class QuadTreeExtent {
 
         return true;
     }
+
+
+    public boolean isFullyInside(QuadTreeExtent extent) {
+        return extent.minCoordinate.getX() >= this.minCoordinate.getX() && extent.maxCoordinate.getX() <= this.maxCoordinate.getX()
+            && extent.minCoordinate.getY() >= this.minCoordinate.getY() && extent.maxCoordinate.getY() <= this.maxCoordinate.getY();
+    }
 }

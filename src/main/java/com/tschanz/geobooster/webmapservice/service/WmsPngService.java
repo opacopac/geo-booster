@@ -45,19 +45,23 @@ public class WmsPngService {
         var bbox = mapRequest.getBbox();
         var vmTypes = mapRequest.getViewparams().getTypes();
 
-        logger.info("read hst...");
+        logger.info("searching hst versions...");
         List<HaltestelleVersion> hstVersions = mapRequest.getLayers().contains(GetMapRequest.LAYER_HALTESTELLEN)
             ? this.haltestelleRepo.readVersions(date, bbox)
             : Collections.emptyList();
-        logger.info("read hst done");
+        logger.info(String.format("found %d hst versions", hstVersions.size()));
 
+        logger.info("searching vk versions...");
         List<VerkehrskanteVersion> vkVersions = mapRequest.getLayers().contains(GetMapRequest.LAYER_VERKEHRSKANTEN)
             ? this.verkehrskanteRepo.readVersions(date, bbox, vmTypes)
             : Collections.emptyList();
+        logger.info(String.format("found %d vk versions", vkVersions.size()));
 
+        logger.info("searching tk versions...");
         List<TarifkanteVersion> tkVersions = mapRequest.getLayers().contains(GetMapRequest.LAYER_TARIFKANTEN)
             ? this.tarifkanteRepo.readVersions(date, bbox, vmTypes)
             : Collections.emptyList();
+        logger.info(String.format("found %d tk versions", tkVersions.size()));
 
         // TMP: mem profiling
         /*System.out.println(GraphLayout.parseInstance(this.haltestelleRepo).toFootprint());
