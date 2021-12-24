@@ -32,7 +32,7 @@ public class VerkehrskanteVersion implements Version<Verkehrskante> {
 
 
     public Epsg4326Coordinate getEndCoordinate() {
-        return this.getHaltestelle1Version().getCoordinate();
+        return this.getHaltestelle2Version().getCoordinate();
     }
 
 

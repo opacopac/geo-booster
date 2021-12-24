@@ -26,20 +26,21 @@ public class AwtImage implements GbImage {
         this.graphics = this.image.createGraphics();
 
         // create bg
-        if (!isBgTransparent) {
+        if (isBgTransparent) {
             this.graphics.setComposite(AlphaComposite.Clear);
+            this.graphics.fillRect(0, 0, width, height);
+            this.graphics.setComposite(AlphaComposite.Src);
         } else {
             this.graphics.setColor(BG_COLOR_NON_TRANSPARENT);
+            this.graphics.fillRect(0, 0, width, height);
         }
-        this.graphics.fillRect(0, 0, width, height);
-        this.graphics.setComposite(AlphaComposite.Src);
     }
 
 
     public void drawLine(int x1, int y1, int x2, int y2, GbLineStyle style) {
         this.graphics.setColor(AwtColorConverter.toAwt(style.getColor()));
         this.graphics.setStroke(AwtStrokeConverter.toAwt(style.getStroke()));
-        this.graphics.drawLine(x1, y1, x2, y2);
+        this.getGraphics().drawLine(x1, y1, x2, y2);
     }
 
 

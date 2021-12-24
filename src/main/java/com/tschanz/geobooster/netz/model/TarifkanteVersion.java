@@ -19,7 +19,7 @@ public class TarifkanteVersion implements Version<Tarifkante> {
 
 
     public Epsg4326Coordinate getEndCoordinate() {
-        return this.getHaltestelle1Version().getCoordinate();
+        return this.getHaltestelle2Version().getCoordinate();
     }
 
 
@@ -29,7 +29,7 @@ public class TarifkanteVersion implements Version<Tarifkante> {
 
 
     public Haltestelle getHaltestelle2() {
-        return this.versionInfo.getElement().getHaltestelle1();
+        return this.versionInfo.getElement().getHaltestelle2();
     }
 
 

@@ -15,11 +15,11 @@ public class SqlTarifkanteVersionConverter {
 
     @SneakyThrows
     public static TarifkanteVersion fromResultSet(ResultSet row, Map<Long, Tarifkante> elementMap) {
-        var vkV = new TarifkanteVersion(
+        var tkV = new TarifkanteVersion(
             SqlVersionInfoConverter.fromResultSet(row, elementMap)
         );
-        vkV.getVersionInfo().getElement().getElementInfo().getVersions().add(vkV);
+        tkV.getVersionInfo().getElement().getElementInfo().getVersions().add(tkV);
 
-        return vkV;
+        return tkV;
     }
 }

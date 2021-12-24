@@ -1,8 +1,6 @@
 package com.tschanz.geobooster.webmapservice.service;
 
 import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
-import com.tschanz.geobooster.graphics.model.GbLineStyle;
-import com.tschanz.geobooster.graphics.model.GbPointStyle;
 import com.tschanz.geobooster.graphics.service.ImageService;
 import com.tschanz.geobooster.maptile.model.MapTile;
 import com.tschanz.geobooster.maptile.model.MapTileLine;
@@ -14,6 +12,7 @@ import com.tschanz.geobooster.netz.model.VerkehrskanteVersion;
 import com.tschanz.geobooster.netz.service.HaltestelleRepo;
 import com.tschanz.geobooster.netz.service.TarifkanteRepo;
 import com.tschanz.geobooster.netz.service.VerkehrskanteRepo;
+import com.tschanz.geobooster.netz_graphics.model.NetzStyles;
 import com.tschanz.geobooster.webmapservice.model.GetMapRequest;
 import com.tschanz.geobooster.webmapservice.model.PngResponse;
 import lombok.RequiredArgsConstructor;
@@ -70,7 +69,7 @@ public class WmsPngService {
         var mapTilePoints = hstVersions.stream()
             .map(hstV -> new MapTilePoint(
                 CoordinateConverter.convertToEpsg3857(hstV.getCoordinate()),
-                GbPointStyle.grayPointStyle
+                NetzStyles.HALTESTELLE_POINTSTYLE
             ))
             .collect(Collectors.toList());
 
@@ -79,13 +78,13 @@ public class WmsPngService {
                     .map(vkV -> new MapTileLine(
                         CoordinateConverter.convertToEpsg3857(vkV.getStartCoordinate()),
                         CoordinateConverter.convertToEpsg3857(vkV.getEndCoordinate()),
-                        GbLineStyle.tmpBlackLine
+                        NetzStyles.VERKEHRSKANTE_LINESTYLE
                     )),
                 tkVersions.stream()
                     .map(tkV -> new MapTileLine(
                         CoordinateConverter.convertToEpsg3857(tkV.getStartCoordinate()),
                         CoordinateConverter.convertToEpsg3857(tkV.getEndCoordinate()),
-                        GbLineStyle.tmpBlueLine
+                        NetzStyles.TARIFKANTE_LINESTYLE
                     ))
             )
             .collect(Collectors.toList());
