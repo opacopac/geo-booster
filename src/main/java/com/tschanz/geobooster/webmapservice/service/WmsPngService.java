@@ -78,17 +78,19 @@ public class WmsPngService {
             .collect(Collectors.toList());
 
         var mapTileLines = Stream.concat(
-                vkVersions.stream()
+            tkVersions
+                .stream()
+                .map(tkV -> new MapTileLine(
+                    CoordinateConverter.convertToEpsg3857(tkV.getStartCoordinate()),
+                    CoordinateConverter.convertToEpsg3857(tkV.getEndCoordinate()),
+                    NetzStyles.TARIFKANTE_LINESTYLE
+                )),
+                vkVersions
+                    .stream()
                     .map(vkV -> new MapTileLine(
                         CoordinateConverter.convertToEpsg3857(vkV.getStartCoordinate()),
                         CoordinateConverter.convertToEpsg3857(vkV.getEndCoordinate()),
                         NetzStyles.VERKEHRSKANTE_LINESTYLE
-                    )),
-                tkVersions.stream()
-                    .map(tkV -> new MapTileLine(
-                        CoordinateConverter.convertToEpsg3857(tkV.getStartCoordinate()),
-                        CoordinateConverter.convertToEpsg3857(tkV.getEndCoordinate()),
-                        NetzStyles.TARIFKANTE_LINESTYLE
                     ))
             )
             .collect(Collectors.toList());

@@ -8,4 +8,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class GbStroke {
     private final float width;
+    private final float[] dash;
+
+
+    public GbStroke(float width) {
+        this.width = width;
+        this.dash = null;
+    }
 }
