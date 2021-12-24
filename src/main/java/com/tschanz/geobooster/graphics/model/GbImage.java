@@ -1,13 +1,12 @@
 package com.tschanz.geobooster.graphics.model;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 
 
-@Getter
-@RequiredArgsConstructor
-public class GbImage {
-    private final BufferedImage image;
+public interface GbImage {
+    void drawLine(int x1, int y1, int x2, int y2, GbLineStyle style);
+
+    void drawPoint(int x, int y, GbPointStyle style);
+
+    ByteArrayOutputStream getPngByteStream();
 }

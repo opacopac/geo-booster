@@ -25,13 +25,13 @@ public class MapTileServiceImpl implements MapTileService {
             var y1 = (int) (tile.getHeight() - (line.getStartCoordinate().getN() - bboxMinN) / bboxHeight * tile.getHeight());
             var x2 = (int) ((line.getEndCoordinate().getE() - bboxMinE) / bboxWidth * tile.getWidth());
             var y2 = (int) (tile.getHeight() - (line.getEndCoordinate().getN() - bboxMinN) / bboxHeight * tile.getHeight());
-            imageService.drawLine(image, x1, y1, x2, y2, line.getStyle());
+            image.drawLine(x1, y1, x2, y2, line.getStyle());
         });
 
         tile.getPoints().forEach(point -> {
             var x = (int) ((point.getCoordinate().getE() - bboxMinE) / bboxWidth * tile.getWidth());
             var y = (int) (tile.getHeight() - (point.getCoordinate().getN() - bboxMinN) / bboxHeight * tile.getHeight());
-            imageService.drawPoint(image, x, y, point.getStyle());
+            image.drawPoint(x, y, point.getStyle());
         });
 
         return image;

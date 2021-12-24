@@ -74,4 +74,14 @@ public class WmsController {
 
         return utfGridResponse.getText();
     }
+
+
+    // TODO: temp for performance measurements
+    @GetMapping(value = "/nix")
+    @ResponseBody
+    public String nixHandler() {
+        logger.info("NIX request");
+
+        return "NIX";
+    }
 }

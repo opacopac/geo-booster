@@ -1,24 +1,16 @@
 package com.tschanz.geobooster.graphics.model;
 
 import lombok.Getter;
-
-import java.awt.*;
+import lombok.RequiredArgsConstructor;
 
 
 @Getter
+@RequiredArgsConstructor
 public class GbPointStyle {
-    public final static GbPointStyle grayPointStyle = new GbPointStyle(Color.GRAY, 5, Color.BLACK);
+    public final static GbPointStyle grayPointStyle = new GbPointStyle(GbColor.GRAY, 5, GbColor.BLACK, new GbStroke(1));
 
-    private final Color color;
+    private final GbColor color;
     private final int radius;
-    private final Color borderColor;
-    private final Stroke stroke;
-
-
-    public GbPointStyle(Color color, int radius, Color borderColor) {
-        this.color = color;
-        this.radius = radius;
-        this.borderColor = borderColor;
-        this.stroke = new BasicStroke(1);
-    }
+    private final GbColor borderColor;
+    private final GbStroke borderStroke;
 }
