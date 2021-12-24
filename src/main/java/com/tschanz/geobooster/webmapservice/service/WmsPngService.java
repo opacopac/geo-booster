@@ -46,9 +46,11 @@ public class WmsPngService {
         var bbox = mapRequest.getBbox();
         var vmTypes = mapRequest.getViewparams().getTypes();
 
+        logger.info("read hst...");
         List<HaltestelleVersion> hstVersions = mapRequest.getLayers().contains(GetMapRequest.LAYER_HALTESTELLEN)
             ? this.haltestelleRepo.readVersions(date, bbox)
             : Collections.emptyList();
+        logger.info("read hst done");
 
         List<VerkehrskanteVersion> vkVersions = mapRequest.getLayers().contains(GetMapRequest.LAYER_VERKEHRSKANTEN)
             ? this.verkehrskanteRepo.readVersions(date, bbox, vmTypes)

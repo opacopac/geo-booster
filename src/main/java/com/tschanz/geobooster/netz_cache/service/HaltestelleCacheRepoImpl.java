@@ -1,11 +1,16 @@
 package com.tschanz.geobooster.netz_cache.service;
 
 
+import com.tschanz.geobooster.geofeature.model.Coordinate;
 import com.tschanz.geobooster.geofeature.model.Extent;
 import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
 import com.tschanz.geobooster.netz.model.Haltestelle;
 import com.tschanz.geobooster.netz.model.HaltestelleVersion;
 import com.tschanz.geobooster.netz_persistence.service.HaltestellenPersistenceRepo;
+import com.tschanz.geobooster.quadtree.model.QuadTree;
+import com.tschanz.geobooster.quadtree.model.QuadTreeCoordinate;
+import com.tschanz.geobooster.quadtree.model.QuadTreeExtent;
+import com.tschanz.geobooster.quadtree.model.QuadTreeItem;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,10 +26,21 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class HaltestelleCacheRepoImpl implements HaltestelleCacheRepo {
     private static final Logger logger = LogManager.getLogger(HaltestelleCacheRepoImpl.class);
+    // TODO
+    // minLat = 43.0062910000
+    // maxLat = 53.7988520000
+    // minLon = 1x 0.6202740000, 2x 2.0794830000, rest: 4.8248030000
+    // maxLon = 14.5659700000
+    private static final double MIN_COORD_X = 556597.45 - 1;
+    private static final double MIN_COORD_Y = 5654278.34 - 1;
+    private static final double MAX_COORD_X = 1246778.30 + 1;
+    private static final double MAX_COORD_Y = 6108322.79 + 1;
+    private static final int MAX_TREE_DEPTH = 6;
 
     private final HaltestellenPersistenceRepo haltestellenPersistenceRepo;
     private Map<Long, Haltestelle> elementMap;
     private Map<Long, HaltestelleVersion> versionMap;
+    private QuadTree<HaltestelleVersion> versionQuadTree;
 
 
     public Map<Long, Haltestelle> getElementMap() {
@@ -49,19 +65,51 @@ public class HaltestelleCacheRepoImpl implements HaltestelleCacheRepo {
     }
 
 
+    public QuadTree<HaltestelleVersion> getVersionQuadTree() {
+        if (this.versionQuadTree == null) {
+            // init quad tree
+            this.versionQuadTree = new QuadTree<>(
+                MAX_TREE_DEPTH,
+                new QuadTreeExtent(
+                    new QuadTreeCoordinate(MIN_COORD_X, MIN_COORD_Y),
+                    new QuadTreeCoordinate(MAX_COORD_X, MAX_COORD_Y)
+                )
+            );
+
+            // populate quad tree
+            this.getVersionMap().values()
+                .forEach(hstV -> {
+                    this.versionQuadTree.addItem(
+                        new QuadTreeItem<>(this.getQuadTreeCoordinates(hstV.getCoordinate()), hstV)
+                    );
+                });
+        }
+
+        return this.versionQuadTree;
+    }
+
+
     @Override
     public List<HaltestelleVersion> readVersions(LocalDate date, Extent extent) {
-        var minLon = CoordinateConverter.convertToEpsg4326(extent.getMinCoordinate()).getLongitude();
-        var minLat = CoordinateConverter.convertToEpsg4326(extent.getMinCoordinate()).getLatitude();
-        var maxLon = CoordinateConverter.convertToEpsg4326(extent.getMaxCoordinate()).getLongitude();
-        var maxLat = CoordinateConverter.convertToEpsg4326(extent.getMaxCoordinate()).getLatitude();
-
-        return this.getVersionMap().values()
-            .stream()
+        return this.getVersionQuadTree().findItems(this.getQuadTreeExtent(extent)).stream()
+            .map(QuadTreeItem::getItem)
             .filter(hstv -> date.isEqual(hstv.getVersionInfo().getGueltigVon()) || date.isAfter(hstv.getVersionInfo().getGueltigVon()))
             .filter(hstv -> date.isEqual(hstv.getVersionInfo().getGueltigBis()) || date.isBefore(hstv.getVersionInfo().getGueltigBis()))
-            .filter(hstv -> hstv.getCoordinate().getLongitude() >= minLon && hstv.getCoordinate().getLongitude() <= maxLon)
-            .filter(hstv -> hstv.getCoordinate().getLatitude() >= minLat && hstv.getCoordinate().getLatitude() <= maxLat)
             .collect(Collectors.toList());
+    }
+
+
+    private QuadTreeCoordinate getQuadTreeCoordinates(Coordinate coordinate) {
+        var coord = CoordinateConverter.convertToEpsg3857(coordinate);
+
+        return new QuadTreeCoordinate(coord.getE(), coord.getN());
+    }
+
+
+    private QuadTreeExtent getQuadTreeExtent(Extent extent) {
+        return new QuadTreeExtent(
+            this.getQuadTreeCoordinates(extent.getMinCoordinate()),
+            this.getQuadTreeCoordinates(extent.getMaxCoordinate())
+        );
     }
 }
