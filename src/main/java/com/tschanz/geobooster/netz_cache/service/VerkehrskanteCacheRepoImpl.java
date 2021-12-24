@@ -106,21 +106,6 @@ public class VerkehrskanteCacheRepoImpl implements VerkehrskanteCacheRepo {
             .filter(vkV -> date.isEqual(vkV.getVersionInfo().getGueltigBis()) || date.isBefore(vkV.getVersionInfo().getGueltigBis()))
             .filter(vkV -> vkV.hasOneOfVmTypes(vmTypes))
             .collect(Collectors.toList());
-
-
-        /*var minLon = CoordinateConverter.convertToEpsg4326(extent.getMinCoordinate()).getLongitude();
-        var minLat = CoordinateConverter.convertToEpsg4326(extent.getMinCoordinate()).getLatitude();
-        var maxLon = CoordinateConverter.convertToEpsg4326(extent.getMaxCoordinate()).getLongitude();
-        var maxLat = CoordinateConverter.convertToEpsg4326(extent.getMaxCoordinate()).getLatitude();
-
-        return this.getVersionMap().values()
-            .stream()
-            .filter(vkV -> date.isEqual(vkV.getVersionInfo().getGueltigVon()) || date.isAfter(vkV.getVersionInfo().getGueltigVon()))
-            .filter(vkV -> date.isEqual(vkV.getVersionInfo().getGueltigBis()) || date.isBefore(vkV.getVersionInfo().getGueltigBis()))
-            .filter(vkV -> vkV.hasOneOfVmTypes(vmTypes))
-            //.filter(hstv -> hstv.getLng() >= minLon && hstv.getLng() <= maxLon)
-            //.filter(hstv -> hstv.getLat() >= minLat && hstv.getLat() <= maxLat)
-            .collect(Collectors.toList());*/
     }
 
 
