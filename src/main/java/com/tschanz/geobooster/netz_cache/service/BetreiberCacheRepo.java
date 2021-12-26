@@ -7,6 +7,8 @@ import java.util.Map;
 
 
 public interface BetreiberCacheRepo {
+    void init();
+
     Map<Long, Betreiber> getElementMap();
 
     Map<Long, BetreiberVersion> getVersionMap();

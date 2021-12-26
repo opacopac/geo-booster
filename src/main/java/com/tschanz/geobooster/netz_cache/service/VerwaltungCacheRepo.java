@@ -7,6 +7,8 @@ import java.util.Map;
 
 
 public interface VerwaltungCacheRepo {
+    void init();
+
     Map<Long, Verwaltung> getElementMap();
 
     Map<Long, VerwaltungVersion> getVersionMap();

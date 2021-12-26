@@ -45,6 +45,14 @@ public class TarifkanteCacheRepoImpl implements TarifkanteCacheRepo {
     private AreaQuadTree<TarifkanteVersion> versionQuadTree;
 
 
+    @Override
+    public void init() {
+        this.getElementMap();
+        this.getVersionMap();
+        this.getVersionQuadTree();
+    }
+
+
     public Map<Long, Tarifkante> getElementMap() {
         if (this.elementMap == null) {
             logger.info("loading all tk elements...");

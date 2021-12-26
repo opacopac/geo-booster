@@ -8,6 +8,8 @@ import java.util.Map;
 
 
 public interface TarifkanteCacheRepo extends TarifkanteRepo {
+    void init();
+
     Map<Long, Tarifkante> getElementMap();
 
     Map<Long, TarifkanteVersion> getVersionMap();

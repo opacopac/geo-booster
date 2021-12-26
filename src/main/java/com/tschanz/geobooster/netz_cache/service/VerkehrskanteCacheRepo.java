@@ -8,6 +8,8 @@ import java.util.Map;
 
 
 public interface VerkehrskanteCacheRepo extends VerkehrskanteRepo {
+    void init();
+
     Map<Long, Verkehrskante> getElementMap();
 
     Map<Long, VerkehrskanteVersion> getVersionMap();

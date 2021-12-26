@@ -23,6 +23,13 @@ public class VerwaltungCacheRepoImpl implements VerwaltungCacheRepo {
     private Map<Long, VerwaltungVersion> versionMap;
 
 
+    @Override
+    public void init() {
+        this.getElementMap();
+        this.getVersionMap();
+    }
+
+
     public Map<Long, Verwaltung> getElementMap() {
         if (this.elementMap == null) {
             logger.info("loading all verwaltung elements...");

@@ -46,6 +46,14 @@ public class VerkehrskanteCacheRepoImpl implements VerkehrskanteCacheRepo {
     private AreaQuadTree<VerkehrskanteVersion> versionQuadTree;
 
 
+    @Override
+    public void init() {
+        this.getElementMap();
+        this.getVersionMap();
+        this.getVersionQuadTree();
+    }
+
+
     public Map<Long, Verkehrskante> getElementMap() {
         if (this.elementMap == null) {
             logger.info("loading all vk elements...");

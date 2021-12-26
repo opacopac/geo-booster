@@ -43,6 +43,14 @@ public class HaltestelleCacheRepoImpl implements HaltestelleCacheRepo {
     private QuadTree<HaltestelleVersion> versionQuadTree;
 
 
+    @Override
+    public void init() {
+        this.getElementMap();
+        this.getVersionMap();
+        this.getVersionQuadTree();
+    }
+
+
     public Map<Long, Haltestelle> getElementMap() {
         if (this.elementMap == null) {
             logger.info("loading all hst elements...");

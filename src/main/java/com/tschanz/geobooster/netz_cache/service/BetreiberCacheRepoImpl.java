@@ -21,6 +21,13 @@ public class BetreiberCacheRepoImpl implements BetreiberCacheRepo {
     private Map<Long, BetreiberVersion> versionMap;
 
 
+    @Override
+    public void init() {
+        this.getElementMap();
+        this.getVersionMap();
+    }
+
+
     public Map<Long, Betreiber> getElementMap() {
         if (this.elementMap == null) {
             logger.info("loading all betreiber elements...");

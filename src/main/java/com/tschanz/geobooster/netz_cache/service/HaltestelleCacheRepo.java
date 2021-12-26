@@ -8,6 +8,8 @@ import java.util.Map;
 
 
 public interface HaltestelleCacheRepo extends HaltestelleRepo {
+    void init();
+
     Map<Long, Haltestelle> getElementMap();
 
     Map<Long, HaltestelleVersion> getVersionMap();
