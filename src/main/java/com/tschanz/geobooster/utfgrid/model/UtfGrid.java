@@ -11,11 +11,35 @@ import java.util.List;
 
 @RequiredArgsConstructor
 public class UtfGrid {
+    private static final int REDUCTION_FACTOR = 2;
+
+    @Getter private final int width;
+    @Getter private final int height;
     @Getter private final Epsg3857Coordinate minCoordinate;
     @Getter private final Epsg3857Coordinate maxCoordinate;
     @Getter private final List<UtfGridPointItem> pointItems;
     @Getter private final List<UtfGridLineItem> lineItems;
+    @Getter private UtfGridImg utfGridImg;
     private List<KeyValue<Integer, UtfGridItem>> numberedItems;
+
+
+    public void render() {
+        this.utfGridImg = new UtfGridImg(width / REDUCTION_FACTOR, height / REDUCTION_FACTOR, minCoordinate, maxCoordinate);
+
+        for (var pointItem: this.pointItems) {
+            var x = this.getX(pointItem.getCoordinate());
+            var y = this.getY(pointItem.getCoordinate());
+            this.utfGridImg.drawPoint(x, y, 'X'); // TODO
+        }
+
+        for (var lineItem: this.lineItems) {
+            var x0 = this.getX(lineItem.getStartCoordinate());
+            var y0 = this.getY(lineItem.getStartCoordinate());
+            var x1 = this.getX(lineItem.getEndCoordinate());
+            var y1 = this.getY(lineItem.getEndCoordinate());
+            this.utfGridImg.drawLine(x0, y0, x1, y1, '*'); // TODO
+        }
+    }
 
 
     public List<KeyValue<Integer, UtfGridItem>> getNumberedItems() {
@@ -39,5 +63,15 @@ public class UtfGrid {
         }
 
         return list;
+    }
+
+
+    private int getX(Epsg3857Coordinate coord) {
+        return (int) (coord.getE() - this.minCoordinate.getE()) / (this.width / REDUCTION_FACTOR);
+    }
+
+
+    private int getY(Epsg3857Coordinate coord) {
+        return (int) (coord.getN() - this.minCoordinate.getN()) / (this.height / REDUCTION_FACTOR);
     }
 }

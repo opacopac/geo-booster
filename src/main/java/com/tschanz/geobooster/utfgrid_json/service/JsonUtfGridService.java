@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class JsonUtfGridService implements UtfGridService {
     @Override
-    public String render(UtfGrid utfGrid) {
+    public String createJson(UtfGrid utfGrid) {
         var utfGridJson = JsonUtfGridConverter.toJson(utfGrid);
         var gson = new GsonBuilder().setPrettyPrinting().create();
 

@@ -1,7 +1,6 @@
 package com.tschanz.geobooster.webmapservice.service;
 
 import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
-import com.tschanz.geobooster.graphics.service.ImageService;
 import com.tschanz.geobooster.maptile.model.MapTile;
 import com.tschanz.geobooster.maptile.model.MapTileLine;
 import com.tschanz.geobooster.maptile.model.MapTilePoint;
@@ -36,7 +35,6 @@ public class WmsPngService {
     private final VerkehrskanteRepo verkehrskanteRepo;
     private final TarifkanteRepo tarifkanteRepo;
     private final MapTileService mapTileService;
-    private final ImageService imageService;
 
 
     @SneakyThrows
@@ -46,19 +44,19 @@ public class WmsPngService {
         var vmTypes = mapRequest.getViewparams().getTypes();
 
         logger.info("searching hst versions...");
-        List<HaltestelleVersion> hstVersions = mapRequest.getLayers().contains(GetMapRequest.LAYER_HALTESTELLEN)
+        List<HaltestelleVersion> hstVersions = mapRequest.hasLayerHaltestellen()
             ? this.haltestelleRepo.readVersions(date, bbox)
             : Collections.emptyList();
         logger.info(String.format("found %d hst versions", hstVersions.size()));
 
         logger.info("searching vk versions...");
-        List<VerkehrskanteVersion> vkVersions = mapRequest.getLayers().contains(GetMapRequest.LAYER_VERKEHRSKANTEN)
+        List<VerkehrskanteVersion> vkVersions = mapRequest.hasLayerVerkehrskanten()
             ? this.verkehrskanteRepo.readVersions(date, bbox, vmTypes)
             : Collections.emptyList();
         logger.info(String.format("found %d vk versions", vkVersions.size()));
 
         logger.info("searching tk versions...");
-        List<TarifkanteVersion> tkVersions = mapRequest.getLayers().contains(GetMapRequest.LAYER_TARIFKANTEN)
+        List<TarifkanteVersion> tkVersions = mapRequest.hasLayerTarifkanten()
             ? this.tarifkanteRepo.readVersions(date, bbox, vmTypes)
             : Collections.emptyList();
         logger.info(String.format("found %d tk versions", tkVersions.size()));

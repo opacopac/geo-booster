@@ -42,23 +42,24 @@ public class WmsUtfGridService {
         var vmTypes = mapRequest.getViewparams().getTypes();
 
         logger.info("searching hst versions...");
-        List<HaltestelleVersion> hstVersions = mapRequest.getLayers().contains(GetMapRequest.LAYER_HALTESTELLEN)
+        List<HaltestelleVersion> hstVersions = mapRequest.hasLayerHaltestellen()
             ? this.haltestelleRepo.readVersions(date, bbox)
             : Collections.emptyList();
         logger.info(String.format("found %d hst versions", hstVersions.size()));
 
         logger.info("searching vk versions...");
-        List<VerkehrskanteVersion> vkVersions = mapRequest.getLayers().contains(GetMapRequest.LAYER_VERKEHRSKANTEN)
+        List<VerkehrskanteVersion> vkVersions = mapRequest.hasLayerVerkehrskanten()
             ? this.verkehrskanteRepo.readVersions(date, bbox, vmTypes)
             : Collections.emptyList();
         logger.info(String.format("found %d vk versions", vkVersions.size()));
 
         logger.info("searching tk versions...");
-        List<TarifkanteVersion> tkVersions = mapRequest.getLayers().contains(GetMapRequest.LAYER_TARIFKANTEN)
+        List<TarifkanteVersion> tkVersions = mapRequest.hasLayerTarifkanten()
             ? this.tarifkanteRepo.readVersions(date, bbox, vmTypes)
             : Collections.emptyList();
         logger.info(String.format("found %d tk versions", tkVersions.size()));
 
+        logger.info("initializing utf grid...");
         var pointItems = hstVersions.stream()
             .map(UtfGridHaltestelleConverter::toUtfGrid)
             .collect(Collectors.toList());
@@ -69,16 +70,23 @@ public class WmsUtfGridService {
         ).collect(Collectors.toList());
 
         var utfGrid = new UtfGrid(
+            mapRequest.getWidth(),
+            mapRequest.getHeight(),
             CoordinateConverter.convertToEpsg3857(bbox.getMinCoordinate()),
             CoordinateConverter.convertToEpsg3857(bbox.getMaxCoordinate()),
             pointItems,
             lineItems
         );
-
-        logger.info("rendering utf grid...");
-        var utfGridText = this.utfGridService.render(utfGrid);
         logger.info("done");
 
-        return new UtfGridResponse(utfGridText);
+        logger.info("rendering utf grid...");
+        utfGrid.render();
+        logger.info("done");
+
+        logger.info("generating json...");
+        var utfGridJson = this.utfGridService.createJson(utfGrid);
+        logger.info("done");
+
+        return new UtfGridResponse(utfGridJson);
     }
 }

@@ -11,9 +11,9 @@ import java.util.Map;
 @Getter
 @RequiredArgsConstructor
 public class GetMapRequest {
-    public static final String LAYER_HALTESTELLEN = "novap:HALTESTELLEN";
-    public static final String LAYER_VERKEHRSKANTEN = "novap:VERKEHRSKANTEN";
-    public static final String LAYER_TARIFKANTEN = "novap:TARIFKANTEN";
+    private static final String LAYER_HALTESTELLEN = "novap:HALTESTELLEN";
+    private static final String LAYER_VERKEHRSKANTEN = "novap:VERKEHRSKANTEN";
+    private static final String LAYER_TARIFKANTEN = "novap:TARIFKANTEN";
     private static final String PARAM_VERSION = "version";
     private static final String PARAM_LAYERS = "layers";
     private static final String PARAM_STYLES = "styles";
@@ -50,5 +50,20 @@ public class GetMapRequest {
             params.get(PARAM_SRS),
             WmsExtentConverter.fromRest(params.get(PARAM_BBOX), params.get(PARAM_SRS))
         );
+    }
+
+
+    public boolean hasLayerHaltestellen() {
+        return this.layers.contains(GetMapRequest.LAYER_HALTESTELLEN);
+    }
+
+
+    public boolean hasLayerVerkehrskanten() {
+        return this.layers.contains(GetMapRequest.LAYER_VERKEHRSKANTEN);
+    }
+
+
+    public boolean hasLayerTarifkanten() {
+        return this.layers.contains(GetMapRequest.LAYER_TARIFKANTEN);
     }
 }
