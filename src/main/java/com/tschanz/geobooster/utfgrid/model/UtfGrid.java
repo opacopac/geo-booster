@@ -30,18 +30,25 @@ public class UtfGrid {
         this.imgHeight = this.height / REDUCTION_FACTOR;
         this.utfGridImg = new UtfGridImg(this.imgWidth, this.imgHeight);
 
-        for (var lineItem: this.lineItems) {
-            var x0 = this.getX(lineItem.getStartCoordinate());
-            var y0 = this.getY(lineItem.getStartCoordinate());
-            var x1 = this.getX(lineItem.getEndCoordinate());
-            var y1 = this.getY(lineItem.getEndCoordinate());
-            this.utfGridImg.drawLine(x0, y0, x1, y1, '*'); // TODO
-        }
+        for (var entry: this.getNumberedItems()) {
+            var symbol = this.getSymbol(entry.getKey());
 
-        for (var pointItem: this.pointItems) {
-            var x = this.getX(pointItem.getCoordinate());
-            var y = this.getY(pointItem.getCoordinate());
-            this.utfGridImg.drawPoint(x, y, 'X'); // TODO
+            if (entry.getValue() instanceof UtfGridLineItem) {
+                var lineItem = (UtfGridLineItem) entry.getValue();
+                var x0 = this.getX(lineItem.getStartCoordinate());
+                var y0 = this.getY(lineItem.getStartCoordinate());
+                var x1 = this.getX(lineItem.getEndCoordinate());
+                var y1 = this.getY(lineItem.getEndCoordinate());
+                this.utfGridImg.drawLine(x0, y0, x1, y1, symbol);
+            }
+
+            if (entry.getValue() instanceof UtfGridPointItem) {
+                var pointItem = (UtfGridPointItem) entry.getValue();
+                var x = this.getX(pointItem.getCoordinate());
+                var y = this.getY(pointItem.getCoordinate());
+                this.utfGridImg.drawPoint(x, y, symbol);
+
+            }
         }
     }
 
@@ -79,5 +86,20 @@ public class UtfGrid {
     private int getY(Epsg3857Coordinate coord) {
         var scale = this.imgHeight / (this.maxCoordinate.getN() - this.minCoordinate.getN());
         return (int) ((coord.getN() - this.minCoordinate.getN()) * scale);
+    }
+
+
+    private char getSymbol(int itemIndex) {
+        var charCode = itemIndex + 31;
+
+        if (charCode > 34) {
+            charCode += 1;
+        }
+
+        if (charCode >= 92) {
+            charCode += 1;
+        }
+
+        return (char) charCode;
     }
 }
