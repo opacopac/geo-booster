@@ -11,7 +11,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 public class UtfGrid {
-    private static final int REDUCTION_FACTOR = 2;
+    private static final int REDUCTION_FACTOR = 4;
 
     @Getter private final int width;
     @Getter private final int height;
@@ -21,16 +21,14 @@ public class UtfGrid {
     @Getter private final List<UtfGridLineItem> lineItems;
     @Getter private UtfGridImg utfGridImg;
     private List<KeyValue<Integer, UtfGridItem>> numberedItems;
+    private int imgWidth;
+    private int imgHeight;
 
 
     public void render() {
-        this.utfGridImg = new UtfGridImg(width / REDUCTION_FACTOR, height / REDUCTION_FACTOR, minCoordinate, maxCoordinate);
-
-        for (var pointItem: this.pointItems) {
-            var x = this.getX(pointItem.getCoordinate());
-            var y = this.getY(pointItem.getCoordinate());
-            this.utfGridImg.drawPoint(x, y, 'X'); // TODO
-        }
+        this.imgWidth = this.width / REDUCTION_FACTOR;
+        this.imgHeight = this.height / REDUCTION_FACTOR;
+        this.utfGridImg = new UtfGridImg(this.imgWidth, this.imgHeight);
 
         for (var lineItem: this.lineItems) {
             var x0 = this.getX(lineItem.getStartCoordinate());
@@ -38,6 +36,12 @@ public class UtfGrid {
             var x1 = this.getX(lineItem.getEndCoordinate());
             var y1 = this.getY(lineItem.getEndCoordinate());
             this.utfGridImg.drawLine(x0, y0, x1, y1, '*'); // TODO
+        }
+
+        for (var pointItem: this.pointItems) {
+            var x = this.getX(pointItem.getCoordinate());
+            var y = this.getY(pointItem.getCoordinate());
+            this.utfGridImg.drawPoint(x, y, 'X'); // TODO
         }
     }
 
@@ -67,11 +71,13 @@ public class UtfGrid {
 
 
     private int getX(Epsg3857Coordinate coord) {
-        return (int) (coord.getE() - this.minCoordinate.getE()) / (this.width / REDUCTION_FACTOR);
+        var scale = this.imgWidth / (this.maxCoordinate.getE() - this.minCoordinate.getE());
+        return (int) ((coord.getE() - this.minCoordinate.getE()) * scale);
     }
 
 
     private int getY(Epsg3857Coordinate coord) {
-        return (int) (coord.getN() - this.minCoordinate.getN()) / (this.height / REDUCTION_FACTOR);
+        var scale = this.imgHeight / (this.maxCoordinate.getN() - this.minCoordinate.getN());
+        return (int) ((coord.getN() - this.minCoordinate.getN()) * scale);
     }
 }

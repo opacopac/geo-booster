@@ -1,6 +1,5 @@
 package com.tschanz.geobooster.utfgrid.model;
 
-import com.tschanz.geobooster.geofeature.model.Epsg3857Coordinate;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -14,12 +13,7 @@ public class UtfGridImg {
     private final char[][] bitMap; // [height - y - 1, x]
 
 
-    public UtfGridImg(
-        int width,
-        int height,
-        Epsg3857Coordinate minCoordinate,
-        Epsg3857Coordinate maxCoordinate
-    ) {
+    public UtfGridImg(int width, int height) {
         this.width = width;
         this.height = height;
         this.bitMap = new char[width][height];
