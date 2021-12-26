@@ -110,8 +110,8 @@ public class WmsPngService {
         var img = mapTileService.renderTile(tile);
         logger.info("done.");
 
-        logger.info("getting byte stream...");
-        var bos = img.getPngByteStream();
+        logger.info("getting image bytes...");
+        var bos = img.getBytes();
         logger.info("done.");
 
         return new PngResponse(bos);

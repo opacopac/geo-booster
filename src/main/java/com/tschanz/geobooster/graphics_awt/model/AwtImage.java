@@ -1,15 +1,14 @@
 package com.tschanz.geobooster.graphics_awt.model;
 
+import com.pngencoder.PngEncoder;
 import com.tschanz.geobooster.graphics.model.GbImage;
 import com.tschanz.geobooster.graphics.model.GbLineStyle;
 import com.tschanz.geobooster.graphics.model.GbPointStyle;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 
 
 @Getter
@@ -56,10 +55,23 @@ public class AwtImage implements GbImage {
 
     @Override
     @SneakyThrows
-    public ByteArrayOutputStream getPngByteStream() {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    public byte[] getBytes() {
+        // ImageIO
+        /*var bos = new ByteArrayOutputStream();
         ImageIO.write(this.image, FORMAT_PNG, bos);
+        return bos.toByteArray();*/
 
-        return bos;
+        // Apache Commons Imaging
+        /* var format = ImageFormats.PNG;
+        Map<String, Object> params = new HashMap<>();
+        //params.put(PngConstants.FILTER_METHOD_ADAPTIVE, );
+        return Imaging.writeImageToBytes(image, format, params); */
+
+        // PngEncoder (https://github.com/pngencoder/pngencoder)
+        return new PngEncoder()
+            .withBufferedImage(this.image)
+            .withCompressionLevel(7)
+            .toBytes();
+
     }
 }

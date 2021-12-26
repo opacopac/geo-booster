@@ -58,6 +58,16 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
         </dependency>
+        <!--<dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-imaging</artifactId>
+            <version>1.0-alpha2</version>
+        </dependency>-->
+        <dependency>
+            <groupId>com.pngencoder</groupId>
+            <artifactId>pngencoder</artifactId>
+            <version>0.11.0</version>
+        </dependency>
         <!-- TODO: tmp for profiling -->
         <!--<dependency>
             <groupId>org.openjdk.jol</groupId>

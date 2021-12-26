@@ -51,7 +51,7 @@ public class WmsController {
 
         var pngResponse = this.wmsPngService.getResponse(mapRequest);
 
-        return pngResponse.getImgByteStream().toByteArray();
+        return pngResponse.getImgBytes();
     }
 
 
