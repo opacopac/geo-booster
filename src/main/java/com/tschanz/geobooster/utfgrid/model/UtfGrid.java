@@ -65,13 +65,13 @@ public class UtfGrid {
 
     private List<KeyValue<Integer, UtfGridItem>> calcNumberedItems() {
         var list = new ArrayList<KeyValue<Integer, UtfGridItem>>();
-        for (var i = 0; i < pointItems.size(); i++) {
-            list.add(new KeyValue<>(i + 1, pointItems.get(i)));
+        for (var i = 0; i < lineItems.size(); i++) {
+            list.add(new KeyValue<>(i + 1, lineItems.get(i)));
         }
 
         var offset = list.size() + 1;
-        for (var i = 0; i < lineItems.size(); i++) {
-            list.add(new KeyValue<>(i + offset, lineItems.get(i)));
+        for (var i = 0; i < pointItems.size(); i++) {
+            list.add(new KeyValue<>(i + offset, pointItems.get(i)));
         }
 
         return list;
