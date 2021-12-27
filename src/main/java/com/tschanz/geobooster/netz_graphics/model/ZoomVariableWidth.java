@@ -1,15 +1,15 @@
 package com.tschanz.geobooster.netz_graphics.model;
 
 
-public class VariableWidth {
+public class ZoomVariableWidth {
     private final float lowerZoom;
     private final float upperZoom;
     private final float lowerZoomWidth;
     private final float upperZoomWidth;
-    private final float widthStep;
+    private final float widthPerZoomStep;
 
 
-    public VariableWidth(
+    public ZoomVariableWidth(
         float lowerZoom,
         float upperZoom,
         float lowerZoomWidth,
@@ -19,7 +19,7 @@ public class VariableWidth {
         this.upperZoom = upperZoom;
         this.lowerZoomWidth = lowerZoomWidth;
         this.upperZoomWidth = upperZoomWidth;
-        this.widthStep = (upperZoom - lowerZoom) / (upperZoomWidth - lowerZoomWidth);
+        this.widthPerZoomStep = (upperZoomWidth - lowerZoomWidth) / (upperZoom - lowerZoom);
     }
 
 
@@ -29,7 +29,7 @@ public class VariableWidth {
         } else if (zoomLevel >= this.upperZoom) {
             return this.upperZoomWidth;
         } else {
-            return (zoomLevel - this.lowerZoom) * this.widthStep;
+            return (zoomLevel - this.lowerZoom) * this.widthPerZoomStep;
         }
     }
 }

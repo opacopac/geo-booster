@@ -6,7 +6,7 @@ import com.tschanz.geobooster.graphics.model.GbStroke;
 
 
 public class HaltestelleStyle {
-    private final static VariableWidth width = new VariableWidth(4, 13, 0, 13);
+    private final static ZoomVariableWidth width = new ZoomVariableWidth(4, 13, 0, 13);
 
 
     public static GbPointStyle getStyle(float zoomLevel) {

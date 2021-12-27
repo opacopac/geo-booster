@@ -6,7 +6,7 @@ import com.tschanz.geobooster.graphics.model.GbStroke;
 
 
 public class TarifkanteStyle {
-    private final static VariableWidth width = new VariableWidth(3, 13, 0, 28);
+    private final static ZoomVariableWidth width = new ZoomVariableWidth(3, 13, 0, 28);
 
 
     public static GbLineStyle getStyle(float zoomLevel) {
