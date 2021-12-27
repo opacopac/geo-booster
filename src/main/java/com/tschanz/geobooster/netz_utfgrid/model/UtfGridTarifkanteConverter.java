@@ -2,6 +2,7 @@ package com.tschanz.geobooster.netz_utfgrid.model;
 
 import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
 import com.tschanz.geobooster.netz.model.TarifkanteVersion;
+import com.tschanz.geobooster.netz_graphics.model.TarifkanteStyle;
 import com.tschanz.geobooster.utfgrid.model.UtfGridLineItem;
 import com.tschanz.geobooster.util.model.KeyValue;
 
@@ -9,10 +10,11 @@ import java.util.Arrays;
 
 
 public class UtfGridTarifkanteConverter {
-    public static UtfGridLineItem toUtfGrid(TarifkanteVersion tarifkanteVersion) {
+    public static UtfGridLineItem toUtfGrid(TarifkanteVersion tarifkanteVersion, float zoomLevel) {
         return new UtfGridLineItem(
             CoordinateConverter.convertToEpsg3857(tarifkanteVersion.getStartCoordinate()),
             CoordinateConverter.convertToEpsg3857(tarifkanteVersion.getEndCoordinate()),
+            TarifkanteStyle.WIDTH.getWidth(zoomLevel),
             Arrays.asList(
                 new KeyValue<>("id", "TARIFKANTEN." + tarifkanteVersion.getVersionInfo().getId()),
                 new KeyValue<>("ID", tarifkanteVersion.getVersionInfo().getId()),

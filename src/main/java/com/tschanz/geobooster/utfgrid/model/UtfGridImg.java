@@ -25,16 +25,21 @@ public class UtfGridImg {
     }
 
 
-    public void drawPoint(int x, int y, float radius, char symbol) {
-        for (var i = Math.round(x - radius); i <= Math.round(x + radius); i++) {
-            for (var j = Math.round(y - radius); j <= Math.round(y + radius); j++) {
+    public void drawPoint(int x, int y, float width, char symbol) {
+        var xmin = (int) Math.round(x - width / 2.0);
+        var xmax = (int) Math.round(x + width / 2.0);
+        var ymin = (int) Math.round(y - width / 2.0);
+        var ymax = (int) Math.round(y + width / 2.0);
+
+        for (var i = xmin; i <= xmax; i++) {
+            for (var j = ymin; j <= ymax; j++) {
                 this.setSymbol(i, j, symbol);
             }
         }
     }
 
 
-    public void drawLine(int x0, int y0, int x1, int y1, float radius, char symbol) {
+    public void drawLine(int x0, int y0, int x1, int y1, float width, char symbol) {
         // bresham algorithm (https://de.wikipedia.org/wiki/Bresenham-Algorithmus)
         var dx = Math.abs(x1 - x0);
         var sx = x0 < x1 ? 1 : -1;
@@ -45,7 +50,7 @@ public class UtfGridImg {
         int e2; /* error value e_xy */
 
         while (true) {
-            this.setSymbol(x0, y0, symbol);
+            this.drawLineWidth(x0, y0, width, symbol);
 
             if (x0 == x1 && y0 == y1) break;
             e2 = 2 * err;
@@ -59,6 +64,22 @@ public class UtfGridImg {
                 err += dx;
                 y0 += sy;
             } /* e_xy + e_y < 0 */
+        }
+    }
+
+
+    private void drawLineWidth(int x, int y, float width, char symbol) {
+        var xmin = (int) Math.round(x - width / 2.0);
+        var xmax = (int) Math.round(x + width / 2.0);
+        var ymin = (int) Math.round(y - width / 2.0);
+        var ymax = (int) Math.round(y + width / 2.0);
+
+        for (var i = xmin; i <= xmax; i++) {
+            this.setSymbol(i, ymin, symbol);
+        }
+
+        for (var j = ymin; j <= ymax; j++) {
+            this.setSymbol(xmin, j, symbol);
         }
     }
 

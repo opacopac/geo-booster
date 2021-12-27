@@ -2,6 +2,7 @@ package com.tschanz.geobooster.netz_utfgrid.model;
 
 import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
 import com.tschanz.geobooster.netz.model.VerkehrskanteVersion;
+import com.tschanz.geobooster.netz_graphics.model.VerkehrskanteStyle;
 import com.tschanz.geobooster.utfgrid.model.UtfGridLineItem;
 import com.tschanz.geobooster.util.model.KeyValue;
 
@@ -9,10 +10,11 @@ import java.util.Arrays;
 
 
 public class UtfGridVerkehrskanteConverter {
-    public static UtfGridLineItem toUtfGrid(VerkehrskanteVersion verkehrskanteVersion) {
+    public static UtfGridLineItem toUtfGrid(VerkehrskanteVersion verkehrskanteVersion, float zoomLevel) {
         return new UtfGridLineItem(
             CoordinateConverter.convertToEpsg3857(verkehrskanteVersion.getStartCoordinate()),
             CoordinateConverter.convertToEpsg3857(verkehrskanteVersion.getEndCoordinate()),
+            VerkehrskanteStyle.WIDTH.getWidth(zoomLevel),
             Arrays.asList(
                 new KeyValue<>("id", "VERKEHRSKANTEN." + verkehrskanteVersion.getVersionInfo().getId()),
                 new KeyValue<>("ID", verkehrskanteVersion.getVersionInfo().getId()),

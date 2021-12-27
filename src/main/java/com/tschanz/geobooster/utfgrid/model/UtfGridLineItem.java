@@ -13,5 +13,6 @@ import java.util.List;
 public class UtfGridLineItem implements UtfGridItem {
     private final Epsg3857Coordinate startCoordinate;
     private final Epsg3857Coordinate endCoordinate;
+    private final float width;
     private final List<KeyValue<String, ?>> dataFields;
 }

@@ -61,12 +61,12 @@ public class WmsUtfGridService {
 
         logger.info("initializing utf grid...");
         var pointItems = hstVersions.stream()
-            .map(UtfGridHaltestelleConverter::toUtfGrid)
+            .map(hst -> UtfGridHaltestelleConverter.toUtfGrid(hst, mapRequest.getZoomLevel()))
             .collect(Collectors.toList());
 
         var lineItems = Stream.concat(
-            vkVersions.stream().map(UtfGridVerkehrskanteConverter::toUtfGrid),
-            tkVersions.stream().map(UtfGridTarifkanteConverter::toUtfGrid)
+            tkVersions.stream().map(tkV -> UtfGridTarifkanteConverter.toUtfGrid(tkV, mapRequest.getZoomLevel())),
+            vkVersions.stream().map(vkV -> UtfGridVerkehrskanteConverter.toUtfGrid(vkV, mapRequest.getZoomLevel()))
         ).collect(Collectors.toList());
 
         var utfGrid = new UtfGrid(

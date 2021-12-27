@@ -12,5 +12,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UtfGridPointItem implements UtfGridItem {
     private final Epsg3857Coordinate coordinate;
+    private final float width;
     private final List<KeyValue<String, ?>> dataFields;
 }

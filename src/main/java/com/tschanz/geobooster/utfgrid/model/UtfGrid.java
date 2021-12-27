@@ -28,8 +28,6 @@ public class UtfGrid {
     public void render() {
         this.imgWidth = this.width / REDUCTION_FACTOR;
         this.imgHeight = this.height / REDUCTION_FACTOR;
-        var lineWidth = 2; // TODO
-        var pointRad = 2; // TODO
         this.utfGridImg = new UtfGridImg(this.imgWidth, this.imgHeight);
 
         for (var entry: this.getNumberedItems()) {
@@ -37,18 +35,20 @@ public class UtfGrid {
 
             if (entry.getValue() instanceof UtfGridLineItem) {
                 var lineItem = (UtfGridLineItem) entry.getValue();
+                var width = lineItem.getWidth() / REDUCTION_FACTOR;
                 var x0 = this.getX(lineItem.getStartCoordinate());
                 var y0 = this.getY(lineItem.getStartCoordinate());
                 var x1 = this.getX(lineItem.getEndCoordinate());
                 var y1 = this.getY(lineItem.getEndCoordinate());
-                this.utfGridImg.drawLine(x0, y0, x1, y1, lineWidth, symbol);
+                this.utfGridImg.drawLine(x0, y0, x1, y1, width, symbol);
             }
 
             if (entry.getValue() instanceof UtfGridPointItem) {
                 var pointItem = (UtfGridPointItem) entry.getValue();
+                var width = pointItem.getWidth() / REDUCTION_FACTOR;
                 var x = this.getX(pointItem.getCoordinate());
                 var y = this.getY(pointItem.getCoordinate());
-                this.utfGridImg.drawPoint(x, y, pointRad, symbol);
+                this.utfGridImg.drawPoint(x, y, width, symbol);
             }
         }
     }

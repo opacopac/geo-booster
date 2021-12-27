@@ -6,13 +6,13 @@ import com.tschanz.geobooster.graphics.model.GbStroke;
 
 
 public class VerkehrskanteStyle {
-    private final static ZoomVariableWidth width = new ZoomVariableWidth(4, 11, 0, 5);
+    public final static ZoomVariableWidth WIDTH = new ZoomVariableWidth(4, 11, 0, 5);
 
 
     public static GbLineStyle getStyle(float zoomLevel) {
         return new GbLineStyle(
             GbColor.BLACK,
-            new GbStroke(width.getWidth(zoomLevel))
+            new GbStroke(WIDTH.getWidth(zoomLevel))
         );
     }
 }
