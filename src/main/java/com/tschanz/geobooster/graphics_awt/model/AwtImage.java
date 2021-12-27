@@ -44,12 +44,13 @@ public class AwtImage implements GbImage {
 
 
     public void drawPoint(int x, int y, GbPointStyle style) {
-        var radius = style.getRadius();
+        var diameter = Math.round(style.getDiameter());
+        var radius = Math.round(style.getDiameter() / 2);
         this.graphics.setColor(AwtColorConverter.toAwt(style.getColor()));
-        this.graphics.fillOval(x - radius, y - radius, radius * 2, radius * 2);
+        this.graphics.fillOval(x - radius, y - radius, diameter, diameter);
         this.graphics.setColor(AwtColorConverter.toAwt(style.getBorderColor()));
         this.graphics.setStroke(AwtStrokeConverter.toAwt(style.getBorderStroke()));
-        this.graphics.drawOval(x - radius, y - radius, radius * 2, radius * 2);
+        this.graphics.drawOval(x - radius, y - radius, diameter, diameter);
     }
 
 

@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class GbPointStyle {
     private final GbColor color;
-    private final int radius;
+    private final float diameter;
     private final GbColor borderColor;
     private final GbStroke borderStroke;
 }

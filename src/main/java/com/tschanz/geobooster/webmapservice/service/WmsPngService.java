@@ -11,7 +11,9 @@ import com.tschanz.geobooster.netz.model.VerkehrskanteVersion;
 import com.tschanz.geobooster.netz.service.HaltestelleRepo;
 import com.tschanz.geobooster.netz.service.TarifkanteRepo;
 import com.tschanz.geobooster.netz.service.VerkehrskanteRepo;
-import com.tschanz.geobooster.netz_graphics.model.NetzStyles;
+import com.tschanz.geobooster.netz_graphics.model.HaltestelleStyle;
+import com.tschanz.geobooster.netz_graphics.model.TarifkanteStyle;
+import com.tschanz.geobooster.netz_graphics.model.VerkehrskanteStyle;
 import com.tschanz.geobooster.webmapservice.model.GetMapRequest;
 import com.tschanz.geobooster.webmapservice.model.PngResponse;
 import lombok.RequiredArgsConstructor;
@@ -71,7 +73,7 @@ public class WmsPngService {
         var mapTilePoints = hstVersions.stream()
             .map(hstV -> new MapTilePoint(
                 CoordinateConverter.convertToEpsg3857(hstV.getCoordinate()),
-                NetzStyles.HALTESTELLE_POINTSTYLE
+                HaltestelleStyle.getStyle(mapRequest.getZoomLevel())
             ))
             .collect(Collectors.toList());
 
@@ -81,14 +83,14 @@ public class WmsPngService {
                 .map(tkV -> new MapTileLine(
                     CoordinateConverter.convertToEpsg3857(tkV.getStartCoordinate()),
                     CoordinateConverter.convertToEpsg3857(tkV.getEndCoordinate()),
-                    NetzStyles.TARIFKANTE_LINESTYLE
+                    TarifkanteStyle.getStyle(mapRequest.getZoomLevel())
                 )),
                 vkVersions
                     .stream()
                     .map(vkV -> new MapTileLine(
                         CoordinateConverter.convertToEpsg3857(vkV.getStartCoordinate()),
                         CoordinateConverter.convertToEpsg3857(vkV.getEndCoordinate()),
-                        NetzStyles.VERKEHRSKANTE_LINESTYLE
+                        VerkehrskanteStyle.getStyle(mapRequest.getZoomLevel())
                     ))
             )
             .collect(Collectors.toList());

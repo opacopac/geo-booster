@@ -1,6 +1,7 @@
 package com.tschanz.geobooster.webmapservice.model;
 
 import com.tschanz.geobooster.geofeature.model.Extent;
+import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
 import com.tschanz.geobooster.geofeature_wms.model.WmsExtentConverter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -50,6 +51,14 @@ public class GetMapRequest {
             params.get(PARAM_SRS),
             WmsExtentConverter.fromRest(params.get(PARAM_BBOX), params.get(PARAM_SRS))
         );
+    }
+
+
+    public float getZoomLevel() {
+        var minDeg = CoordinateConverter.convertToEpsg4326(this.getBbox().getMinCoordinate()).getLongitude();
+        var maxDeg = CoordinateConverter.convertToEpsg4326(this.getBbox().getMaxCoordinate()).getLongitude();
+
+        return (float) (Math.log(360.0 / (maxDeg - minDeg)) / Math.log(2));
     }
 
 
