@@ -2,7 +2,6 @@ package com.tschanz.geobooster.webmapservice.model;
 
 import com.tschanz.geobooster.geofeature.model.Extent;
 import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
-import com.tschanz.geobooster.geofeature_wms.model.WmsExtentConverter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -12,6 +11,9 @@ import java.util.Map;
 @Getter
 @RequiredArgsConstructor
 public class GetMapRequest {
+    public static final String REQ_GETMAP = "GetMap";
+    public static final String REQ_FORMAT_PNG = "image/png8";
+    public static final String REQ_FORMAT_UTFGRID = "application/json;type=utfgrid";
     private static final String LAYER_HALTESTELLEN = "novap:HALTESTELLEN";
     private static final String LAYER_VERKEHRSKANTEN = "novap:VERKEHRSKANTEN";
     private static final String LAYER_TARIFKANTEN = "novap:TARIFKANTEN";
@@ -31,7 +33,7 @@ public class GetMapRequest {
     private final String styles;
     private final String format;
     private final boolean transparent;
-    private final GetMapViewParams viewparams;
+    private final GetMapRequestViewParams viewparams;
     private final int width;
     private final int height;
     private final String srs;
@@ -45,11 +47,11 @@ public class GetMapRequest {
             params.get(PARAM_STYLES),
             params.get(PARAM_FORMAT),
             Boolean.parseBoolean(params.get(PARAM_TRANSPARENT)),
-            GetMapViewParams.parse(params.get(PARAM_VIEWPARAMS)),
+            GetMapRequestViewParams.parse(params.get(PARAM_VIEWPARAMS)),
             Integer.parseInt(params.get(PARAM_WIDTH)),
             Integer.parseInt(params.get(PARAM_HEIGHT)),
             params.get(PARAM_SRS),
-            WmsExtentConverter.fromRest(params.get(PARAM_BBOX), params.get(PARAM_SRS))
+            GetMapRequestExtentConverter.fromRest(params.get(PARAM_BBOX), params.get(PARAM_SRS))
         );
     }
 

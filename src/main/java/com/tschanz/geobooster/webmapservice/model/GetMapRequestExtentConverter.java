@@ -1,11 +1,11 @@
-package com.tschanz.geobooster.geofeature_wms.model;
+package com.tschanz.geobooster.webmapservice.model;
 
 import com.tschanz.geobooster.geofeature.model.Epsg3857Coordinate;
 import com.tschanz.geobooster.geofeature.model.Epsg4326Coordinate;
 import com.tschanz.geobooster.geofeature.model.Extent;
 
 
-public class WmsExtentConverter {
+public class GetMapRequestExtentConverter {
     public static Extent fromRest(String bbox, String projection) {
         var coords = bbox.split(",");
 

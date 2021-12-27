@@ -10,12 +10,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 @SpringBootTest
-class GetMapViewParamsTests {
+class GetMapRequestViewParamsTests {
     @Test
     void test_mixed1() {
         var viewparams = "TYPEN:'BAHN'\\,'BUS';;;DATE:'2021-12-11';REFRESH_COUNTER:1640119429107;";
 
-        var result = GetMapViewParams.parse(viewparams);
+        var result = GetMapRequestViewParams.parse(viewparams);
 
         assertEquals(LocalDate.of(2021, 12, 11), result.getDate());
         assertEquals(1640119429107L, result.getRefreshCounter());

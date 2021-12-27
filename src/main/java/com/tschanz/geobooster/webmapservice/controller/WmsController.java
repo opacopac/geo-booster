@@ -24,9 +24,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class WmsController {
     private static final String REQ_SERVICE_WMS = "WMS";
-    private static final String REQ_GETMAP = "GetMap";
-    private static final String REQ_FORMAT_PNG = "image/png8";
-    private static final String REQ_FORMAT_UTFGRID = "application/json;type=utfgrid";
     private static final String RESP_UTFGRID_CONTENT_TYPE = "application/json;type=utfgrid";
     private static final String RESP_CONTENT_DISPO_KEY = "Content-Disposition";
     private static final String RESP_CONTENT_DISPO_VALUE = "inline; filename=";
@@ -39,7 +36,7 @@ public class WmsController {
 
     @GetMapping(
         value = "/geo/wms",
-        params = {"service=" + REQ_SERVICE_WMS, "request=" + REQ_GETMAP, "format=" + REQ_FORMAT_PNG},
+        params = {"service=" + REQ_SERVICE_WMS, "request=" + GetMapRequest.REQ_GETMAP, "format=" + GetMapRequest.REQ_FORMAT_PNG},
         produces = MediaType.IMAGE_PNG_VALUE
     )
     @ResponseBody
@@ -64,7 +61,7 @@ public class WmsController {
 
     @GetMapping(
         value = "/geo/wms",
-        params = {"service=" + REQ_SERVICE_WMS, "request=" + REQ_GETMAP, "format=" + REQ_FORMAT_UTFGRID},
+        params = {"service=" + REQ_SERVICE_WMS, "request=" + GetMapRequest.REQ_GETMAP, "format=" + GetMapRequest.REQ_FORMAT_UTFGRID},
         produces = RESP_UTFGRID_CONTENT_TYPE
     )
     @CrossOrigin(allowedHeaders = "X-NewRelic-App-Data")
@@ -85,16 +82,6 @@ public class WmsController {
         var utfGridResponse = this.wmsUtfGridService.getResponse(mapRequest);
 
         return utfGridResponse.getText();
-    }
-
-
-    // TODO: temp for performance measurements
-    @GetMapping(value = "/nix")
-    @ResponseBody
-    public String nixHandler() {
-        logger.info("NIX request");
-
-        return "NIX";
     }
 
 

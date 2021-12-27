@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 @Getter
 @RequiredArgsConstructor
-public class GetMapViewParams {
+public class GetMapRequestViewParams {
     private static final String SUBPARAM_SEPARATOR = ";";
     private static final String SUBPARAM_NAME_VALUE = ":";
     private static final String SUBPARAM_VALUE_QUOTES = "'";
@@ -27,7 +27,7 @@ public class GetMapViewParams {
     private final long refreshCounter;
 
 
-    public static GetMapViewParams parse(String value) {
+    public static GetMapRequestViewParams parse(String value) {
         List<VerkehrsmittelTyp> types = Collections.emptyList();
         LocalDate date = null;
         long refreshCounter = 0;
@@ -53,7 +53,7 @@ public class GetMapViewParams {
             }
         }
 
-        return new GetMapViewParams(
+        return new GetMapRequestViewParams(
             types,
             date,
             refreshCounter
