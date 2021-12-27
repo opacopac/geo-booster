@@ -112,7 +112,7 @@ public class TarifkanteCacheRepoImpl implements TarifkanteCacheRepo {
             .map(AreaQuadTreeItem::getItem)
             .filter(tkV -> date.isEqual(tkV.getVersionInfo().getGueltigVon()) || date.isAfter(tkV.getVersionInfo().getGueltigVon()))
             .filter(tkV -> date.isEqual(tkV.getVersionInfo().getGueltigBis()) || date.isBefore(tkV.getVersionInfo().getGueltigBis()))
-            //.filter(tkV -> tkV.hasOneOfVmTypes(vmTypes))
+            .filter(tkV -> tkV.hasOneOfVmTypes(vmTypes))
             .collect(Collectors.toList());
     }
 

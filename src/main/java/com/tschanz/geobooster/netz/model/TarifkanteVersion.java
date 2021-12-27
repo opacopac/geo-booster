@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 
 @Getter
@@ -47,5 +49,21 @@ public class TarifkanteVersion implements Version<Tarifkante> {
         return this.getHaltestelle2()
             .getElementInfo()
             .getVersion(this.versionInfo.getGueltigVon());
+    }
+
+
+    public List<VerkehrsmittelTyp> getVmTypes() {
+        return this.verkehrskanten
+            .stream()
+            .map(vk -> vk.getElementInfo().getVersion(this.versionInfo.getGueltigVon()))
+            .filter(Objects::nonNull)
+            .flatMap(vkv -> vkv.getVmTypes().stream())
+            .collect(Collectors.toList());
+    }
+
+
+    public boolean hasOneOfVmTypes(List<VerkehrsmittelTyp> vmTypes) {
+        var vmTypeBitmask = VerkehrsmittelTyp.getBitMask(this.getVmTypes());
+        return (VerkehrsmittelTyp.getBitMask(vmTypes) & vmTypeBitmask) > 0;
     }
 }

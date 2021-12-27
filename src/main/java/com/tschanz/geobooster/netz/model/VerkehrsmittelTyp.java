@@ -33,7 +33,7 @@ public enum VerkehrsmittelTyp {
     public static List<VerkehrsmittelTyp> getVmTypes(byte bitMask) {
         var vmTypeList = new ArrayList<VerkehrsmittelTyp>();
         Arrays.stream(VerkehrsmittelTyp.values()).forEach(vmType -> {
-            if ((bitMask | vmType.bitMask) > 0) {
+            if ((bitMask & vmType.bitMask) > 0) {
                 vmTypeList.add(vmType);
             }
         });
