@@ -6,11 +6,14 @@ import com.tschanz.geobooster.versioning.model.VersionInfo;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 
 @Getter
 @RequiredArgsConstructor
 public class TarifkanteVersion implements Version<Tarifkante> {
     private final VersionInfo<Tarifkante> versionInfo;
+    private final List<Verkehrskante> verkehrskanten;
 
 
     public Epsg4326Coordinate getStartCoordinate() {

@@ -40,6 +40,7 @@ public class TarifkanteCacheRepoImpl implements TarifkanteCacheRepo {
 
     private final TarifkantePersistenceRepo tkPersistenceRepo;
     private final HaltestelleCacheRepo hstRepo;
+    private final VerkehrskanteCacheRepo vkRepo;
     private Map<Long, Tarifkante> elementMap;
     private Map<Long, TarifkanteVersion> versionMap;
     private AreaQuadTree<TarifkanteVersion> versionQuadTree;
@@ -67,7 +68,7 @@ public class TarifkanteCacheRepoImpl implements TarifkanteCacheRepo {
     public Map<Long, TarifkanteVersion> getVersionMap() {
         if (this.versionMap == null) {
             logger.info("loading all tk versions...");
-            this.versionMap = this.tkPersistenceRepo.readAllVersions(this.getElementMap());
+            this.versionMap = this.tkPersistenceRepo.readAllVersions(this.getElementMap(), this.vkRepo.getElementMap());
             logger.info(String.format("cached %d tk versions.", this.versionMap.size()));
         }
 
