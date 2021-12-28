@@ -64,7 +64,6 @@ public class WmsController {
         params = {"service=" + REQ_SERVICE_WMS, "request=" + GetMapRequest.REQ_GETMAP, "format=" + GetMapRequest.REQ_FORMAT_UTFGRID},
         produces = RESP_UTFGRID_CONTENT_TYPE
     )
-    @CrossOrigin(allowedHeaders = "X-NewRelic-App-Data")
     @ResponseBody
     public String wmsGetMapUtfGridHandler(@RequestParam Map<String,String> allParams, HttpServletResponse response) {
         var mapRequest = GetMapRequest.fromParams(allParams);
