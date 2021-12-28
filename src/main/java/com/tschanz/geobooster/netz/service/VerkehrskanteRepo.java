@@ -11,8 +11,6 @@ import java.util.List;
 
 
 public interface VerkehrskanteRepo extends VersionedObjectRepo<Verkehrskante, VerkehrskanteVersion> {
-    void init();
-
     List<VerkehrskanteVersion> readVersions(LocalDate date, Extent extent, List<VerkehrsmittelTyp> vmTypes);
 
     Haltestelle getStartHaltestelle(VerkehrskanteVersion vkVersion);

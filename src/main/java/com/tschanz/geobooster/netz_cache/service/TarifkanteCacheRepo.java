@@ -7,7 +7,6 @@ import com.tschanz.geobooster.geofeature.model.Extent;
 import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
 import com.tschanz.geobooster.netz.model.*;
 import com.tschanz.geobooster.netz.service.HaltestelleRepo;
-import com.tschanz.geobooster.netz.service.TarifkantePersistenceRepo;
 import com.tschanz.geobooster.netz.service.TarifkanteRepo;
 import com.tschanz.geobooster.netz.service.VerkehrskanteRepo;
 import com.tschanz.geobooster.quadtree.model.AreaQuadTree;
@@ -45,20 +44,13 @@ public class TarifkanteCacheRepo implements TarifkanteRepo {
 
     private final HaltestelleRepo hstRepo;
     private final VerkehrskanteRepo vkRepo;
-    private final TarifkantePersistenceRepo tkPersistenceRepo;
     private VersionedObjectMap<Tarifkante, TarifkanteVersion> versionedObjectMap;
     private AreaQuadTree<TarifkanteVersion> versionQuadTree;
 
 
     @Override
-    public void init() {
-        logger.info("loading tk data...");
-        this.versionedObjectMap = new VersionedObjectMap<>(
-            this.tkPersistenceRepo.readAllElements(),
-            this.tkPersistenceRepo.readAllVersions()
-        );
-        logger.info(String.format("%d elements / %d versions cached", this.versionedObjectMap.getAllElements().size(),
-            this.versionedObjectMap.getAllVersions().size()));
+    public void init(Collection<Tarifkante> elements, Collection<TarifkanteVersion> versions) {
+        this.versionedObjectMap = new VersionedObjectMap<>(elements, versions);
 
         this.versionQuadTree = new AreaQuadTree<>(
             MAX_TREE_DEPTH,

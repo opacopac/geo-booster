@@ -11,8 +11,6 @@ import java.util.List;
 
 
 public interface HaltestelleRepo extends VersionedObjectRepo<Haltestelle, HaltestelleVersion> {
-    void init();
-
     List<HaltestelleVersion> readVersions(LocalDate date, Extent extent);
 
     VersionedObjectMap<Haltestelle, HaltestelleVersion> getVersionedObjectMap();

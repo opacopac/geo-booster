@@ -6,5 +6,4 @@ import com.tschanz.geobooster.versioning.service.VersionedObjectRepo;
 
 
 public interface BetreiberRepo extends VersionedObjectRepo<Betreiber, BetreiberVersion> {
-    void init();
 }

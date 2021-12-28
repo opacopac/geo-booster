@@ -7,15 +7,12 @@ import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
 import com.tschanz.geobooster.netz.model.Haltestelle;
 import com.tschanz.geobooster.netz.model.HaltestelleVersion;
 import com.tschanz.geobooster.netz.service.HaltestelleRepo;
-import com.tschanz.geobooster.netz.service.HaltestellenPersistenceRepo;
 import com.tschanz.geobooster.quadtree.model.QuadTree;
 import com.tschanz.geobooster.quadtree.model.QuadTreeCoordinate;
 import com.tschanz.geobooster.quadtree.model.QuadTreeExtent;
 import com.tschanz.geobooster.quadtree.model.QuadTreeItem;
 import com.tschanz.geobooster.versioning.model.VersionedObjectMap;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -27,8 +24,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class HaltestelleCacheRepo implements HaltestelleRepo {
-    private static final Logger logger = LogManager.getLogger(HaltestelleCacheRepo.class);
-
     // TODO
     // minLat = 43.0062910000
     // maxLat = 53.7988520000
@@ -40,20 +35,13 @@ public class HaltestelleCacheRepo implements HaltestelleRepo {
     private static final double MAX_COORD_Y = 6108322.79 + 1;
     private static final int MAX_TREE_DEPTH = 6;
 
-    private final HaltestellenPersistenceRepo haltestellenPersistenceRepo;
     private VersionedObjectMap<Haltestelle, HaltestelleVersion> versionedObjectMap;
     private QuadTree<HaltestelleVersion> versionQuadTree;
 
 
     @Override
-    public void init() {
-        logger.info("loading hst data...");
-        this.versionedObjectMap = new VersionedObjectMap<>(
-            this.haltestellenPersistenceRepo.readAllElements(),
-            this.haltestellenPersistenceRepo.readAllVersions()
-        );
-        logger.info(String.format("%d elements / %d versions cached", this.versionedObjectMap.getAllElements().size(),
-            this.versionedObjectMap.getAllVersions().size()));
+    public void init(Collection<Haltestelle> elements, Collection<HaltestelleVersion> versions) {
+        this.versionedObjectMap = new VersionedObjectMap<>(elements, versions);
 
         this.versionQuadTree = new QuadTree<>(
             MAX_TREE_DEPTH,
