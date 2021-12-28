@@ -60,13 +60,16 @@ public class WmsUtfGridService {
         logger.info(String.format("found %d tk versions", tkVersions.size()));
 
         logger.info("initializing utf grid...");
+        var utfGridHstConverter = new UtfGridHaltestelleConverter(this.haltestelleRepo);
         var pointItems = hstVersions.stream()
-            .map(hst -> UtfGridHaltestelleConverter.toUtfGrid(hst, mapRequest.getZoomLevel()))
+            .map(hst -> utfGridHstConverter.toUtfGrid(hst, mapRequest.getZoomLevel()))
             .collect(Collectors.toList());
 
+        var utfGridTkConverter = new UtfGridTarifkanteConverter(this.tarifkanteRepo);
+        var utfGridVkConverter = new UtfGridVerkehrskanteConverter(this.verkehrskanteRepo);
         var lineItems = Stream.concat(
-            tkVersions.stream().map(tkV -> UtfGridTarifkanteConverter.toUtfGrid(tkV, mapRequest.getZoomLevel())),
-            vkVersions.stream().map(vkV -> UtfGridVerkehrskanteConverter.toUtfGrid(vkV, mapRequest.getZoomLevel()))
+            tkVersions.stream().map(tkV -> utfGridTkConverter.toUtfGrid(tkV, mapRequest.getZoomLevel())),
+            vkVersions.stream().map(vkV -> utfGridVkConverter.toUtfGrid(vkV, mapRequest.getZoomLevel()))
         ).collect(Collectors.toList());
 
         var utfGrid = new UtfGrid(

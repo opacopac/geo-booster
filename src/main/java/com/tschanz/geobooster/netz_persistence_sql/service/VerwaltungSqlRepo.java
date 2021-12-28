@@ -1,9 +1,8 @@
 package com.tschanz.geobooster.netz_persistence_sql.service;
 
-import com.tschanz.geobooster.netz.model.Betreiber;
 import com.tschanz.geobooster.netz.model.Verwaltung;
 import com.tschanz.geobooster.netz.model.VerwaltungVersion;
-import com.tschanz.geobooster.netz_persistence.service.VerwaltungPersistenceRepo;
+import com.tschanz.geobooster.netz.service.VerwaltungPersistenceRepo;
 import com.tschanz.geobooster.netz_persistence_sql.model.SqlVerwaltungElementConverter;
 import com.tschanz.geobooster.netz_persistence_sql.model.SqlVerwaltungVersionConverter;
 import com.tschanz.geobooster.persistence_sql.service.SqlConnectionFactory;
@@ -11,8 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collection;
 
 
 @Service
@@ -23,48 +21,36 @@ public class VerwaltungSqlRepo implements VerwaltungPersistenceRepo {
 
     @Override
     @SneakyThrows
-    public Map<Long, Verwaltung> readAllElements(Map<Long, Betreiber> betreiberMap) {
-        var connection = this.connectionFactory.createConnection();
+    public Collection<Verwaltung> readAllElements() {
+        var sqlReader = new SqlReader<>(
+            this.connectionFactory,
+            new SqlVerwaltungElementConverter(),
+            "%d verwaltung elements loaded...",
+            2
+        );
         var query = String.format(
             "SELECT %s FROM N_VERWALTUNG_E",
             String.join(",", SqlVerwaltungElementConverter.ALL_COLS)
         );
 
-        var elementMap = new HashMap<Long, Verwaltung>();
-        if (connection.getStatement().execute(query)) {
-            while (connection.getStatement().getResultSet().next()) {
-                var resultSet = connection.getStatement().getResultSet();
-                var element = SqlVerwaltungElementConverter.fromResultSet(resultSet, betreiberMap);
-                elementMap.put(element.getElementInfo().getId(), element);
-            }
-        }
-
-        connection.closeAll();
-
-        return elementMap;
+        return sqlReader.read(query);
     }
 
 
     @Override
     @SneakyThrows
-    public Map<Long, VerwaltungVersion> readAllVersions(Map<Long, Verwaltung> elementMap) {
-        var connection = this.connectionFactory.createConnection();
+    public Collection<VerwaltungVersion> readAllVersions() {
+        var sqlReader = new SqlReader<>(
+            this.connectionFactory,
+            new SqlVerwaltungVersionConverter(),
+            "%d verwaltung versions loaded...",
+            2
+        );
         var query = String.format(
             "SELECT %s FROM N_VERWALTUNG_V",
             String.join(",", SqlVerwaltungVersionConverter.ALL_COLS)
         );
 
-        var versionMap = new HashMap<Long, VerwaltungVersion>();
-        if (connection.getStatement().execute(query)) {
-            while (connection.getStatement().getResultSet().next()) {
-                var resultSet = connection.getStatement().getResultSet();
-                var version = SqlVerwaltungVersionConverter.fromResultSet(resultSet, elementMap);
-                versionMap.put(version.getVersionInfo().getId(), version);
-            }
-        }
-
-        connection.closeAll();
-
-        return versionMap;
+        return sqlReader.read(query);
     }
 }

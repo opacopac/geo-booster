@@ -1,25 +1,24 @@
 package com.tschanz.geobooster.netz_persistence_sql.model;
 
-import com.tschanz.geobooster.netz.model.Betreiber;
 import com.tschanz.geobooster.netz.model.BetreiberVersion;
-import com.tschanz.geobooster.versioning_persistence_sql.model.SqlVersionInfoConverter;
+import com.tschanz.geobooster.versioning_persistence_sql.model.SqlVersionConverter;
 import lombok.SneakyThrows;
 
 import java.sql.ResultSet;
-import java.util.Map;
 
 
-public class SqlBetreiberVersionConverter {
-    public final static String[] ALL_COLS = SqlVersionInfoConverter.ALL_COLS;
+public class SqlBetreiberVersionConverter implements SqlResultsetConverter<BetreiberVersion> {
+    public final static String[] ALL_COLS = SqlVersionConverter.ALL_COLS;
 
 
+    @Override
     @SneakyThrows
-    public static BetreiberVersion fromResultSet(ResultSet row, Map<Long, Betreiber> betreiberElementMap) {
-        var betreiberV = new BetreiberVersion(
-            SqlVersionInfoConverter.fromResultSet(row, betreiberElementMap)
+    public BetreiberVersion fromResultSet(ResultSet row) {
+        return new BetreiberVersion(
+            SqlVersionConverter.getId(row),
+            SqlVersionConverter.getElementId(row),
+            SqlVersionConverter.getGueltigVon(row),
+            SqlVersionConverter.getGueltigBis(row)
         );
-        betreiberV.getVersionInfo().getElement().getElementInfo().getVersions().add(betreiberV);
-
-        return betreiberV;
     }
 }

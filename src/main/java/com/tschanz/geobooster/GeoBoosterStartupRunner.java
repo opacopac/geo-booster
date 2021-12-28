@@ -1,6 +1,6 @@
 package com.tschanz.geobooster;
 
-import com.tschanz.geobooster.netz_cache.service.*;
+import com.tschanz.geobooster.netz.service.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,21 +14,21 @@ import org.springframework.stereotype.Component;
 public class GeoBoosterStartupRunner implements ApplicationRunner {
     private static final Logger logger = LogManager.getLogger(GeoBoosterStartupRunner.class);
 
-    private final BetreiberCacheRepo betreiberCacheRepo;
-    private final VerwaltungCacheRepo verwaltungCacheRepo;
-    private final HaltestelleCacheRepo haltestelleCacheRepo;
-    private final VerkehrskanteCacheRepo verkehrskanteCacheRepo;
-    private final TarifkanteCacheRepo tarifkanteCacheRepo;
+    private final BetreiberRepo betreiberRepo;
+    private final VerwaltungRepo verwaltungRepo;
+    private final HaltestelleRepo haltestelleRepo;
+    private final VerkehrskanteRepo verkehrskanteRepo;
+    private final TarifkanteRepo tarifkanteRepo;
 
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
+    public void run(ApplicationArguments args) {
         logger.info("initializing cache repos...");
-        this.betreiberCacheRepo.init();
-        this.verwaltungCacheRepo.init();
-        this.haltestelleCacheRepo.init();
-        this.verkehrskanteCacheRepo.init();
-        this.tarifkanteCacheRepo.init();;
+        this.betreiberRepo.init();
+        this.verwaltungRepo.init();
+        this.haltestelleRepo.init();
+        this.verkehrskanteRepo.init();
+        this.tarifkanteRepo.init();;
         logger.info("cache initialization done");
     }
 }

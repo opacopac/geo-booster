@@ -1,7 +1,10 @@
 package com.tschanz.geobooster.netz_persistence_sql.model;
 
-import com.tschanz.geobooster.netz.model.*;
-import com.tschanz.geobooster.versioning_persistence_sql.model.SqlVersionInfoConverter;
+import com.tschanz.geobooster.netz.model.VerkehrskanteAuspraegung;
+import com.tschanz.geobooster.netz.model.VerkehrskanteVersion;
+import com.tschanz.geobooster.netz.model.VerkehrsmittelTyp;
+import com.tschanz.geobooster.versioning_persistence_sql.model.SqlVersionConverter;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.sql.ResultSet;
@@ -10,42 +13,40 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 
-public class SqlVerkehrskanteVersionConverter {
-    public final static String[] ALL_COLS = SqlVersionInfoConverter.ALL_COLS;
+@RequiredArgsConstructor
+public class SqlVerkehrskanteVersionConverter implements SqlResultsetConverter<VerkehrskanteVersion> {
+    public final static String[] ALL_COLS = SqlVersionConverter.ALL_COLS;
+
+    public final Map<Long, List<VerkehrskanteAuspraegung>> vkasByVkEIdMap;
 
 
+    @Override
     @SneakyThrows
-    public static VerkehrskanteVersion fromResultSet(
-        ResultSet row,
-        Map<Long, Verkehrskante> elementMap,
-        Map<Long, List<VerkehrskanteAuspraegung>> vkasByVkEMap,
-        Map<Long, Verwaltung> verwaltungMap
-    ) {
-        var versionInfo = SqlVersionInfoConverter.fromResultSet(row, elementMap);
-        var vkEId = versionInfo.getElement().getElementInfo().getId();
-        var vkV = new VerkehrskanteVersion(
-            versionInfo,
-            getVkVerwaltungen(vkasByVkEMap.get(vkEId), verwaltungMap),
-            getVkVmTypes(vkasByVkEMap.get(vkEId))
+    public VerkehrskanteVersion fromResultSet(ResultSet row) {
+        var vkEId = SqlVersionConverter.getElementId(row);
+        return new VerkehrskanteVersion(
+            SqlVersionConverter.getId(row),
+            vkEId,
+            SqlVersionConverter.getGueltigVon(row),
+            SqlVersionConverter.getGueltigBis(row),
+            this.getVerwaltungIds(vkEId),
+            this.getVmBitmask(vkEId)
         );
-        // add to element's version list
-        vkV.getVersionInfo().getElement().getElementInfo().getVersions().add(vkV);
-
-        return vkV;
     }
 
 
-    private static List<Verwaltung> getVkVerwaltungen(List<VerkehrskanteAuspraegung> vkaList, Map<Long, Verwaltung> verwaltungMap) {
-        // TODO: filter by version
-        return vkaList.stream()
-            .map(vka -> verwaltungMap.get(vka.getVerkehrskante().getElementInfo().getId()))
+    private List<Long> getVerwaltungIds(long vkEId) {
+        return this.vkasByVkEIdMap.get(vkEId).stream()
+            .map(VerkehrskanteAuspraegung::getId)
             .collect(Collectors.toList());
     }
 
 
-    private static List<VerkehrsmittelTyp> getVkVmTypes(List<VerkehrskanteAuspraegung> vkaList) {
-        return vkaList.stream()
+    private byte getVmBitmask(long vkEId) {
+        var vmTypes = this.vkasByVkEIdMap.get(vkEId).stream()
             .map(VerkehrskanteAuspraegung::getVerkehrsmittelTyp)
             .collect(Collectors.toList());
+
+        return VerkehrsmittelTyp.getBitMask(vmTypes);
     }
 }

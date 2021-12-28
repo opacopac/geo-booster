@@ -63,11 +63,12 @@ public class WmsPngService {
             : Collections.emptyList();
         logger.info(String.format("found %d tk versions", tkVersions.size()));
 
+
         // TMP: mem profiling
-        /*System.out.println(GraphLayout.parseInstance(this.haltestelleRepo).toFootprint());
-        System.out.println(GraphLayout.parseInstance(this.verkehrskanteRepo).toFootprint());
-        System.out.println(GraphLayout.parseInstance(this.tarifkanteRepo).toFootprint());
-        System.out.println(GraphLayout.parseInstance(this).toFootprint());*/
+        /* System.out.println(GraphLayout.parseInstance(this.haltestelleRepo.getVersionedObjectMap()).toFootprint());
+        System.out.println(GraphLayout.parseInstance(this.verkehrskanteRepo.getVersionedObjectMap()).toFootprint());
+        System.out.println(GraphLayout.parseInstance(this.tarifkanteRepo.getVersionedObjectMap()).toFootprint()); */
+
 
         logger.info("prepare map tile...");
         var mapTilePoints = hstVersions.stream()
@@ -81,15 +82,15 @@ public class WmsPngService {
             tkVersions
                 .stream()
                 .map(tkV -> new MapTileLine(
-                    CoordinateConverter.convertToEpsg3857(tkV.getStartCoordinate()),
-                    CoordinateConverter.convertToEpsg3857(tkV.getEndCoordinate()),
+                    CoordinateConverter.convertToEpsg3857(this.tarifkanteRepo.getStartCoordinate(tkV)),
+                    CoordinateConverter.convertToEpsg3857(this.tarifkanteRepo.getEndCoordinate(tkV)),
                     TarifkanteStyle.getStyle(mapRequest.getZoomLevel())
                 )),
                 vkVersions
                     .stream()
                     .map(vkV -> new MapTileLine(
-                        CoordinateConverter.convertToEpsg3857(vkV.getStartCoordinate()),
-                        CoordinateConverter.convertToEpsg3857(vkV.getEndCoordinate()),
+                        CoordinateConverter.convertToEpsg3857(this.verkehrskanteRepo.getStartCoordinate(vkV)),
+                        CoordinateConverter.convertToEpsg3857(this.verkehrskanteRepo.getEndCoordinate(vkV)),
                         VerkehrskanteStyle.getStyle(mapRequest.getZoomLevel())
                     ))
             )

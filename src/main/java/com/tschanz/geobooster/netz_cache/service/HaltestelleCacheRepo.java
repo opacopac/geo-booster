@@ -1,16 +1,127 @@
 package com.tschanz.geobooster.netz_cache.service;
 
+
+import com.tschanz.geobooster.geofeature.model.Coordinate;
+import com.tschanz.geobooster.geofeature.model.Extent;
+import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
 import com.tschanz.geobooster.netz.model.Haltestelle;
 import com.tschanz.geobooster.netz.model.HaltestelleVersion;
 import com.tschanz.geobooster.netz.service.HaltestelleRepo;
+import com.tschanz.geobooster.netz.service.HaltestellenPersistenceRepo;
+import com.tschanz.geobooster.quadtree.model.QuadTree;
+import com.tschanz.geobooster.quadtree.model.QuadTreeCoordinate;
+import com.tschanz.geobooster.quadtree.model.QuadTreeExtent;
+import com.tschanz.geobooster.quadtree.model.QuadTreeItem;
+import com.tschanz.geobooster.versioning.model.VersionedObjectMap;
+import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Service;
 
-import java.util.Map;
+import java.time.LocalDate;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
-public interface HaltestelleCacheRepo extends HaltestelleRepo {
-    void init();
+@Service
+@RequiredArgsConstructor
+public class HaltestelleCacheRepo implements HaltestelleRepo {
+    private static final Logger logger = LogManager.getLogger(HaltestelleCacheRepo.class);
 
-    Map<Long, Haltestelle> getElementMap();
+    // TODO
+    // minLat = 43.0062910000
+    // maxLat = 53.7988520000
+    // minLon = 1x 0.6202740000, 2x 2.0794830000, rest: 4.8248030000
+    // maxLon = 14.5659700000
+    private static final double MIN_COORD_X = 556597.45 - 1;
+    private static final double MIN_COORD_Y = 5654278.34 - 1;
+    private static final double MAX_COORD_X = 1246778.30 + 1;
+    private static final double MAX_COORD_Y = 6108322.79 + 1;
+    private static final int MAX_TREE_DEPTH = 6;
 
-    Map<Long, HaltestelleVersion> getVersionMap();
+    private final HaltestellenPersistenceRepo haltestellenPersistenceRepo;
+    private VersionedObjectMap<Haltestelle, HaltestelleVersion> versionedObjectMap;
+    private QuadTree<HaltestelleVersion> versionQuadTree;
+
+
+    @Override
+    public void init() {
+        logger.info("loading hst data...");
+        this.versionedObjectMap = new VersionedObjectMap<>(
+            this.haltestellenPersistenceRepo.readAllElements(),
+            this.haltestellenPersistenceRepo.readAllVersions()
+        );
+        logger.info(String.format("%d elements / %d versions cached", this.versionedObjectMap.getAllElements().size(),
+            this.versionedObjectMap.getAllVersions().size()));
+
+        this.versionQuadTree = new QuadTree<>(
+            MAX_TREE_DEPTH,
+            new QuadTreeExtent(
+                new QuadTreeCoordinate(MIN_COORD_X, MIN_COORD_Y),
+                new QuadTreeCoordinate(MAX_COORD_X, MAX_COORD_Y)
+            )
+        );
+
+        this.versionedObjectMap.getAllVersions()
+            .forEach(hstV -> {
+                this.versionQuadTree.addItem(
+                    new QuadTreeItem<>(this.getQuadTreeCoordinates(hstV.getCoordinate()), hstV)
+                );
+            });
+    }
+
+
+    @Override
+    public List<HaltestelleVersion> readVersions(LocalDate date, Extent extent) {
+        return this.versionQuadTree.findItems(this.getQuadTreeExtent(extent)).stream()
+            .map(QuadTreeItem::getItem)
+            .filter(hstv -> date.isEqual(hstv.getGueltigVon()) || date.isAfter(hstv.getGueltigVon()))
+            .filter(hstv -> date.isEqual(hstv.getGueltigBis()) || date.isBefore(hstv.getGueltigBis()))
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    public VersionedObjectMap<Haltestelle, HaltestelleVersion> getVersionedObjectMap() {
+        return this.versionedObjectMap;
+    }
+
+
+    private QuadTreeCoordinate getQuadTreeCoordinates(Coordinate coordinate) {
+        var coord = CoordinateConverter.convertToEpsg3857(coordinate);
+
+        return new QuadTreeCoordinate(coord.getE(), coord.getN());
+    }
+
+
+    private QuadTreeExtent getQuadTreeExtent(Extent extent) {
+        return new QuadTreeExtent(
+            this.getQuadTreeCoordinates(extent.getMinCoordinate()),
+            this.getQuadTreeCoordinates(extent.getMaxCoordinate())
+        );
+    }
+
+
+    @Override
+    public Haltestelle getElement(long id) {
+        return this.versionedObjectMap.getElement(id);
+    }
+
+
+    @Override
+    public HaltestelleVersion getVersion(long id) {
+        return this.versionedObjectMap.getVersion(id);
+    }
+
+
+    @Override
+    public Collection<HaltestelleVersion> getElementVersions(long elementId) {
+        return this.versionedObjectMap.getElementVersions(elementId);
+    }
+
+
+    @Override
+    public HaltestelleVersion getElementVersionAtDate(long elementId, LocalDate date) {
+        return this.versionedObjectMap.getElementVersionAtDate(elementId, date);
+    }
 }

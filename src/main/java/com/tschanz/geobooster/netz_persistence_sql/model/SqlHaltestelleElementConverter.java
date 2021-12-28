@@ -2,21 +2,22 @@ package com.tschanz.geobooster.netz_persistence_sql.model;
 
 import com.tschanz.geobooster.netz.model.Haltestelle;
 import com.tschanz.geobooster.util.service.ArrayHelper;
-import com.tschanz.geobooster.versioning_persistence_sql.model.SqlElementInfoConverter;
+import com.tschanz.geobooster.versioning_persistence_sql.model.SqlElementConverter;
 import lombok.SneakyThrows;
 
 import java.sql.ResultSet;
 
 
-public class SqlHaltestelleElementConverter {
+public class SqlHaltestelleElementConverter implements SqlResultsetConverter<Haltestelle> {
     public final static String COL_UIC = "UIC_CODE";
-    public final static String[] ALL_COLS = ArrayHelper.appendTo(SqlElementInfoConverter.ALL_COLS, COL_UIC);
+    public final static String[] ALL_COLS = ArrayHelper.appendTo(SqlElementConverter.ALL_COLS, COL_UIC);
 
 
     @SneakyThrows
-    public static Haltestelle fromResultSet(ResultSet row) {
+    @Override
+    public Haltestelle fromResultSet(ResultSet row) {
         return new Haltestelle(
-            SqlElementInfoConverter.fromResultSet(row),
+            SqlElementConverter.getId(row),
             row.getInt(COL_UIC)
         );
     }
