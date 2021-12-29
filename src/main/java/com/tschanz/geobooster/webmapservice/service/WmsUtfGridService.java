@@ -43,19 +43,19 @@ public class WmsUtfGridService {
 
         logger.info("searching hst versions...");
         List<HaltestelleVersion> hstVersions = mapRequest.hasLayerHaltestellen()
-            ? this.haltestelleRepo.readVersions(date, bbox)
+            ? this.haltestelleRepo.searchVersions(date, bbox)
             : Collections.emptyList();
         logger.info(String.format("found %d hst versions", hstVersions.size()));
 
         logger.info("searching vk versions...");
         List<VerkehrskanteVersion> vkVersions = mapRequest.hasLayerVerkehrskanten()
-            ? this.verkehrskanteRepo.readVersions(date, bbox, vmTypes)
+            ? this.verkehrskanteRepo.searchVersions(date, bbox, vmTypes)
             : Collections.emptyList();
         logger.info(String.format("found %d vk versions", vkVersions.size()));
 
         logger.info("searching tk versions...");
         List<TarifkanteVersion> tkVersions = mapRequest.hasLayerTarifkanten()
-            ? this.tarifkanteRepo.readVersions(date, bbox, vmTypes)
+            ? this.tarifkanteRepo.searchVersions(date, bbox, vmTypes)
             : Collections.emptyList();
         logger.info(String.format("found %d tk versions", tkVersions.size()));
 

@@ -96,7 +96,7 @@ public class VerkehrskanteCacheRepo implements VerkehrskanteRepo {
 
 
     @Override
-    public List<VerkehrskanteVersion> readVersions(LocalDate date, Extent extent, List<VerkehrsmittelTyp> vmTypes) {
+    public List<VerkehrskanteVersion> searchVersions(LocalDate date, Extent extent, List<VerkehrsmittelTyp> vmTypes) {
         return this.versionQuadTree
             .findItems(this.getQuadTreeExtent(extent.getMinCoordinate(), extent.getMaxCoordinate()))
             .stream()

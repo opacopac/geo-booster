@@ -2,6 +2,7 @@ package com.tschanz.geobooster.webmapservice.controller;
 
 import com.tschanz.geobooster.GbDataSourceProperties;
 import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
+import com.tschanz.geobooster.presentation.state.GbState;
 import com.tschanz.geobooster.webmapservice.model.GetMapRequest;
 import com.tschanz.geobooster.webmapservice.service.WmsPngService;
 import com.tschanz.geobooster.webmapservice.service.WmsUtfGridService;
@@ -32,6 +33,7 @@ public class WmsController {
     private final GbDataSourceProperties gbProperties;
     private final WmsUtfGridService wmsUtfGridService;
     private final WmsPngService wmsPngService;
+    private final GbState gbState;
 
 
     @GetMapping(
@@ -49,6 +51,7 @@ public class WmsController {
             CoordinateConverter.convertToEpsg4326(mapRequest.getBbox().getMaxCoordinate()).getLatitude(),
             CoordinateConverter.convertToEpsg4326(mapRequest.getBbox().getMaxCoordinate()).getLongitude()
         ));
+        this.gbState.incPngRequestCount();
 
         var fileName = this.getFilename(mapRequest) + ".png";
         response.setHeader(RESP_CONTENT_DISPO_KEY, RESP_CONTENT_DISPO_VALUE + fileName);
@@ -74,6 +77,7 @@ public class WmsController {
             CoordinateConverter.convertToEpsg4326(mapRequest.getBbox().getMaxCoordinate()).getLatitude(),
             CoordinateConverter.convertToEpsg4326(mapRequest.getBbox().getMaxCoordinate()).getLongitude()
         ));
+        this.gbState.incUtfGridRequestCount();
 
         var fileName = this.getFilename(mapRequest);
         response.setHeader(RESP_CONTENT_DISPO_KEY, RESP_CONTENT_DISPO_VALUE + fileName);

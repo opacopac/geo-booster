@@ -100,7 +100,7 @@ public class TarifkanteCacheRepo implements TarifkanteRepo {
 
 
     @Override
-    public List<TarifkanteVersion> readVersions(LocalDate date, Extent extent, List<VerkehrsmittelTyp> vmTypes) {
+    public List<TarifkanteVersion> searchVersions(LocalDate date, Extent extent, List<VerkehrsmittelTyp> vmTypes) {
         return this.versionQuadTree
             .findItems(this.getQuadTreeExtent(extent.getMinCoordinate(), extent.getMaxCoordinate()))
             .stream()

@@ -10,6 +10,6 @@ public class GeoBoosterApplication {
     @SneakyThrows
     public static void main(String[] args) {
         Class.forName("oracle.jdbc.OracleDriver");
-        var ctx = SpringApplication.run(GeoBoosterApplication.class, args);
+        SpringApplication.run(GeoBoosterApplication.class, args);
     }
 }

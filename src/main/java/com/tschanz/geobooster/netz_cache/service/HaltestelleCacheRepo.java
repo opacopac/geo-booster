@@ -61,7 +61,7 @@ public class HaltestelleCacheRepo implements HaltestelleRepo {
 
 
     @Override
-    public List<HaltestelleVersion> readVersions(LocalDate date, Extent extent) {
+    public List<HaltestelleVersion> searchVersions(LocalDate date, Extent extent) {
         return this.versionQuadTree.findItems(this.getQuadTreeExtent(extent)).stream()
             .map(QuadTreeItem::getItem)
             .filter(hstv -> date.isEqual(hstv.getGueltigVon()) || date.isAfter(hstv.getGueltigVon()))
