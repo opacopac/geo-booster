@@ -2,25 +2,25 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
-<AnchorPane prefHeight="400.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.tschanz.geobooster.presentation_jfx.viewcontroller.JfxMainViewController"
-            AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+<AnchorPane prefHeight="400.0" prefWidth="300.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.tschanz.geobooster.presentation_jfx.viewcontroller.JfxMainViewController">
     <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <center>
             <VBox spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                 <padding>
                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                 </padding>
-                <fx:include fx:id="connectionView" source="JfxConnectionView.fxml"/>
-                <Label text="Caching Stats"/>
-                <fx:include fx:id="cachingStatsView" source="JfxCachingStatsView.fxml"/>
-                <Label text="Serving Stats"/>
-                <fx:include fx:id="servingStatsView" source="JfxServingStatsView.fxml"/>
+                <fx:include fx:id="connectionView" source="JfxConnectionView.fxml" />
+                <Label text="Caching Stats" />
+                <fx:include fx:id="cachingStatsView" source="JfxCachingStatsView.fxml" />
+                <Label text="Serving Stats" />
+                <fx:include fx:id="servingStatsView" source="JfxServingStatsView.fxml" />
+                <ImageView fx:id="gbImageView" pickOnBounds="true" preserveRatio="true" />
             </VBox>
         </center>
         <bottom>
-            <fx:include fx:id="statusBarView" source="JfxStatusBarView.fxml"/>
+            <fx:include fx:id="statusBarView" source="JfxStatusBarView.fxml" />
         </bottom>
     </BorderPane>
 </AnchorPane>
