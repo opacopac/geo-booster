@@ -17,9 +17,13 @@ public class JfxServingStatsViewController implements ServingStatsViewPresenter 
         wmsStats$.subscribe(wmsStats -> {
             Platform.runLater(() -> {
                 if (wmsStats != null) {
-                    var pngRequests = String.valueOf(wmsStats.getPngRequests());
+                    var pngRequests = wmsStats.getPngRequests()
+                        + " / " + wmsStats.getLastNPngResponseAverage(10) + "ms"
+                        + " / " + wmsStats.getLastNPngResponseAverage(100) + "ms";
                     this.pngRequestsLabel.setText(pngRequests);
-                    var utfGridRequests = String.valueOf(wmsStats.getUtfGridRequests());
+                    var utfGridRequests = wmsStats.getUtfGridRequests()
+                        + " / " + wmsStats.getLastNUtfGridResponseAverage(10) + "ms"
+                        + " / " + wmsStats.getLastNUtfGridResponseAverage(100) + "ms";
                     this.utfGridRequestsLabel.setText(utfGridRequests);
                 }
             });

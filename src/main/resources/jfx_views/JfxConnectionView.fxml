@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <AnchorPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.tschanz.geobooster.presentation_jfx.viewcontroller.JfxConnectionViewController">
-    <HBox>
+    <HBox spacing="5">
         <ChoiceBox fx:id="connectionChoiceBox" onAction="#onConnectionSelected" />
         <Button mnemonicParsing="false" onAction="#onLoadDrButtonClicked" text="Load DR..."/>
     </HBox>

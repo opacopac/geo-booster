@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletResponse;
+import java.time.Instant;
 import java.util.Map;
 
 
@@ -43,20 +44,23 @@ public class WmsController {
     )
     @ResponseBody
     public byte[] wmsGetMapPngHandler(@RequestParam Map<String,String> allParams, HttpServletResponse response) {
-        var mapRequest = GetMapRequest.fromParams(allParams);
+        var startMs = Instant.now().toEpochMilli();
 
+        var mapRequest = GetMapRequest.fromParams(allParams);
         logger.info(String.format("PNG request for bbox %s,%s %s,%s",
             CoordinateConverter.convertToEpsg4326(mapRequest.getBbox().getMinCoordinate()).getLatitude(),
             CoordinateConverter.convertToEpsg4326(mapRequest.getBbox().getMinCoordinate()).getLongitude(),
             CoordinateConverter.convertToEpsg4326(mapRequest.getBbox().getMaxCoordinate()).getLatitude(),
             CoordinateConverter.convertToEpsg4326(mapRequest.getBbox().getMaxCoordinate()).getLongitude()
         ));
-        this.gbState.incPngRequestCount();
 
         var fileName = this.getFilename(mapRequest) + ".png";
         response.setHeader(RESP_CONTENT_DISPO_KEY, RESP_CONTENT_DISPO_VALUE + fileName);
 
         var pngResponse = this.wmsPngService.getResponse(mapRequest);
+
+        var msElapsed = Instant.now().toEpochMilli() - startMs;
+        this.gbState.addPngResponseTime(msElapsed);
 
         return pngResponse.getImgBytes();
     }
@@ -69,20 +73,23 @@ public class WmsController {
     )
     @ResponseBody
     public String wmsGetMapUtfGridHandler(@RequestParam Map<String,String> allParams, HttpServletResponse response) {
-        var mapRequest = GetMapRequest.fromParams(allParams);
+        var startMs = Instant.now().toEpochMilli();
 
+        var mapRequest = GetMapRequest.fromParams(allParams);
         logger.info(String.format("UTF grid request for bbox %s,%s %s,%s",
             CoordinateConverter.convertToEpsg4326(mapRequest.getBbox().getMinCoordinate()).getLatitude(),
             CoordinateConverter.convertToEpsg4326(mapRequest.getBbox().getMinCoordinate()).getLongitude(),
             CoordinateConverter.convertToEpsg4326(mapRequest.getBbox().getMaxCoordinate()).getLatitude(),
             CoordinateConverter.convertToEpsg4326(mapRequest.getBbox().getMaxCoordinate()).getLongitude()
         ));
-        this.gbState.incUtfGridRequestCount();
 
         var fileName = this.getFilename(mapRequest);
         response.setHeader(RESP_CONTENT_DISPO_KEY, RESP_CONTENT_DISPO_VALUE + fileName);
 
         var utfGridResponse = this.wmsUtfGridService.getResponse(mapRequest);
+
+        var msElapsed = Instant.now().toEpochMilli() - startMs;
+        this.gbState.addUtfGridResponseTime(msElapsed);
 
         return utfGridResponse.getText();
     }

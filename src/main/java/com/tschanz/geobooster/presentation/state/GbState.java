@@ -18,7 +18,7 @@ public class GbState {
     private final BehaviorSubject<String> progressText$ = BehaviorSubject.create();
     private final BehaviorSubject<List<String>> connectionList$ = BehaviorSubject.create();
     private final BehaviorSubject<GbDr> gbDr$ = BehaviorSubject.create();
-    private final BehaviorSubject<WmsStats> wmsStats$ = BehaviorSubject.create();
+    private final BehaviorSubject<WmsStats> wmsStats$ = BehaviorSubject.createDefault(new WmsStats());
 
 
     public void setProgressText(String text) {
@@ -38,23 +38,18 @@ public class GbState {
     }
 
 
-    public void incPngRequestCount() {
-        var oldWmsStats = this.getWmsStatsValue();
-        var newWmsStats = new WmsStats(oldWmsStats.getPngRequests() + 1, oldWmsStats.getUtfGridRequests());
-        this.wmsStats$.onNext(newWmsStats);
-    }
-
-
-    public void incUtfGridRequestCount() {
-        var oldWmsStats = this.getWmsStatsValue();
-        var newWmsStats = new WmsStats(oldWmsStats.getPngRequests(), oldWmsStats.getUtfGridRequests() + 1);
-        this.wmsStats$.onNext(newWmsStats);
-    }
-
-
-    private WmsStats getWmsStatsValue() {
+    public void addPngResponseTime(long responseTimeMs) {
         var wmsStats = wmsStats$.getValue();
+        wmsStats.addPngResponse(responseTimeMs);
 
-        return wmsStats != null ? wmsStats : new WmsStats(0, 0);
+        this.wmsStats$.onNext(wmsStats);
+    }
+
+
+    public void addUtfGridResponseTime(long responseTimeMs) {
+        var wmsStats = wmsStats$.getValue();
+        wmsStats.addUtfGridResponse(responseTimeMs);
+
+        this.wmsStats$.onNext(wmsStats);
     }
 }
