@@ -36,7 +36,7 @@ public class JfxGeoBoosterApplication extends Application {
         Parent root = fxmlLoader.load();
         JfxMainViewController jfxMainViewController = fxmlLoader.getController();
         jfxMainViewController.bindState(gbState);
-        jfxMainViewController.bindAction(gbActions);
+        jfxMainViewController.bindActions(gbActions);
         var icon = new Image(ICON_FILE);
         mainStage.getIcons().add(icon);
         mainStage.setTitle(WINDOW_TITLE);

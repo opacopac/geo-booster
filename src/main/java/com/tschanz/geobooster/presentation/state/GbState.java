@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 
 @Getter
 @Component
@@ -14,12 +16,19 @@ import org.springframework.stereotype.Component;
 public class GbState {
     private final BehaviorSubject<Boolean> isInProgress$ = BehaviorSubject.create();
     private final BehaviorSubject<String> progressText$ = BehaviorSubject.create();
+    private final BehaviorSubject<List<String>> connectionList$ = BehaviorSubject.create();
     private final BehaviorSubject<GbDr> gbDr$ = BehaviorSubject.create();
     private final BehaviorSubject<WmsStats> wmsStats$ = BehaviorSubject.create();
 
 
     public void setProgressText(String text) {
         this.setProgressText(text, true);
+    }
+
+
+    public void setErrorText(String text) {
+        // TODO: red
+        this.setProgressText(text, false);
     }
 
 
