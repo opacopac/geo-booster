@@ -44,7 +44,7 @@ public class WmsPngService {
         var date = mapRequest.getViewparams().getDate();
         var bbox = mapRequest.getBbox();
         var vmTypes = mapRequest.getViewparams().getTypes();
-        var verwaltungIds = mapRequest.getViewparams().getVerwaltungIds();
+        var verwaltungVersionIds = mapRequest.getViewparams().getVerwaltungVersionIds();
 
         logger.info("searching hst versions...");
         List<HaltestelleVersion> hstVersions = mapRequest.hasLayerHaltestellen()
@@ -54,13 +54,13 @@ public class WmsPngService {
 
         logger.info("searching vk versions...");
         List<VerkehrskanteVersion> vkVersions = mapRequest.hasLayerVerkehrskanten()
-            ? this.verkehrskanteRepo.searchVersions(date, bbox, vmTypes, verwaltungIds)
+            ? this.verkehrskanteRepo.searchVersions(date, bbox, vmTypes, verwaltungVersionIds)
             : Collections.emptyList();
         logger.info(String.format("found %d vk versions", vkVersions.size()));
 
         logger.info("searching tk versions...");
         List<TarifkanteVersion> tkVersions = mapRequest.hasLayerTarifkanten()
-            ? this.tarifkanteRepo.searchVersions(date, bbox, vmTypes, verwaltungIds)
+            ? this.tarifkanteRepo.searchVersions(date, bbox, vmTypes, verwaltungVersionIds)
             : Collections.emptyList();
         logger.info(String.format("found %d tk versions", tkVersions.size()));
 

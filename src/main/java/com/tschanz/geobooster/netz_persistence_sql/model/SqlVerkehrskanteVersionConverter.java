@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class SqlVerkehrskanteVersionConverter implements SqlResultsetConverter<VerkehrskanteVersion> {
     public final static String[] ALL_COLS = SqlVersionConverter.ALL_COLS;
 
-    public final Map<Long, List<VerkehrskanteAuspraegung>> vkasByVkEIdMap;
+    public final Map<Long, List<VerkehrskanteAuspraegung>> vkVkasMap;
 
 
     @Override
@@ -36,14 +36,14 @@ public class SqlVerkehrskanteVersionConverter implements SqlResultsetConverter<V
 
 
     private List<Long> getVerwaltungIds(long vkEId) {
-        return this.vkasByVkEIdMap.get(vkEId).stream()
-            .map(VerkehrskanteAuspraegung::getId)
+        return this.vkVkasMap.get(vkEId).stream()
+            .map(VerkehrskanteAuspraegung::getVerwaltungId)
             .collect(Collectors.toList());
     }
 
 
     private byte getVmBitmask(long vkEId) {
-        var vmTypes = this.vkasByVkEIdMap.get(vkEId).stream()
+        var vmTypes = this.vkVkasMap.get(vkEId).stream()
             .map(VerkehrskanteAuspraegung::getVerkehrsmittelTyp)
             .collect(Collectors.toList());
 

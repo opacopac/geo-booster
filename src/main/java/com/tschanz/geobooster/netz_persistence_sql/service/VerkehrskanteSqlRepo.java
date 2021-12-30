@@ -44,13 +44,13 @@ public class VerkehrskanteSqlRepo implements VerkehrskantePersistenceRepo {
     @SneakyThrows
     public Collection<VerkehrskanteVersion> readAllVersions() {
         // read vkas
-        var vkaEs = this.vkaPersistenceRepo.readAllElements();
+        var vkaList = this.vkaPersistenceRepo.readAllElements();
         //var vkaVList = this.vkaPersistenceRepo.readAllVersions(); // TODO: version map not needed?
-        var vkasByEIdMap = this.createVkasByVkEIdMap(vkaEs);
+        var vkVkasMap = this.createVkVkasMap(vkaList);
 
         var sqlReader = new SqlReader<>(
             this.connectionFactory,
-            new SqlVerkehrskanteVersionConverter(vkasByEIdMap),
+            new SqlVerkehrskanteVersionConverter(vkVkasMap),
             "%d vk versions loaded...",
             2
         );
@@ -63,21 +63,15 @@ public class VerkehrskanteSqlRepo implements VerkehrskantePersistenceRepo {
     }
 
 
-    private Map<Long, List<VerkehrskanteAuspraegung>> createVkasByVkEIdMap(Collection<VerkehrskanteAuspraegung> vkaList) {
-        Map<Long, List<VerkehrskanteAuspraegung>> vkasByVkEidMap = new HashMap<>();
+    private Map<Long, List<VerkehrskanteAuspraegung>> createVkVkasMap(Collection<VerkehrskanteAuspraegung> vkaList) {
+        Map<Long, List<VerkehrskanteAuspraegung>> vkVkasMap = new HashMap<>();
 
         vkaList.forEach(vka -> {
-            var vkEId = vka.getVerkehrskanteId();
-            var vkVkas = vkasByVkEidMap.get(vkEId);
-            if (vkVkas == null) {
-                vkVkas = new ArrayList<>();
-                vkVkas.add(vka);
-                vkasByVkEidMap.put(vkEId, vkVkas);
-            } else {
-                vkVkas.add(vka);
-            }
+            var vkId = vka.getVerkehrskanteId();
+            var vkVkas = vkVkasMap.computeIfAbsent(vkId, k -> new ArrayList<>());
+            vkVkas.add(vka);
         });
 
-        return vkasByVkEidMap;
+        return vkVkasMap;
     }
 }

@@ -8,6 +8,7 @@ import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
 import com.tschanz.geobooster.netz.model.*;
 import com.tschanz.geobooster.netz.service.HaltestelleRepo;
 import com.tschanz.geobooster.netz.service.VerkehrskanteRepo;
+import com.tschanz.geobooster.netz.service.VerwaltungRepo;
 import com.tschanz.geobooster.quadtree.model.AreaQuadTree;
 import com.tschanz.geobooster.quadtree.model.AreaQuadTreeItem;
 import com.tschanz.geobooster.quadtree.model.QuadTreeCoordinate;
@@ -40,6 +41,7 @@ public class VerkehrskanteCacheRepo implements VerkehrskanteRepo {
     private static final int MAX_TREE_DEPTH = 6;
 
     private final HaltestelleRepo hstRepo;
+    private final VerwaltungRepo verwaltungRepo;
     private VersionedObjectMap<Verkehrskante, VerkehrskanteVersion> versionedObjectMap;
     private AreaQuadTree<VerkehrskanteVersion> versionQuadTree;
 
@@ -96,7 +98,11 @@ public class VerkehrskanteCacheRepo implements VerkehrskanteRepo {
 
 
     @Override
-    public List<VerkehrskanteVersion> searchVersions(LocalDate date, Extent extent, List<VerkehrsmittelTyp> vmTypes, List<Long> verwaltungIds) {
+    public List<VerkehrskanteVersion> searchVersions(LocalDate date, Extent extent, List<VerkehrsmittelTyp> vmTypes, List<Long> verwaltungVersionIds) {
+        var verwaltungIds = verwaltungVersionIds.stream()
+            .map(verwVId -> this.verwaltungRepo.getVersion(verwVId).getElementId())
+            .collect(Collectors.toList());
+
         return this.versionQuadTree
             .findItems(this.getQuadTreeExtent(extent.getMinCoordinate(), extent.getMaxCoordinate()))
             .stream()

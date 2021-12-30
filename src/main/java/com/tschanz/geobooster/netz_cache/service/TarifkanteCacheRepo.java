@@ -9,6 +9,7 @@ import com.tschanz.geobooster.netz.model.*;
 import com.tschanz.geobooster.netz.service.HaltestelleRepo;
 import com.tschanz.geobooster.netz.service.TarifkanteRepo;
 import com.tschanz.geobooster.netz.service.VerkehrskanteRepo;
+import com.tschanz.geobooster.netz.service.VerwaltungRepo;
 import com.tschanz.geobooster.quadtree.model.AreaQuadTree;
 import com.tschanz.geobooster.quadtree.model.AreaQuadTreeItem;
 import com.tschanz.geobooster.quadtree.model.QuadTreeCoordinate;
@@ -42,6 +43,7 @@ public class TarifkanteCacheRepo implements TarifkanteRepo {
     private static final double MAX_COORD_Y = 6108322.79 + 1;
     private static final int MAX_TREE_DEPTH = 6;
 
+    private final VerwaltungRepo verwaltungRepo;
     private final HaltestelleRepo hstRepo;
     private final VerkehrskanteRepo vkRepo;
     private VersionedObjectMap<Tarifkante, TarifkanteVersion> versionedObjectMap;
@@ -100,7 +102,11 @@ public class TarifkanteCacheRepo implements TarifkanteRepo {
 
 
     @Override
-    public List<TarifkanteVersion> searchVersions(LocalDate date, Extent extent, List<VerkehrsmittelTyp> vmTypes, List<Long> verwaltungIds) {
+    public List<TarifkanteVersion> searchVersions(LocalDate date, Extent extent, List<VerkehrsmittelTyp> vmTypes, List<Long> verwaltungVersionIds) {
+        var verwaltungIds = verwaltungVersionIds.stream()
+            .map(verwVId -> this.verwaltungRepo.getVersion(verwVId).getElementId())
+            .collect(Collectors.toList());
+
         return this.versionQuadTree
             .findItems(this.getQuadTreeExtent(extent.getMinCoordinate(), extent.getMaxCoordinate()))
             .stream()
@@ -112,6 +118,7 @@ public class TarifkanteCacheRepo implements TarifkanteRepo {
             .collect(Collectors.toList());
     }
 
+    
     @Override
     public Haltestelle getStartHaltestelle(TarifkanteVersion tkVersion) {
         var tkE = this.getElement(tkVersion.getElementId());

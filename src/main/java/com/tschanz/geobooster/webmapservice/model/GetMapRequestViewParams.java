@@ -24,7 +24,7 @@ public class GetMapRequestViewParams {
     private static final String SUBPARAM_REFRESHCOUNTER = "REFRESH_COUNTER";
 
     private final List<VerkehrsmittelTyp> types;
-    private final List<Long> verwaltungIds;
+    private final List<Long> verwaltungVersionIds;
     private final LocalDate date;
     private final long refreshCounter;
 
