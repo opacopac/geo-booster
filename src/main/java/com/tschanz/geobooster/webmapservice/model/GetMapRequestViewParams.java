@@ -20,18 +20,21 @@ public class GetMapRequestViewParams {
     private static final String SUBPARAM_VALUE_SEPARATOR = "\\\\,";
     private static final String SUBPARAM_TYPES = "TYPEN";
     private static final String SUBPARAM_VERWALTUNGEN = "VERWALTUNGEN";
+    private static final String SUBPARAM_LINIEN_VARIANTEN = "LINIE_VARIANTEN";
     private static final String SUBPARAM_DATE = "DATE";
     private static final String SUBPARAM_REFRESHCOUNTER = "REFRESH_COUNTER";
 
     private final List<VerkehrsmittelTyp> types;
     private final List<Long> verwaltungVersionIds;
+    private final List<Long> linienVariantenIds; // TODO: or version-ids? => please check
     private final LocalDate date;
     private final long refreshCounter;
 
 
     public static GetMapRequestViewParams parse(String value) {
         List<VerkehrsmittelTyp> types = Collections.emptyList();
-        List<Long> verwaltungIds = Collections.emptyList();
+        List<Long> verwaltungVersionIds = Collections.emptyList();
+        List<Long> linienIds = Collections.emptyList();
         LocalDate date = null;
         long refreshCounter = 0;
 
@@ -48,8 +51,12 @@ public class GetMapRequestViewParams {
                     types = typeNames.stream().map(VerkehrsmittelTyp::valueOf).collect(Collectors.toList());
                     break;
                 case SUBPARAM_VERWALTUNGEN:
-                    var idStrings = Arrays.asList(name_value[1].split(SUBPARAM_VALUE_SEPARATOR));
-                    verwaltungIds = idStrings.stream().map(Long::parseLong).collect(Collectors.toList());
+                    var verwaltungVersionIdStrings = Arrays.asList(name_value[1].split(SUBPARAM_VALUE_SEPARATOR));
+                    verwaltungVersionIds = verwaltungVersionIdStrings.stream().map(Long::parseLong).collect(Collectors.toList());
+                    break;
+                case SUBPARAM_LINIEN_VARIANTEN:
+                    var linienIdStrings = Arrays.asList(name_value[1].split(SUBPARAM_VALUE_SEPARATOR));
+                    linienIds = linienIdStrings.stream().map(Long::parseLong).collect(Collectors.toList());
                     break;
                 case SUBPARAM_DATE:
                     date = LocalDate.parse(stripQuotes(name_value[1]));
@@ -62,7 +69,8 @@ public class GetMapRequestViewParams {
 
         return new GetMapRequestViewParams(
             types,
-            verwaltungIds,
+            verwaltungVersionIds,
+            linienIds,
             date,
             refreshCounter
         );
