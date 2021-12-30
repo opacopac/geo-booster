@@ -96,14 +96,15 @@ public class VerkehrskanteCacheRepo implements VerkehrskanteRepo {
 
 
     @Override
-    public List<VerkehrskanteVersion> searchVersions(LocalDate date, Extent extent, List<VerkehrsmittelTyp> vmTypes) {
+    public List<VerkehrskanteVersion> searchVersions(LocalDate date, Extent extent, List<VerkehrsmittelTyp> vmTypes, List<Long> verwaltungIds) {
         return this.versionQuadTree
             .findItems(this.getQuadTreeExtent(extent.getMinCoordinate(), extent.getMaxCoordinate()))
             .stream()
             .map(AreaQuadTreeItem::getItem)
             .filter(vkV -> date.isEqual(vkV.getGueltigVon()) || date.isAfter(vkV.getGueltigVon()))
             .filter(vkV -> date.isEqual(vkV.getGueltigBis()) || date.isBefore(vkV.getGueltigBis()))
-            .filter(vkV -> vkV.hasOneOfVmTypes(vmTypes))
+            .filter(vkV -> vmTypes.isEmpty() || vkV.hasOneOfVmTypes(vmTypes))
+            .filter(vkV -> verwaltungIds.isEmpty() || vkV.hasOneOfVerwaltungIds(verwaltungIds))
             .collect(Collectors.toList());
     }
 
@@ -128,7 +129,7 @@ public class VerkehrskanteCacheRepo implements VerkehrskanteRepo {
     public HaltestelleVersion getStartHaltestelleVersion(VerkehrskanteVersion vkVersion) {
         var vkE = this.getElement(vkVersion.getElementId());
 
-        return this.hstRepo.getElementVersionAtDate(vkE.getHaltestelle1Id(), vkVersion.getGueltigVon());
+        return this.hstRepo.getElementVersionAtDate(vkE.getHaltestelle1Id(), vkVersion.getGueltigBis());
     }
 
 
@@ -136,7 +137,7 @@ public class VerkehrskanteCacheRepo implements VerkehrskanteRepo {
     public HaltestelleVersion getEndHaltestelleVersion(VerkehrskanteVersion vkVersion) {
         var vkE = this.getElement(vkVersion.getElementId());
 
-        return this.hstRepo.getElementVersionAtDate(vkE.getHaltestelle2Id(), vkVersion.getGueltigVon());
+        return this.hstRepo.getElementVersionAtDate(vkE.getHaltestelle2Id(), vkVersion.getGueltigBis());
     }
 
 

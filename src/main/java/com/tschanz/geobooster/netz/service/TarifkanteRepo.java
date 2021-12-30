@@ -11,7 +11,7 @@ import java.util.List;
 
 
 public interface TarifkanteRepo extends VersionedObjectRepo<Tarifkante, TarifkanteVersion> {
-    List<TarifkanteVersion> searchVersions(LocalDate date, Extent extent, List<VerkehrsmittelTyp> vmTypes);
+    List<TarifkanteVersion> searchVersions(LocalDate date, Extent extent, List<VerkehrsmittelTyp> vmTypes, List<Long> verwaltungIds);
 
     Haltestelle getStartHaltestelle(TarifkanteVersion tkVersion);
 

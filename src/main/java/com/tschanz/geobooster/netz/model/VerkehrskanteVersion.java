@@ -28,4 +28,15 @@ public class VerkehrskanteVersion implements Version {
     public boolean hasOneOfVmTypes(List<VerkehrsmittelTyp> vmTypes) {
         return (VerkehrsmittelTyp.getBitMask(vmTypes) & this.vmTypeBitmask) > 0;
     }
+
+
+    public boolean hasOneOfVerwaltungIds(List<Long> verwaltungIds) {
+        for (var verwaltungId: verwaltungIds) {
+            if (this.verwaltungIds.contains(verwaltungId)) {
+                return true;
+            }
+        };
+
+        return false;
+    }
 }

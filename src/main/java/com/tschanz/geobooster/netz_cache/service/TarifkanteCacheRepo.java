@@ -100,14 +100,15 @@ public class TarifkanteCacheRepo implements TarifkanteRepo {
 
 
     @Override
-    public List<TarifkanteVersion> searchVersions(LocalDate date, Extent extent, List<VerkehrsmittelTyp> vmTypes) {
+    public List<TarifkanteVersion> searchVersions(LocalDate date, Extent extent, List<VerkehrsmittelTyp> vmTypes, List<Long> verwaltungIds) {
         return this.versionQuadTree
             .findItems(this.getQuadTreeExtent(extent.getMinCoordinate(), extent.getMaxCoordinate()))
             .stream()
             .map(AreaQuadTreeItem::getItem)
             .filter(tkV -> date.isEqual(tkV.getGueltigVon()) || date.isAfter(tkV.getGueltigVon()))
             .filter(tkV -> date.isEqual(tkV.getGueltigBis()) || date.isBefore(tkV.getGueltigBis()))
-            .filter(tkV -> this.hasOneOfVmTypes(tkV, vmTypes))
+            .filter(tkV -> vmTypes.isEmpty() || this.hasOneOfVmTypes(tkV, vmTypes))
+            .filter(tkV -> verwaltungIds.isEmpty() || this.hasOneOfVerwaltungIds(tkV, verwaltungIds))
             .collect(Collectors.toList());
     }
 
@@ -131,7 +132,7 @@ public class TarifkanteCacheRepo implements TarifkanteRepo {
     public HaltestelleVersion getStartHaltestelleVersion(TarifkanteVersion tkVersion) {
         var tkE = this.getElement(tkVersion.getElementId());
 
-        return this.hstRepo.getElementVersionAtDate(tkE.getHaltestelle1Id(), tkVersion.getGueltigVon());
+        return this.hstRepo.getElementVersionAtDate(tkE.getHaltestelle1Id(), tkVersion.getGueltigBis());
     }
 
 
@@ -139,7 +140,7 @@ public class TarifkanteCacheRepo implements TarifkanteRepo {
     public HaltestelleVersion getEndHaltestelleVersion(TarifkanteVersion tkVersion) {
         var tkE = this.getElement(tkVersion.getElementId());
 
-        return this.hstRepo.getElementVersionAtDate(tkE.getHaltestelle2Id(), tkVersion.getGueltigVon());
+        return this.hstRepo.getElementVersionAtDate(tkE.getHaltestelle2Id(), tkVersion.getGueltigBis());
     }
 
 
@@ -168,20 +169,36 @@ public class TarifkanteCacheRepo implements TarifkanteRepo {
     private List<VerkehrskanteVersion> getVerkehrskanteVersions(TarifkanteVersion tkVersion) {
         return tkVersion.getVerkehrskanteIds()
             .stream()
-            .map(vkId -> this.vkRepo.getElementVersionAtDate(vkId, tkVersion.getGueltigVon()))
+            .map(vkId -> this.vkRepo.getElementVersionAtDate(vkId, tkVersion.getGueltigBis()))
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
     }
 
 
     private boolean hasOneOfVmTypes(TarifkanteVersion tkVersion, List<VerkehrsmittelTyp> vmTypes) {
-        var vkVmTypes = this.getVerkehrskanteVersions(tkVersion)
+        var tkVmTypes = this.getVerkehrskanteVersions(tkVersion)
             .stream()
             .flatMap(vkv -> vkv.getVmTypes().stream())
             .collect(Collectors.toList());
 
-        var vmTypeBitmask = VerkehrsmittelTyp.getBitMask(vkVmTypes);
+        var vmTypeBitmask = VerkehrsmittelTyp.getBitMask(tkVmTypes);
         return (VerkehrsmittelTyp.getBitMask(vmTypes) & vmTypeBitmask) > 0;
+    }
+
+
+    private boolean hasOneOfVerwaltungIds(TarifkanteVersion tkVersion, List<Long> verwaltungIds) {
+        var tkVerwaltungen = this.getVerkehrskanteVersions(tkVersion)
+            .stream()
+            .flatMap(vkv -> vkv.getVerwaltungIds().stream())
+            .collect(Collectors.toList());
+
+        for (var verwaltungId: verwaltungIds) {
+            if (tkVerwaltungen.contains(verwaltungId)) {
+                return true;
+            }
+        };
+
+        return false;
     }
 
 
