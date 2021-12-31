@@ -212,10 +212,15 @@ public class TarifkanteCacheRepo implements TarifkanteRepo {
     private QuadTreeExtent getQuadTreeExtent(Coordinate startCoordinate, Coordinate endCoordinate) {
         var startCoord = CoordinateConverter.convertToEpsg3857(startCoordinate);
         var endCoord = CoordinateConverter.convertToEpsg3857(endCoordinate);
-
-        return new QuadTreeExtent(
-            new QuadTreeCoordinate(startCoord.getE(), startCoord.getN()),
-            new QuadTreeCoordinate(endCoord.getE(), endCoord.getN())
+        var minCoord = new QuadTreeCoordinate(
+            Math.min(startCoord.getE(), endCoord.getE()),
+            Math.min(startCoord.getN(), endCoord.getN())
         );
+        var maxCoord = new QuadTreeCoordinate(
+            Math.max(startCoord.getE(), endCoord.getE()),
+            Math.max(startCoord.getN(), endCoord.getN())
+        );
+
+        return new QuadTreeExtent(minCoord, maxCoord);
     }
 }

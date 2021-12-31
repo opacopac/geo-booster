@@ -103,6 +103,17 @@ public class VerkehrskanteCacheRepo implements VerkehrskanteRepo {
             .map(verwVId -> this.verwaltungRepo.getVersion(verwVId).getElementId())
             .collect(Collectors.toList());
 
+        var vkvs = this.versionQuadTree
+            .findItems(this.getQuadTreeExtent(extent.getMinCoordinate(), extent.getMaxCoordinate()))
+            .stream()
+            .map(AreaQuadTreeItem::getItem)
+            .collect(Collectors.toList());
+
+        var vkeIds = vkvs.stream().map(VerkehrskanteVersion::getElementId).collect(Collectors.toList());
+        var kiesenUttigen = vkeIds.contains(1646591L);
+        var wichtrachKiesen = vkeIds.contains(1652195L);
+        var bernMuensingen = vkeIds.contains(1652027L);
+
         return this.versionQuadTree
             .findItems(this.getQuadTreeExtent(extent.getMinCoordinate(), extent.getMaxCoordinate()))
             .stream()
@@ -172,10 +183,15 @@ public class VerkehrskanteCacheRepo implements VerkehrskanteRepo {
     private QuadTreeExtent getQuadTreeExtent(Coordinate startCoordinate, Coordinate endCoordinate) {
         var startCoord = CoordinateConverter.convertToEpsg3857(startCoordinate);
         var endCoord = CoordinateConverter.convertToEpsg3857(endCoordinate);
-
-        return new QuadTreeExtent(
-            new QuadTreeCoordinate(startCoord.getE(), startCoord.getN()),
-            new QuadTreeCoordinate(endCoord.getE(), endCoord.getN())
+        var minCoord = new QuadTreeCoordinate(
+            Math.min(startCoord.getE(), endCoord.getE()),
+            Math.min(startCoord.getN(), endCoord.getN())
         );
+        var maxCoord = new QuadTreeCoordinate(
+            Math.max(startCoord.getE(), endCoord.getE()),
+            Math.max(startCoord.getN(), endCoord.getN())
+        );
+
+        return new QuadTreeExtent(minCoord, maxCoord);
     }
 }
