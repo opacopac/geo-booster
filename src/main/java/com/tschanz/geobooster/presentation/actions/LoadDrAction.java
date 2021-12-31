@@ -18,12 +18,12 @@ public class LoadDrAction {
     private final GbState gbState;
 
 
-    public void loadDr() {
+    public void loadDr(boolean useQuickStartDr) {
         new Thread(() -> {
             try {
                 this.gbState.setProgressText("loading dr...");
                 GbDr dr;
-                if (this.gbDrJsonRepo.hasQuickStartDr()) {
+                if (useQuickStartDr && this.gbDrJsonRepo.hasQuickStartDr()) {
                     this.gbState.setProgressText("loading json data...");
                     dr = this.gbDrJsonRepo.readDr();
                     this.gbState.setProgressText("loading json data done");
@@ -35,6 +35,7 @@ public class LoadDrAction {
                     this.gbState.setProgressText("saving quick start dr...");
                     this.gbDrJsonRepo.save(dr);
                     this.gbState.setProgressText("saving quick start dr done");
+                    this.gbState.getHasQuickStartDr$().onNext(true);
                 }
 
                 this.gbState.setProgressText("init repos...");

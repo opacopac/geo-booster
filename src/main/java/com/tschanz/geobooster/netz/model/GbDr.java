@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
+import java.util.Collections;
 
 
 @Getter
@@ -19,4 +20,20 @@ public class GbDr {
     private final Collection<VerkehrskanteVersion> verkehrskanteVersions;
     private final Collection<Tarifkante> tarifkanten;
     private final Collection<TarifkanteVersion> tarifkanteVersions;
+
+
+    public static GbDr createEmpty() {
+        return new GbDr(
+            Collections.emptyList(),
+            Collections.emptyList(),
+            Collections.emptyList(),
+            Collections.emptyList(),
+            Collections.emptyList(),
+            Collections.emptyList(),
+            Collections.emptyList(),
+            Collections.emptyList(),
+            Collections.emptyList(),
+            Collections.emptyList()
+        );
+    }
 }

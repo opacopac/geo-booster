@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.tschanz.geobooster.netz.model.GbDr;
+import com.tschanz.geobooster.presentation.service.QuickStartDrSelector;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
@@ -17,19 +18,27 @@ import java.util.zip.ZipOutputStream;
 
 @Service
 @RequiredArgsConstructor
-public class GbDrJsonRepo {
-    private final static String GBDR_ZIP_FILE = "gbdr.zip";
-    private final static String GBDR_JSON_FILE = "gbdr.json";
+public class GbDrJsonRepo implements QuickStartDrSelector {
+    private int quickStartDrIdx = -1;
+
+    private final static String GBDR_ZIP_FILE = "gbdr_%d.zip";
+    private final static String GBDR_JSON_FILE = "gbdr_%d.json";
+
+
+    public void selectQuickStartDr(int index) {
+        this.quickStartDrIdx = index;
+    }
 
 
     public boolean hasQuickStartDr() {
-        return new File(GBDR_ZIP_FILE).exists();
+        var filename = String.format(GBDR_ZIP_FILE, this.quickStartDrIdx);
+        return new File(filename).exists();
     }
 
 
     @SneakyThrows
     public GbDr readDr() {
-        var fileInputStream = new FileInputStream(GBDR_ZIP_FILE);
+        var fileInputStream = new FileInputStream(String.format(GBDR_ZIP_FILE, this.quickStartDrIdx));
         var zipInputStream = new ZipInputStream(fileInputStream);
         zipInputStream.getNextEntry();
 
@@ -47,9 +56,9 @@ public class GbDrJsonRepo {
 
     @SneakyThrows
     public void save(GbDr dr) {
-        var fileOutputStream = new FileOutputStream(GBDR_ZIP_FILE);
+        var fileOutputStream = new FileOutputStream(String.format(GBDR_ZIP_FILE, this.quickStartDrIdx));
         var zipOutputStream = new ZipOutputStream(fileOutputStream);
-        zipOutputStream.putNextEntry(new ZipEntry(GBDR_JSON_FILE));
+        zipOutputStream.putNextEntry(new ZipEntry(String.format(GBDR_JSON_FILE, this.quickStartDrIdx)));
 
         JsonWriter writer = new JsonWriter(new OutputStreamWriter(zipOutputStream, StandardCharsets.UTF_8));
         var gson = new Gson();
