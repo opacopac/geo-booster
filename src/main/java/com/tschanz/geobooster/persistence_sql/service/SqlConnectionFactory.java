@@ -12,6 +12,7 @@ import java.sql.DriverManager;
 @RequiredArgsConstructor
 public class SqlConnectionFactory {
     private final SqlConnectionPropertyProvider propertyProvider;
+    private final static int FETCH_SIZE = 10000;
 
 
     @SneakyThrows
@@ -29,6 +30,7 @@ public class SqlConnectionFactory {
         connection.setSchema(properties.getSchema());
 
         var statement = connection.createStatement();
+        statement.setFetchSize(FETCH_SIZE);
 
         return new SqlConnection(connection, statement, properties);
     }
