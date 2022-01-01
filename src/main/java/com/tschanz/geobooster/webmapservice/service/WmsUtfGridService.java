@@ -41,6 +41,7 @@ public class WmsUtfGridService {
         var bbox = mapRequest.getBbox();
         var vmTypes = mapRequest.getViewparams().getTypes();
         var verwaltungVersionIds = mapRequest.getViewparams().getVerwaltungVersionIds();
+        var showTerminiert = mapRequest.getViewparams().isShowTerminiert();
 
         logger.info("searching hst versions...");
         List<HaltestelleVersion> hstVersions = mapRequest.hasLayerHaltestellen()
@@ -50,7 +51,7 @@ public class WmsUtfGridService {
 
         logger.info("searching vk versions...");
         List<VerkehrskanteVersion> vkVersions = mapRequest.hasLayerVerkehrskanten()
-            ? this.verkehrskanteRepo.searchVersions(date, bbox, vmTypes, verwaltungVersionIds)
+            ? this.verkehrskanteRepo.searchVersions(date, bbox, vmTypes, verwaltungVersionIds, showTerminiert)
             : Collections.emptyList();
         logger.info(String.format("found %d vk versions", vkVersions.size()));
 

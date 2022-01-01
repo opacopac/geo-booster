@@ -41,7 +41,7 @@ public class UtfGridVerkehrskanteConverter {
                 new KeyValue<>("HS2_LNG", hst2V.getCoordinate().getLongitude()),
                 new KeyValue<>("GUELTIG_VON", vkVersion.getGueltigVon()),
                 new KeyValue<>("GUELTIG_BIS", vkVersion.getGueltigBis()),
-                new KeyValue<>("TERMINIERT_PER", null) // TODO
+                new KeyValue<>("TERMINIERT_PER", vkVersion.getTerminiertPer())
             )
         );
     }

@@ -14,7 +14,10 @@ public class JsonUtfGridService implements UtfGridService {
     @Override
     public String createJson(UtfGrid utfGrid) {
         var utfGridJson = JsonUtfGridConverter.toJson(utfGrid);
-        var gson = new GsonBuilder().setPrettyPrinting().create();
+        var gson = new GsonBuilder()
+            .serializeNulls()
+            .setPrettyPrinting()
+            .create();
 
         return gson.toJson(utfGridJson);
     }

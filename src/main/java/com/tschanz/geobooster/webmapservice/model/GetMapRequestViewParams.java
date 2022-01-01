@@ -22,12 +22,14 @@ public class GetMapRequestViewParams {
     private static final String SUBPARAM_VERWALTUNGEN = "VERWALTUNGEN";
     private static final String SUBPARAM_LINIEN_VARIANTEN = "LINIE_VARIANTEN";
     private static final String SUBPARAM_DATE = "DATE";
+    private static final String SUBPARAM_TERMINIERT = "TERMINIERT";
     private static final String SUBPARAM_REFRESHCOUNTER = "REFRESH_COUNTER";
 
     private final List<VerkehrsmittelTyp> types;
     private final List<Long> verwaltungVersionIds;
     private final List<Long> linienVariantenIds; // TODO: or version-ids? => please check
     private final LocalDate date;
+    private final boolean showTerminiert;
     private final long refreshCounter;
 
 
@@ -36,6 +38,7 @@ public class GetMapRequestViewParams {
         List<Long> verwaltungVersionIds = Collections.emptyList();
         List<Long> linienIds = Collections.emptyList();
         LocalDate date = null;
+        var showTerminiert = false;
         long refreshCounter = 0;
 
         var subparams = value.split(SUBPARAM_SEPARATOR);
@@ -61,6 +64,9 @@ public class GetMapRequestViewParams {
                 case SUBPARAM_DATE:
                     date = LocalDate.parse(stripQuotes(name_value[1]));
                     break;
+                case SUBPARAM_TERMINIERT:
+                    showTerminiert = true;
+                    break;
                 case SUBPARAM_REFRESHCOUNTER:
                     refreshCounter = Long.parseLong(name_value[1]);
                     break;
@@ -72,6 +78,7 @@ public class GetMapRequestViewParams {
             verwaltungVersionIds,
             linienIds,
             date,
+            showTerminiert,
             refreshCounter
         );
     }

@@ -16,7 +16,7 @@ class VerkehrskanteVersionTests {
     @Test
     void test_hasOneOfVmTypes_single() {
         var vkVmTypes = VerkehrsmittelTyp.getBitMask(Arrays.asList(VerkehrsmittelTyp.BAHN, VerkehrsmittelTyp.BUS));
-        var vkV = new VerkehrskanteVersion(0, 0, LocalDate.now(), LocalDate.now(), Collections.emptyList(), vkVmTypes);
+        var vkV = new VerkehrskanteVersion(0, 0, LocalDate.now(), LocalDate.now(), null, Collections.emptyList(), vkVmTypes);
 
         var result1 = vkV.hasOneOfVmTypes(Collections.singletonList(VerkehrsmittelTyp.BAHN));
         var result2 = vkV.hasOneOfVmTypes(Collections.singletonList(VerkehrsmittelTyp.BUS));
@@ -31,7 +31,7 @@ class VerkehrskanteVersionTests {
     @Test
     void test_hasOneOfVmTypes_multi() {
         var vkVmTypes = VerkehrsmittelTyp.getBitMask(Arrays.asList(VerkehrsmittelTyp.BAHN, VerkehrsmittelTyp.BUS));
-        var vkV = new VerkehrskanteVersion(0, 0, LocalDate.now(), LocalDate.now(), Collections.emptyList(), vkVmTypes);
+        var vkV = new VerkehrskanteVersion(0, 0, LocalDate.now(), LocalDate.now(), null, Collections.emptyList(), vkVmTypes);
 
         var result1 = vkV.hasOneOfVmTypes(Arrays.asList(VerkehrsmittelTyp.BAHN, VerkehrsmittelTyp.SCHIFF));
         var result2 = vkV.hasOneOfVmTypes(Arrays.asList(VerkehrsmittelTyp.TRAM, VerkehrsmittelTyp.SCHIFF));

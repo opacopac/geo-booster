@@ -98,7 +98,13 @@ public class VerkehrskanteCacheRepo implements VerkehrskanteRepo {
 
 
     @Override
-    public List<VerkehrskanteVersion> searchVersions(LocalDate date, Extent extent, List<VerkehrsmittelTyp> vmTypes, List<Long> verwaltungVersionIds) {
+    public List<VerkehrskanteVersion> searchVersions(
+        LocalDate date,
+        Extent extent,
+        List<VerkehrsmittelTyp> vmTypes,
+        List<Long> verwaltungVersionIds,
+        boolean showTerminiert
+    ) {
         var verwaltungIds = verwaltungVersionIds.stream()
             .map(verwVId -> this.verwaltungRepo.getVersion(verwVId).getElementId())
             .collect(Collectors.toList());
@@ -118,10 +124,11 @@ public class VerkehrskanteCacheRepo implements VerkehrskanteRepo {
             .findItems(this.getQuadTreeExtent(extent.getMinCoordinate(), extent.getMaxCoordinate()))
             .stream()
             .map(AreaQuadTreeItem::getItem)
-            .filter(vkV -> date.isEqual(vkV.getGueltigVon()) || date.isAfter(vkV.getGueltigVon()))
-            .filter(vkV -> date.isEqual(vkV.getGueltigBis()) || date.isBefore(vkV.getGueltigBis()))
+            .filter(vkV -> date.isAfter(vkV.getGueltigVon()) || date.isEqual(vkV.getGueltigVon()))
+            .filter(vkV -> date.isBefore(vkV.getGueltigBis()) || date.isEqual(vkV.getGueltigBis()))
             .filter(vkV -> vmTypes.isEmpty() || vkV.hasOneOfVmTypes(vmTypes))
             .filter(vkV -> verwaltungIds.isEmpty() || vkV.hasOneOfVerwaltungIds(verwaltungIds))
+            .filter(vkV -> showTerminiert || vkV.getTerminiertPer() == null || vkV.getTerminiertPer().isAfter(date))
             .collect(Collectors.toList());
     }
 

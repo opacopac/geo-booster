@@ -16,6 +16,7 @@ public class VerkehrskanteVersion implements Version {
     private final long elementId;
     private final LocalDate gueltigVon;
     private final LocalDate gueltigBis;
+    private final LocalDate terminiertPer;
     private final Collection<Long> verwaltungIds;
     private final byte vmTypeBitmask;
 
