@@ -1,25 +1,27 @@
 package com.tschanz.geobooster.netz.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import java.util.Collection;
 import java.util.Collections;
 
 
 @Getter
-@RequiredArgsConstructor
+@Setter
+@AllArgsConstructor
 public class GbDr {
-    private final Collection<Betreiber> betreiber;
-    private final Collection<BetreiberVersion> betreiberVersions;
-    private final Collection<Verwaltung> verwaltungen;
-    private final Collection<VerwaltungVersion> verwaltungVersions;
-    private final Collection<Haltestelle> haltestellen;
-    private final Collection<HaltestelleVersion> haltestelleVersions;
-    private final Collection<Verkehrskante> verkehrskanten;
-    private final Collection<VerkehrskanteVersion> verkehrskanteVersions;
-    private final Collection<Tarifkante> tarifkanten;
-    private final Collection<TarifkanteVersion> tarifkanteVersions;
+    private Collection<Betreiber> betreiber;
+    private Collection<BetreiberVersion> betreiberVersions;
+    private Collection<Verwaltung> verwaltungen;
+    private Collection<VerwaltungVersion> verwaltungVersions;
+    private Collection<Haltestelle> haltestellen;
+    private Collection<HaltestelleVersion> haltestelleVersions;
+    private Collection<Verkehrskante> verkehrskanten;
+    private Collection<VerkehrskanteVersion> verkehrskanteVersions;
+    private Collection<Tarifkante> tarifkanten;
+    private Collection<TarifkanteVersion> tarifkanteVersions;
 
 
     public static GbDr createEmpty() {
