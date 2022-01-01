@@ -1,8 +1,6 @@
 package com.tschanz.geobooster.presentation.actions;
 
-import com.tschanz.geobooster.netz.model.GbDr;
 import com.tschanz.geobooster.netz.service.GbDrRepo;
-import com.tschanz.geobooster.netz_persistence_json.service.GbDrJsonRepo;
 import com.tschanz.geobooster.netz_persistence_sql.service.GbDrSqlRepo;
 import com.tschanz.geobooster.presentation.state.GbState;
 import lombok.RequiredArgsConstructor;
@@ -13,30 +11,16 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class LoadDrAction {
     private final GbDrSqlRepo gbDrSqlRepo;
-    private final GbDrJsonRepo gbDrJsonRepo;
     private final GbDrRepo gbDrRepo;
     private final GbState gbState;
 
 
-    public void loadDr(boolean useQuickStartDr) {
+    public void loadDr() {
         new Thread(() -> {
             try {
                 this.gbState.setProgressText("loading dr...");
-                GbDr dr;
-                if (useQuickStartDr && this.gbDrJsonRepo.hasQuickStartDr()) {
-                    this.gbState.setProgressText("loading json data...");
-                    dr = this.gbDrJsonRepo.readDr();
-                    this.gbState.setProgressText("loading json data done");
-                } else {
-                    this.gbState.setProgressText("loading sql data...");
-                    dr = this.gbDrSqlRepo.loadDr();
-                    this.gbState.setProgressText("loading sql data done");
-
-                    this.gbState.setProgressText("saving quick start dr...");
-                    this.gbDrJsonRepo.save(dr);
-                    this.gbState.setProgressText("saving quick start dr done");
-                    this.gbState.getHasQuickStartDr$().onNext(true);
-                }
+                var dr = this.gbDrSqlRepo.loadDr();
+                this.gbState.setProgressText("loading dr done");
 
                 this.gbState.setProgressText("init repos...");
                 this.gbDrRepo.init(dr);

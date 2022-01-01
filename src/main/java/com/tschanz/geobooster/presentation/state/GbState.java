@@ -19,7 +19,6 @@ public class GbState {
     private final BehaviorSubject<String> progressText$ = BehaviorSubject.create();
     private final BehaviorSubject<List<String>> connectionList$ = BehaviorSubject.createDefault(Collections.emptyList());
     private final BehaviorSubject<Integer> selectedConnection$ = BehaviorSubject.createDefault(-1);
-    private final BehaviorSubject<Boolean> hasQuickStartDr$ = BehaviorSubject.createDefault(false);
     private final BehaviorSubject<GbDr> gbDr$ = BehaviorSubject.createDefault(GbDr.createEmpty());
     private final BehaviorSubject<WmsStats> wmsStats$ = BehaviorSubject.createDefault(new WmsStats());
 

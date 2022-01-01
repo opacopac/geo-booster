@@ -6,5 +6,5 @@ import java.util.List;
 
 
 public interface ConnectionViewPresenter {
-    void bindState(Observable<List<String>> connectionList$, Observable<Boolean> hasQuickStartDr$);
+    void bindState(Observable<List<String>> connectionList$);
 }
