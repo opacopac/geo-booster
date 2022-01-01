@@ -8,7 +8,7 @@ import java.sql.ResultSet;
 
 
 public class SqlBetreiberVersionConverter implements SqlResultsetConverter<BetreiberVersion> {
-    public final static String[] ALL_COLS = SqlVersionConverter.ALL_COLS;
+    public final static String[] SELECT_COLS = SqlVersionConverter.SELECT_COLS;
 
 
     @Override

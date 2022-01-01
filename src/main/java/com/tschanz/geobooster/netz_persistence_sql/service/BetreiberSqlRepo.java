@@ -30,7 +30,7 @@ public class BetreiberSqlRepo implements BetreiberPersistenceRepo {
         );
         var query = String.format(
             "SELECT %s FROM N_BETREIBER_E",
-            String.join(",", SqlBetreiberElementConverter.ALL_COLS)
+            String.join(",", SqlBetreiberElementConverter.SELECT_COLS)
         );
 
         return sqlReader.read(query);
@@ -48,7 +48,7 @@ public class BetreiberSqlRepo implements BetreiberPersistenceRepo {
         );
         var query = String.format(
             "SELECT %s FROM N_BETREIBER_V",
-            String.join(",", SqlBetreiberVersionConverter.ALL_COLS)
+            String.join(",", SqlBetreiberVersionConverter.SELECT_COLS)
         );
 
         return sqlReader.read(query);

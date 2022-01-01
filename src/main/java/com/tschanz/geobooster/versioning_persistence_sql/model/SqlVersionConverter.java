@@ -12,7 +12,7 @@ public class SqlVersionConverter {
     public final static String COL_IDELEMENT = "ID_ELEMENT";
     public final static String COL_GUELTIGVON = "GUELTIG_VON";
     public final static String COL_GUELTIGBIS = "GUELTIG_BIS";
-    public final static String[] ALL_COLS = {COL_ID, COL_IDELEMENT, COL_GUELTIGVON, COL_GUELTIGBIS};
+    public final static String[] SELECT_COLS = {COL_ID, COL_IDELEMENT, COL_GUELTIGVON, COL_GUELTIGBIS};
 
 
     @SneakyThrows

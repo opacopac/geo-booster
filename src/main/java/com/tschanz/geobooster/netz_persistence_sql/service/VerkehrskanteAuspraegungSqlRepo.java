@@ -30,7 +30,7 @@ public class VerkehrskanteAuspraegungSqlRepo implements VerkehrskanteAuspraegung
         );
         var query = String.format(
             "SELECT %s FROM N_VERKEHRS_KANTE_AUSPR_E",
-            String.join(",", SqlVerkehrskanteAuspraegungElementConverter.ALL_COLS)
+            String.join(",", SqlVerkehrskanteAuspraegungElementConverter.SELECT_COLS)
         );
 
         return sqlReader.read(query);
@@ -48,7 +48,7 @@ public class VerkehrskanteAuspraegungSqlRepo implements VerkehrskanteAuspraegung
         );
         var query = String.format(
             "SELECT %s FROM N_VERKEHRS_KANTE_AUSPR_V",
-            String.join(",", SqlVerkehrskanteAuspraegungVersionConverter.ALL_COLS)
+            String.join(",", SqlVerkehrskanteAuspraegungVersionConverter.SELECT_COLS)
         );
 
 

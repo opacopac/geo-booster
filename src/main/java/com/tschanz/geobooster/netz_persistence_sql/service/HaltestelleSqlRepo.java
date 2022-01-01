@@ -30,7 +30,7 @@ public class HaltestelleSqlRepo implements HaltestellenPersistenceRepo {
         );
         var query = String.format(
             "SELECT %s FROM N_HALTESTELLE_E",
-            String.join(",", SqlHaltestelleElementConverter.ALL_COLS)
+            String.join(",", SqlHaltestelleElementConverter.SELECT_COLS)
         );
 
         return sqlReader.read(query);
@@ -48,7 +48,7 @@ public class HaltestelleSqlRepo implements HaltestellenPersistenceRepo {
         );
         var query = String.format(
             "SELECT %s FROM N_HALTESTELLE_V",
-            String.join(",", SqlHaltestelleVersionConverter.ALL_COLS)
+            String.join(",", SqlHaltestelleVersionConverter.SELECT_COLS)
         );
 
         return sqlReader.read(query);

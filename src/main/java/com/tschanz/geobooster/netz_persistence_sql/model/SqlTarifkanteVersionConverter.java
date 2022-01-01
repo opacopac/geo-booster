@@ -10,37 +10,25 @@ import lombok.SneakyThrows;
 import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 
 @RequiredArgsConstructor
 public class SqlTarifkanteVersionConverter implements SqlResultsetConverter<TarifkanteVersion> {
     public final static String COL_TERMINIERT_PER = "TERMINIERT_PER";
-    public final static String[] ALL_COLS = ArrayHelper.appendTo(SqlVersionConverter.ALL_COLS, COL_TERMINIERT_PER);
-
-    public final Map<Long, List<Long>> tkVkMap;
+    public final static String[] SELECT_COLS = ArrayHelper.appendTo(SqlVersionConverter.SELECT_COLS, COL_TERMINIERT_PER);
 
 
     @SneakyThrows
     public TarifkanteVersion fromResultSet(ResultSet row) {
-        var id = SqlVersionConverter.getId(row);
-        var vkIds = tkVkMap.get(id);
-        if (vkIds == null) {
-            vkIds = Collections.emptyList();
-        }
-
         return new TarifkanteVersion(
-            id,
+            SqlVersionConverter.getId(row),
             SqlVersionConverter.getElementId(row),
             SqlVersionConverter.getGueltigVon(row),
             SqlVersionConverter.getGueltigBis(row),
             this.getTerminiertPer(row),
-            vkIds
+            Collections.emptyList()
         );
     }
-
-
 
 
     @SneakyThrows

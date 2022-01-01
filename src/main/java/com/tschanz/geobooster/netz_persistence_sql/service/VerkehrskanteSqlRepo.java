@@ -33,7 +33,7 @@ public class VerkehrskanteSqlRepo implements VerkehrskantePersistenceRepo {
         );
         var query = String.format(
             "SELECT %s FROM N_VERKEHRSKANTE_E",
-            String.join(",", SqlVerkehrskanteElementConverter.ALL_COLS)
+            String.join(",", SqlVerkehrskanteElementConverter.SELECT_COLS)
         );
 
         return sqlReader.read(query);
@@ -56,7 +56,7 @@ public class VerkehrskanteSqlRepo implements VerkehrskantePersistenceRepo {
         );
         var query = String.format(
             "SELECT %s FROM N_VERKEHRSKANTE_V",
-            String.join(",", SqlVerkehrskanteVersionConverter.ALL_COLS)
+            String.join(",", SqlVerkehrskanteVersionConverter.SELECT_COLS)
         );
 
         return sqlReader.read(query);

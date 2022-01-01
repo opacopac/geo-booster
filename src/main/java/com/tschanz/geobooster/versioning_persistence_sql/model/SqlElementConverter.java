@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 
 public class SqlElementConverter {
     public final static String COL_ID = "ID";
-    public final static String[] ALL_COLS = {COL_ID};
+    public final static String[] SELECT_COLS = {COL_ID};
 
 
     @SneakyThrows

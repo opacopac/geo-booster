@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SqlVerkehrskanteVersionConverter implements SqlResultsetConverter<VerkehrskanteVersion> {
     public final static String COL_TERMINIERT_PER = "TERMINIERT_PER";
-    public final static String[] ALL_COLS = ArrayHelper.appendTo(SqlVersionConverter.ALL_COLS, COL_TERMINIERT_PER);
+    public final static String[] SELECT_COLS = ArrayHelper.appendTo(SqlVersionConverter.SELECT_COLS, COL_TERMINIERT_PER);
 
     public final Map<Long, List<VerkehrskanteAuspraegung>> vkVkasMap;
 

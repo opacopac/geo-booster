@@ -30,7 +30,7 @@ public class VerwaltungSqlRepo implements VerwaltungPersistenceRepo {
         );
         var query = String.format(
             "SELECT %s FROM N_VERWALTUNG_E",
-            String.join(",", SqlVerwaltungElementConverter.ALL_COLS)
+            String.join(",", SqlVerwaltungElementConverter.SELECT_COLS)
         );
 
         return sqlReader.read(query);
@@ -48,7 +48,7 @@ public class VerwaltungSqlRepo implements VerwaltungPersistenceRepo {
         );
         var query = String.format(
             "SELECT %s FROM N_VERWALTUNG_V",
-            String.join(",", SqlVerwaltungVersionConverter.ALL_COLS)
+            String.join(",", SqlVerwaltungVersionConverter.SELECT_COLS)
         );
 
         return sqlReader.read(query);

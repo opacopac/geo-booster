@@ -10,7 +10,7 @@ import java.sql.ResultSet;
 
 public class SqlHaltestelleElementConverter implements SqlResultsetConverter<Haltestelle> {
     public final static String COL_UIC = "UIC_CODE";
-    public final static String[] ALL_COLS = ArrayHelper.appendTo(SqlElementConverter.ALL_COLS, COL_UIC);
+    public final static String[] SELECT_COLS = ArrayHelper.appendTo(SqlElementConverter.SELECT_COLS, COL_UIC);
 
 
     @SneakyThrows

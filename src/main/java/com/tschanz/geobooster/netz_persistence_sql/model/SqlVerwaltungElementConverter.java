@@ -12,8 +12,8 @@ public class SqlVerwaltungElementConverter implements SqlResultsetConverter<Verw
     public final static String COL_CODE = "CODE";
     public final static String COL_IDBETREIBER = "ID_BETREIBER";
     public final static String COL_INFOPLUSTC = "INFO_PLUS_TC";
-    public final static String[] ALL_COLS = ArrayHelper.appendTo(
-        SqlElementConverter.ALL_COLS,
+    public final static String[] SELECT_COLS = ArrayHelper.appendTo(
+        SqlElementConverter.SELECT_COLS,
         COL_CODE, COL_IDBETREIBER, COL_INFOPLUSTC);
 
 

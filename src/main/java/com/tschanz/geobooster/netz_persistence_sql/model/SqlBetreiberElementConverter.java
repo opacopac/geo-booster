@@ -11,7 +11,7 @@ import java.sql.ResultSet;
 public class SqlBetreiberElementConverter implements SqlResultsetConverter<Betreiber> {
     public final static String COL_NAME = "NAME";
     public final static String COL_ABK = "ABKUERZUNG";
-    public final static String[] ALL_COLS = ArrayHelper.appendTo(SqlElementConverter.ALL_COLS, COL_NAME, COL_ABK);
+    public final static String[] SELECT_COLS = ArrayHelper.appendTo(SqlElementConverter.SELECT_COLS, COL_NAME, COL_ABK);
 
 
     @SneakyThrows

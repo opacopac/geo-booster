@@ -8,7 +8,7 @@ import java.sql.ResultSet;
 
 
 public class SqlVerkehrskanteAuspraegungVersionConverter implements SqlResultsetConverter<VerkehrskanteAuspraegungVersion> {
-    public final static String[] ALL_COLS = SqlVersionConverter.ALL_COLS;
+    public final static String[] SELECT_COLS = SqlVersionConverter.SELECT_COLS;
 
 
     @SneakyThrows

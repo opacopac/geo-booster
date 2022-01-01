@@ -13,7 +13,7 @@ public class SqlVerkehrskanteAuspraegungElementConverter implements SqlResultset
     public final static String COL_AUSPTYP = "KANTE_AUSPRAEGUNG_TYP";
     public final static String COL_VK_E_ID = "ID_VERKEHRSKANTE_E";
     public final static String COL_VERW_E_ID = "ID_VERWALTUNG_E";
-    public final static String[] ALL_COLS = {COL_ID, COL_AUSPTYP, COL_VK_E_ID, COL_VERW_E_ID};
+    public final static String[] SELECT_COLS = {COL_ID, COL_AUSPTYP, COL_VK_E_ID, COL_VERW_E_ID};
 
 
     @SneakyThrows

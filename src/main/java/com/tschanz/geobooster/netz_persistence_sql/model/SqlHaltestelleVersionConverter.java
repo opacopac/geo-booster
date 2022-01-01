@@ -13,7 +13,7 @@ public class SqlHaltestelleVersionConverter implements SqlResultsetConverter<Hal
     public final static String COL_NAME = "NAME";
     public final static String COL_LAT = "LAT";
     public final static String COL_LNG = "LNG";
-    public final static String[] ALL_COLS = ArrayHelper.appendTo(SqlVersionConverter.ALL_COLS, COL_NAME, COL_LAT, COL_LNG);
+    public final static String[] SELECT_COLS = ArrayHelper.appendTo(SqlVersionConverter.SELECT_COLS, COL_NAME, COL_LAT, COL_LNG);
 
 
     @SneakyThrows
