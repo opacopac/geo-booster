@@ -1,13 +1,12 @@
 package com.tschanz.geobooster.webmapservice.controller;
 
-import com.tschanz.geobooster.GbDataSourceProperties;
 import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
 import com.tschanz.geobooster.netz_maptile.service.NetzMapTileService;
 import com.tschanz.geobooster.netz_utfgrid.service.NetzUtfGridService;
-import com.tschanz.geobooster.state.GbState;
 import com.tschanz.geobooster.webmapservice.model.GetMapRequest;
 import com.tschanz.geobooster.webmapservice.model.NetzMapTileRequestConverter;
 import com.tschanz.geobooster.webmapservice.model.NetzUtfGridRequestConverter;
+import com.tschanz.geobooster.webmapservice.model.WmsState;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,10 +32,9 @@ public class WmsController {
     private static final String RESP_CONTENT_DISPO_VALUE = "inline; filename=";
     private static final Logger logger = LogManager.getLogger(WmsController.class);
 
-    private final GbDataSourceProperties gbProperties;
     private final NetzUtfGridService netzUtfGridService;
     private final NetzMapTileService netzMapTileService;
-    private final GbState gbState;
+    private final WmsState wmsState;
 
 
     @GetMapping(
@@ -57,7 +55,8 @@ public class WmsController {
         var mapTileResponse = this.netzMapTileService.getResponse(mapTileRequest);
 
         var msElapsed = Instant.now().toEpochMilli() - startMs;
-        this.gbState.addPngResponseTime(msElapsed);
+        this.wmsState.incPngRequestCount();
+        this.wmsState.nextPngRequestMs(msElapsed);
 
         return mapTileResponse.getImgBytes();
     }
@@ -81,7 +80,8 @@ public class WmsController {
         var utfGridResponse = this.netzUtfGridService.getResponse(utfGridRequest);
 
         var msElapsed = Instant.now().toEpochMilli() - startMs;
-        this.gbState.addUtfGridResponseTime(msElapsed);
+        this.wmsState.incUtfGridRequestCount();
+        this.wmsState.nextUtfGridRequestMs(msElapsed);
 
         return utfGridResponse.getText();
     }

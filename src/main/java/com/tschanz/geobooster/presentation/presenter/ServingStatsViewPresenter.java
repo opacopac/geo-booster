@@ -1,9 +1,8 @@
 package com.tschanz.geobooster.presentation.presenter;
 
-import com.tschanz.geobooster.webmapservice.model.WmsStats;
-import io.reactivex.Observable;
+import com.tschanz.geobooster.webmapservice.model.WmsState;
 
 
 public interface ServingStatsViewPresenter {
-    void bindState(Observable<WmsStats> wmsStats$);
+    void bindState(WmsState wmsState);
 }
