@@ -1,4 +1,4 @@
-package com.tschanz.geobooster.actions;
+package com.tschanz.geobooster.presentation.actions;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

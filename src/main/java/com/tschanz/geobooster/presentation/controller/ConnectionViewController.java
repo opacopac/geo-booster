@@ -1,7 +1,7 @@
 package com.tschanz.geobooster.presentation.controller;
 
-import com.tschanz.geobooster.actions.LoadDrAction;
-import com.tschanz.geobooster.actions.SelectDrAction;
+import com.tschanz.geobooster.presentation.actions.LoadDrAction;
+import com.tschanz.geobooster.presentation.actions.SelectDrAction;
 
 
 public interface ConnectionViewController {

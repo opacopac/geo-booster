@@ -1,5 +1,6 @@
 package com.tschanz.geobooster.persistence_sql.service;
 
+import com.tschanz.geobooster.persistence_sql.model.ConnectionState;
 import com.tschanz.geobooster.persistence_sql.model.SqlConnection;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -11,13 +12,13 @@ import java.sql.DriverManager;
 @Service
 @RequiredArgsConstructor
 public class SqlConnectionFactory {
-    private final SqlConnectionPropertyProvider propertyProvider;
+    private final ConnectionState connectionState;
     private final static int FETCH_SIZE = 10000;
 
 
     @SneakyThrows
     public SqlConnection createConnection() {
-        var properties = this.propertyProvider.getConnectionProperties();
+        var properties = this.connectionState.getConnectionProperties();
         if (properties == null) {
             throw new IllegalArgumentException("no connection selected");
         }

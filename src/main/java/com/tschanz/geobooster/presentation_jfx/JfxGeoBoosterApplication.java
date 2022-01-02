@@ -1,9 +1,8 @@
 package com.tschanz.geobooster.presentation_jfx;
 
-
-import com.tschanz.geobooster.actions.GbActions;
+import com.tschanz.geobooster.presentation.actions.GbActions;
+import com.tschanz.geobooster.presentation.model.GbState;
 import com.tschanz.geobooster.presentation_jfx.viewcontroller.JfxMainViewController;
-import com.tschanz.geobooster.state.GbState;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

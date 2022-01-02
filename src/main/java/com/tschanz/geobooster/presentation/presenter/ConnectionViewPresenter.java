@@ -1,10 +1,8 @@
 package com.tschanz.geobooster.presentation.presenter;
 
-import io.reactivex.Observable;
-
-import java.util.List;
+import com.tschanz.geobooster.persistence_sql.model.ConnectionState;
 
 
 public interface ConnectionViewPresenter {
-    void bindState(Observable<List<String>> connectionList$);
+    void bindState(ConnectionState connectionState);
 }

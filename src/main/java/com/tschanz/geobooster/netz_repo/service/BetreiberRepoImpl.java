@@ -4,7 +4,7 @@ import com.tschanz.geobooster.netz.model.Betreiber;
 import com.tschanz.geobooster.netz.model.BetreiberVersion;
 import com.tschanz.geobooster.netz_persistence.service.BetreiberPersistence;
 import com.tschanz.geobooster.netz_repo.model.BetreiberRepoState;
-import com.tschanz.geobooster.state.ProgressState;
+import com.tschanz.geobooster.netz_repo.model.ProgressState;
 import com.tschanz.geobooster.versioning_repo.model.VersionedObjectMap;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

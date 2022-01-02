@@ -1,6 +1,5 @@
-package com.tschanz.geobooster;
+package com.tschanz.geobooster.persistence_sql.model;
 
-import com.tschanz.geobooster.persistence_sql.model.SqlConnectionProperties;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -13,6 +12,6 @@ import org.springframework.context.annotation.PropertySource;
 @Configuration
 @PropertySource("file:./geo-booster.properties")
 @ConfigurationProperties(prefix = "datasource")
-public class GbDataSourceProperties {
+public class DataSourceProperties {
     private SqlConnectionProperties[] connection;
 }

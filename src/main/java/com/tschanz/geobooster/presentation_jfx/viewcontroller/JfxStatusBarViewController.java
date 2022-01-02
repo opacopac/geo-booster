@@ -1,7 +1,7 @@
 package com.tschanz.geobooster.presentation_jfx.viewcontroller;
 
+import com.tschanz.geobooster.netz_repo.model.ProgressState;
 import com.tschanz.geobooster.presentation.presenter.StatusBarViewPresenter;
-import com.tschanz.geobooster.state.ProgressState;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;

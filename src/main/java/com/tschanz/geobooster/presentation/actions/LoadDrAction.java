@@ -1,8 +1,8 @@
-package com.tschanz.geobooster.actions;
+package com.tschanz.geobooster.presentation.actions;
 
 import com.tschanz.geobooster.netz_persistence.service.*;
 import com.tschanz.geobooster.netz_repo.service.*;
-import com.tschanz.geobooster.state.GbState;
+import com.tschanz.geobooster.presentation.model.GbState;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

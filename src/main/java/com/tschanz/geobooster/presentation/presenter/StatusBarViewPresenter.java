@@ -1,6 +1,6 @@
 package com.tschanz.geobooster.presentation.presenter;
 
-import com.tschanz.geobooster.state.ProgressState;
+import com.tschanz.geobooster.netz_repo.model.ProgressState;
 
 
 public interface StatusBarViewPresenter {

@@ -1,4 +1,4 @@
-package com.tschanz.geobooster.state;
+package com.tschanz.geobooster.netz_repo.model;
 
 import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;

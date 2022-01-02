@@ -1,21 +1,21 @@
-package com.tschanz.geobooster;
+package com.tschanz.geobooster.persistence_sql.model;
 
-import com.tschanz.geobooster.persistence_sql.model.SqlConnectionProperties;
-import com.tschanz.geobooster.persistence_sql.service.SqlConnectionPropertyProvider;
-import com.tschanz.geobooster.presentation.service.ConnectionPropertySelector;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 
-@Service
-@RequiredArgsConstructor
-public class GbDataSourceProvider implements SqlConnectionPropertyProvider, ConnectionPropertySelector {
-    private final GbDataSourceProperties dataSourceProperties;
+@Component
+public class ConnectionState {
+    private final DataSourceProperties dataSourceProperties;
     private SqlConnectionProperties selectedConnection;
+
+
+    public ConnectionState(DataSourceProperties dataSourceProperties) {
+        this.dataSourceProperties = dataSourceProperties;
+    }
 
 
     public List<String> getConnectionList() {

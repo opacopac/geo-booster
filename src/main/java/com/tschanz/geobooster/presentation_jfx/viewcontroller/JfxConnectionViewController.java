@@ -1,16 +1,14 @@
 package com.tschanz.geobooster.presentation_jfx.viewcontroller;
 
-import com.tschanz.geobooster.actions.LoadDrAction;
-import com.tschanz.geobooster.actions.SelectDrAction;
+import com.tschanz.geobooster.persistence_sql.model.ConnectionState;
+import com.tschanz.geobooster.presentation.actions.LoadDrAction;
+import com.tschanz.geobooster.presentation.actions.SelectDrAction;
 import com.tschanz.geobooster.presentation.controller.ConnectionViewController;
 import com.tschanz.geobooster.presentation.presenter.ConnectionViewPresenter;
-import io.reactivex.Observable;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
-
-import java.util.List;
 
 
 public class JfxConnectionViewController implements ConnectionViewPresenter, ConnectionViewController {
@@ -21,15 +19,10 @@ public class JfxConnectionViewController implements ConnectionViewPresenter, Con
 
 
     @Override
-    public void bindState(Observable<List<String>> connectionList$) {
-        connectionList$.subscribe(connectionList -> {
-            if (connectionList != null) {
-                connectionChoiceBox.getItems().clear();
-                for (var i = 0; i < connectionList.size(); i++) {
-                    connectionChoiceBox.getItems().add(i, connectionList.get(i));
-                }
-            }
-        });
+    public void bindState(ConnectionState connectionState) {
+        for (var i = 0; i < connectionState.getConnectionList().size(); i++) {
+            connectionChoiceBox.getItems().add(i, connectionState.getConnectionList().get(i));
+        }
     }
 
 
