@@ -2,8 +2,8 @@ package com.tschanz.geobooster.netz_utfgrid.model;
 
 import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
 import com.tschanz.geobooster.netz.model.VerkehrskanteVersion;
-import com.tschanz.geobooster.netz.service.VerkehrskanteRepo;
-import com.tschanz.geobooster.netz_graphics.model.VerkehrskanteStyle;
+import com.tschanz.geobooster.netz_maptile.model.VerkehrskanteStyle;
+import com.tschanz.geobooster.netz_repo.service.VerkehrskanteRepo;
 import com.tschanz.geobooster.utfgrid.model.UtfGridLineItem;
 import com.tschanz.geobooster.util.model.KeyValue;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,7 @@
 package com.tschanz.geobooster.actions;
 
-import com.tschanz.geobooster.netz.service.*;
+import com.tschanz.geobooster.netz_persistence.service.*;
+import com.tschanz.geobooster.netz_repo.service.*;
 import com.tschanz.geobooster.state.GbState;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -9,11 +10,11 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class LoadDrAction {
-    private final BetreiberPersistenceRepo betreiberPersistenceRepo;
-    private final VerwaltungPersistenceRepo verwaltungPersistenceRepo;
-    private final HaltestellenPersistenceRepo haltestellenPersistenceRepo;
-    private final VerkehrskantePersistenceRepo verkehrskantePersistenceRepo;
-    private final TarifkantePersistenceRepo tarifkantePersistenceRepo;
+    private final BetreiberPersistence betreiberPersistence;
+    private final VerwaltungPersistence verwaltungPersistence;
+    private final HaltestellenPersistence haltestellenPersistence;
+    private final VerkehrskantePersistence verkehrskantePersistence;
+    private final TarifkantePersistence tarifkantePersistence;
     private final BetreiberRepo betreiberRepo;
     private final VerwaltungRepo verwaltungRepo;
     private final HaltestelleRepo haltestelleRepo;

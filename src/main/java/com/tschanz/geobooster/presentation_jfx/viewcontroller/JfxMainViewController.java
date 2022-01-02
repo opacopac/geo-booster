@@ -43,7 +43,7 @@ public class JfxMainViewController implements MainViewController, MainViewPresen
     @Override
     public void bindState(GbState gbState) {
         this.connectionViewController.bindState(gbState.getConnectionList$());
-        this.cachingStatsViewController.bindState(gbState.getNetzState());
+        this.cachingStatsViewController.bindState(gbState.getNetzRepoState());
         this.servingStatsViewController.bindState(gbState.getWmsStats$());
         this.statusBarViewController.bindState(gbState.getProgressState());
     }

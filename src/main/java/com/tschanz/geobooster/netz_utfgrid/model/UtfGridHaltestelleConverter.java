@@ -2,8 +2,8 @@ package com.tschanz.geobooster.netz_utfgrid.model;
 
 import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
 import com.tschanz.geobooster.netz.model.HaltestelleVersion;
-import com.tschanz.geobooster.netz.service.HaltestelleRepo;
-import com.tschanz.geobooster.netz_graphics.model.HaltestelleStyle;
+import com.tschanz.geobooster.netz_maptile.model.HaltestelleStyle;
+import com.tschanz.geobooster.netz_repo.service.HaltestelleRepo;
 import com.tschanz.geobooster.utfgrid.model.UtfGridPointItem;
 import com.tschanz.geobooster.util.model.KeyValue;
 import lombok.RequiredArgsConstructor;

@@ -4,7 +4,7 @@ import com.tschanz.geobooster.netz.model.VerkehrskanteAuspraegung;
 import com.tschanz.geobooster.netz.model.VerkehrskanteVersion;
 import com.tschanz.geobooster.netz.model.VerkehrsmittelTyp;
 import com.tschanz.geobooster.util.service.ArrayHelper;
-import com.tschanz.geobooster.versioning.service.FlyWeightDateFactory;
+import com.tschanz.geobooster.versioning_persistence.service.FlyWeightDateFactory;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlVersionConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;

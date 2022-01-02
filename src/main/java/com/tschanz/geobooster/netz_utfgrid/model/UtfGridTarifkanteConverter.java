@@ -2,8 +2,8 @@ package com.tschanz.geobooster.netz_utfgrid.model;
 
 import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
 import com.tschanz.geobooster.netz.model.TarifkanteVersion;
-import com.tschanz.geobooster.netz.service.TarifkanteRepo;
-import com.tschanz.geobooster.netz_graphics.model.TarifkanteStyle;
+import com.tschanz.geobooster.netz_maptile.model.TarifkanteStyle;
+import com.tschanz.geobooster.netz_repo.service.TarifkanteRepo;
 import com.tschanz.geobooster.utfgrid.model.UtfGridLineItem;
 import com.tschanz.geobooster.util.model.KeyValue;
 import lombok.RequiredArgsConstructor;

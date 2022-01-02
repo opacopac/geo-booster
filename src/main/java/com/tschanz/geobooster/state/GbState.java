@@ -1,6 +1,6 @@
 package com.tschanz.geobooster.state;
 
-import com.tschanz.geobooster.state_netz.NetzState;
+import com.tschanz.geobooster.netz_repo.model.NetzRepoState;
 import com.tschanz.geobooster.webmapservice.model.WmsStats;
 import io.reactivex.subjects.BehaviorSubject;
 import lombok.Getter;
@@ -19,7 +19,7 @@ public class GbState {
     private final BehaviorSubject<Integer> selectedConnection$ = BehaviorSubject.createDefault(-1);
     private final BehaviorSubject<WmsStats> wmsStats$ = BehaviorSubject.createDefault(new WmsStats());
     private final ProgressState progressState;
-    private final NetzState netzState;
+    private final NetzRepoState netzRepoState;
 
 
     public void addPngResponseTime(long responseTimeMs) {

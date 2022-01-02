@@ -1,7 +1,7 @@
 package com.tschanz.geobooster.presentation_jfx.viewcontroller;
 
+import com.tschanz.geobooster.netz_repo.model.NetzRepoState;
 import com.tschanz.geobooster.presentation.presenter.CachingStatsViewPresenter;
-import com.tschanz.geobooster.state_netz.NetzState;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -27,54 +27,54 @@ public class JfxCachingStatsViewController implements CachingStatsViewPresenter 
 
 
     @Override
-    public void bindState(NetzState netzState) {
-        netzState.getBetreiberState().getLoadedElementCount$().subscribe(elementCount -> {
+    public void bindState(NetzRepoState netzRepoState) {
+        netzRepoState.getBetreiberRepoState().getLoadedElementCount$().subscribe(elementCount -> {
             Platform.runLater(() -> betrCountLabel.setText(elementCount.toString()));
         });
-        netzState.getBetreiberState().getLoadedVersionCount$().subscribe(versionCount -> {
+        netzRepoState.getBetreiberRepoState().getLoadedVersionCount$().subscribe(versionCount -> {
             Platform.runLater(() -> betrVersionCountLabel.setText(versionCount.toString()));
         });
-        netzState.getBetreiberState().getIsLoading$().subscribe(isLoading -> {
+        netzRepoState.getBetreiberRepoState().getIsLoading$().subscribe(isLoading -> {
             Platform.runLater(() -> betrProgressIndicator.setVisible(isLoading));
         });
 
-        netzState.getVerwaltungState().getLoadedElementCount$().subscribe(elementCount -> {
+        netzRepoState.getVerwaltungRepoState().getLoadedElementCount$().subscribe(elementCount -> {
             Platform.runLater(() -> verwCountLabel.setText(elementCount.toString()));
         });
-        netzState.getVerwaltungState().getLoadedVersionCount$().subscribe(versionCount -> {
+        netzRepoState.getVerwaltungRepoState().getLoadedVersionCount$().subscribe(versionCount -> {
             Platform.runLater(() -> verwVersionCountLabel.setText(versionCount.toString()));
         });
-        netzState.getVerwaltungState().getIsLoading$().subscribe(isLoading -> {
+        netzRepoState.getVerwaltungRepoState().getIsLoading$().subscribe(isLoading -> {
             Platform.runLater(() -> verwProgressIndicator.setVisible(isLoading));
         });
 
-        netzState.getHaltestelleState().getLoadedElementCount$().subscribe(elementCount -> {
+        netzRepoState.getHaltestelleRepoState().getLoadedElementCount$().subscribe(elementCount -> {
             Platform.runLater(() -> hstCountLabel.setText(elementCount.toString()));
         });
-        netzState.getHaltestelleState().getLoadedVersionCount$().subscribe(versionCount -> {
+        netzRepoState.getHaltestelleRepoState().getLoadedVersionCount$().subscribe(versionCount -> {
             Platform.runLater(() -> hstVersionCountLabel.setText(versionCount.toString()));
         });
-        netzState.getHaltestelleState().getIsLoading$().subscribe(isLoading -> {
+        netzRepoState.getHaltestelleRepoState().getIsLoading$().subscribe(isLoading -> {
             Platform.runLater(() -> hstProgressIndicator.setVisible(isLoading));
         });
 
-        netzState.getVerkehrskanteState().getLoadedElementCount$().subscribe(elementCount -> {
+        netzRepoState.getVerkehrskanteRepoState().getLoadedElementCount$().subscribe(elementCount -> {
             Platform.runLater(() -> vkCountLabel.setText(elementCount.toString()));
         });
-        netzState.getVerkehrskanteState().getLoadedVersionCount$().subscribe(versionCount -> {
+        netzRepoState.getVerkehrskanteRepoState().getLoadedVersionCount$().subscribe(versionCount -> {
             Platform.runLater(() -> vkVersionCountLabel.setText(versionCount.toString()));
         });
-        netzState.getVerkehrskanteState().getIsLoading$().subscribe(isLoading -> {
+        netzRepoState.getVerkehrskanteRepoState().getIsLoading$().subscribe(isLoading -> {
             Platform.runLater(() -> vkProgressIndicator.setVisible(isLoading));
         });
 
-        netzState.getTarifkanteState().getLoadedElementCount$().subscribe(elementCount -> {
+        netzRepoState.getTarifkanteRepoState().getLoadedElementCount$().subscribe(elementCount -> {
             Platform.runLater(() -> tkCountLabel.setText(elementCount.toString()));
         });
-        netzState.getTarifkanteState().getLoadedVersionCount$().subscribe(versionCount -> {
+        netzRepoState.getTarifkanteRepoState().getLoadedVersionCount$().subscribe(versionCount -> {
             Platform.runLater(() -> tkVersionCountLabel.setText(versionCount.toString()));
         });
-        netzState.getTarifkanteState().getIsLoading$().subscribe(isLoading -> {
+        netzRepoState.getTarifkanteRepoState().getIsLoading$().subscribe(isLoading -> {
             Platform.runLater(() -> tkProgressIndicator.setVisible(isLoading));
         });
     }

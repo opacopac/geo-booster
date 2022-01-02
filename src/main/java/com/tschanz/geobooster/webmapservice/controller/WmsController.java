@@ -2,10 +2,12 @@ package com.tschanz.geobooster.webmapservice.controller;
 
 import com.tschanz.geobooster.GbDataSourceProperties;
 import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
+import com.tschanz.geobooster.netz_maptile.service.NetzMapTileService;
+import com.tschanz.geobooster.netz_utfgrid.service.NetzUtfGridService;
 import com.tschanz.geobooster.state.GbState;
 import com.tschanz.geobooster.webmapservice.model.GetMapRequest;
-import com.tschanz.geobooster.webmapservice.service.WmsPngService;
-import com.tschanz.geobooster.webmapservice.service.WmsUtfGridService;
+import com.tschanz.geobooster.webmapservice.model.NetzMapTileRequestConverter;
+import com.tschanz.geobooster.webmapservice.model.NetzUtfGridRequestConverter;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,8 +34,8 @@ public class WmsController {
     private static final Logger logger = LogManager.getLogger(WmsController.class);
 
     private final GbDataSourceProperties gbProperties;
-    private final WmsUtfGridService wmsUtfGridService;
-    private final WmsPngService wmsPngService;
+    private final NetzUtfGridService netzUtfGridService;
+    private final NetzMapTileService netzMapTileService;
     private final GbState gbState;
 
 
@@ -45,24 +47,19 @@ public class WmsController {
     @ResponseBody
     public byte[] wmsGetMapPngHandler(@RequestParam Map<String,String> allParams, HttpServletResponse response) {
         var startMs = Instant.now().toEpochMilli();
-
         var mapRequest = GetMapRequest.fromParams(allParams);
-        logger.info(String.format("PNG request for bbox %s,%s %s,%s",
-            CoordinateConverter.convertToEpsg4326(mapRequest.getBbox().getMinCoordinate()).getLatitude(),
-            CoordinateConverter.convertToEpsg4326(mapRequest.getBbox().getMinCoordinate()).getLongitude(),
-            CoordinateConverter.convertToEpsg4326(mapRequest.getBbox().getMaxCoordinate()).getLatitude(),
-            CoordinateConverter.convertToEpsg4326(mapRequest.getBbox().getMaxCoordinate()).getLongitude()
-        ));
+        this.logMapRequest("PNG", mapRequest);
 
         var fileName = this.getFilename(mapRequest) + ".png";
         response.setHeader(RESP_CONTENT_DISPO_KEY, RESP_CONTENT_DISPO_VALUE + fileName);
 
-        var pngResponse = this.wmsPngService.getResponse(mapRequest);
+        var mapTileRequest = NetzMapTileRequestConverter.fromMapRequest(mapRequest);
+        var mapTileResponse = this.netzMapTileService.getResponse(mapTileRequest);
 
         var msElapsed = Instant.now().toEpochMilli() - startMs;
         this.gbState.addPngResponseTime(msElapsed);
 
-        return pngResponse.getImgBytes();
+        return mapTileResponse.getImgBytes();
     }
 
 
@@ -74,19 +71,14 @@ public class WmsController {
     @ResponseBody
     public String wmsGetMapUtfGridHandler(@RequestParam Map<String,String> allParams, HttpServletResponse response) {
         var startMs = Instant.now().toEpochMilli();
-
         var mapRequest = GetMapRequest.fromParams(allParams);
-        logger.info(String.format("UTF grid request for bbox %s,%s %s,%s",
-            CoordinateConverter.convertToEpsg4326(mapRequest.getBbox().getMinCoordinate()).getLatitude(),
-            CoordinateConverter.convertToEpsg4326(mapRequest.getBbox().getMinCoordinate()).getLongitude(),
-            CoordinateConverter.convertToEpsg4326(mapRequest.getBbox().getMaxCoordinate()).getLatitude(),
-            CoordinateConverter.convertToEpsg4326(mapRequest.getBbox().getMaxCoordinate()).getLongitude()
-        ));
+        this.logMapRequest("UTF grid", mapRequest);
 
         var fileName = this.getFilename(mapRequest);
         response.setHeader(RESP_CONTENT_DISPO_KEY, RESP_CONTENT_DISPO_VALUE + fileName);
 
-        var utfGridResponse = this.wmsUtfGridService.getResponse(mapRequest);
+        var utfGridRequest = NetzUtfGridRequestConverter.fromMapRequest(mapRequest);
+        var utfGridResponse = this.netzUtfGridService.getResponse(utfGridRequest);
 
         var msElapsed = Instant.now().toEpochMilli() - startMs;
         this.gbState.addUtfGridResponseTime(msElapsed);
@@ -109,5 +101,16 @@ public class WmsController {
         }
 
         return "unknown";
+    }
+
+
+    private void logMapRequest(String requestType, GetMapRequest mapRequest) {
+        logger.info(String.format("%s request for bbox %s,%s %s,%s",
+            requestType,
+            CoordinateConverter.convertToEpsg4326(mapRequest.getBbox().getMinCoordinate()).getLatitude(),
+            CoordinateConverter.convertToEpsg4326(mapRequest.getBbox().getMinCoordinate()).getLongitude(),
+            CoordinateConverter.convertToEpsg4326(mapRequest.getBbox().getMaxCoordinate()).getLatitude(),
+            CoordinateConverter.convertToEpsg4326(mapRequest.getBbox().getMaxCoordinate()).getLongitude()
+        ));
     }
 }

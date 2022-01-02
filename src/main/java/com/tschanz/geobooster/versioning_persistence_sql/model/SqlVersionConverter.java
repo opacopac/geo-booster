@@ -1,6 +1,6 @@
 package com.tschanz.geobooster.versioning_persistence_sql.model;
 
-import com.tschanz.geobooster.versioning.service.FlyWeightDateFactory;
+import com.tschanz.geobooster.versioning_persistence.service.FlyWeightDateFactory;
 import lombok.SneakyThrows;
 
 import java.sql.ResultSet;
