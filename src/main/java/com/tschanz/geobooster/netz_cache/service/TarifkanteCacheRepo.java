@@ -6,14 +6,13 @@ import com.tschanz.geobooster.geofeature.model.Epsg4326Coordinate;
 import com.tschanz.geobooster.geofeature.model.Extent;
 import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
 import com.tschanz.geobooster.netz.model.*;
-import com.tschanz.geobooster.netz.service.HaltestelleRepo;
-import com.tschanz.geobooster.netz.service.TarifkanteRepo;
-import com.tschanz.geobooster.netz.service.VerkehrskanteRepo;
-import com.tschanz.geobooster.netz.service.VerwaltungRepo;
+import com.tschanz.geobooster.netz.service.*;
 import com.tschanz.geobooster.quadtree.model.AreaQuadTree;
 import com.tschanz.geobooster.quadtree.model.AreaQuadTreeItem;
 import com.tschanz.geobooster.quadtree.model.QuadTreeCoordinate;
 import com.tschanz.geobooster.quadtree.model.QuadTreeExtent;
+import com.tschanz.geobooster.state.ProgressState;
+import com.tschanz.geobooster.state_netz.TarifkanteState;
 import com.tschanz.geobooster.versioning.model.VersionedObjectMap;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -43,15 +42,30 @@ public class TarifkanteCacheRepo implements TarifkanteRepo {
     private static final double MAX_COORD_Y = 6108322.79 + 1;
     private static final int MAX_TREE_DEPTH = 6;
 
+    private final TarifkantePersistenceRepo tkPersistenceRepo;
     private final VerwaltungRepo verwaltungRepo;
     private final HaltestelleRepo hstRepo;
     private final VerkehrskanteRepo vkRepo;
+    private final ProgressState progressState;
+    private final TarifkanteState tarifkanteState;
+
     private VersionedObjectMap<Tarifkante, TarifkanteVersion> versionedObjectMap;
     private AreaQuadTree<TarifkanteVersion> versionQuadTree;
 
 
     @Override
-    public void init(Collection<Tarifkante> elements, Collection<TarifkanteVersion> versions) {
+    public void loadAll() {
+        this.tarifkanteState.updateIsLoading(true);
+
+        this.progressState.updateProgressText("loading tarifkanten...");
+        var elements = this.tkPersistenceRepo.readAllElements();
+        this.tarifkanteState.updateLoadedElementCount(elements.size());
+
+        this.progressState.updateProgressText("loading tarifkante versions...");
+        var versions = this.tkPersistenceRepo.readAllVersions();
+        this.tarifkanteState.updateLoadedVersionCount(versions.size());
+
+        this.progressState.updateProgressText("initializing tarifkante repo...");
         this.versionedObjectMap = new VersionedObjectMap<>(elements, versions);
 
         this.versionQuadTree = new AreaQuadTree<>(
@@ -74,6 +88,9 @@ public class TarifkanteCacheRepo implements TarifkanteRepo {
                     logger.warn(String.format("missing haltestelle version for TK version %s", tkV.getId()));
                 }
             });
+
+        this.progressState.updateProgressText("loading tarifkanten done");
+        this.tarifkanteState.updateIsLoading(false);
     }
 
 

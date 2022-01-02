@@ -7,12 +7,15 @@ import com.tschanz.geobooster.geofeature.model.Extent;
 import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
 import com.tschanz.geobooster.netz.model.*;
 import com.tschanz.geobooster.netz.service.HaltestelleRepo;
+import com.tschanz.geobooster.netz.service.VerkehrskantePersistenceRepo;
 import com.tschanz.geobooster.netz.service.VerkehrskanteRepo;
 import com.tschanz.geobooster.netz.service.VerwaltungRepo;
 import com.tschanz.geobooster.quadtree.model.AreaQuadTree;
 import com.tschanz.geobooster.quadtree.model.AreaQuadTreeItem;
 import com.tschanz.geobooster.quadtree.model.QuadTreeCoordinate;
 import com.tschanz.geobooster.quadtree.model.QuadTreeExtent;
+import com.tschanz.geobooster.state.ProgressState;
+import com.tschanz.geobooster.state_netz.VerkehrskanteState;
 import com.tschanz.geobooster.versioning.model.VersionedObjectMap;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -40,14 +43,29 @@ public class VerkehrskanteCacheRepo implements VerkehrskanteRepo {
     private static final double MAX_COORD_Y = 6108322.79 + 1;
     private static final int MAX_TREE_DEPTH = 6;
 
+    private final VerkehrskantePersistenceRepo vkPersistenceRepo;
     private final HaltestelleRepo hstRepo;
     private final VerwaltungRepo verwaltungRepo;
+    private final ProgressState progressState;
+    private final VerkehrskanteState verkehrskanteState;
+
     private VersionedObjectMap<Verkehrskante, VerkehrskanteVersion> versionedObjectMap;
     private AreaQuadTree<VerkehrskanteVersion> versionQuadTree;
 
 
     @Override
-    public void init(Collection<Verkehrskante> elements, Collection<VerkehrskanteVersion> versions) {
+    public void loadAll() {
+        this.verkehrskanteState.updateIsLoading(true);
+
+        this.progressState.updateProgressText("loading verkehrskanten...");
+        var elements = this.vkPersistenceRepo.readAllElements();
+        this.verkehrskanteState.updateLoadedElementCount(elements.size());
+
+        this.progressState.updateProgressText("loading verkehrskante versions...");
+        var versions = this.vkPersistenceRepo.readAllVersions();
+        this.verkehrskanteState.updateLoadedVersionCount(versions.size());
+
+        this.progressState.updateProgressText("initializing verkehrskante repo...");
         this.versionedObjectMap = new VersionedObjectMap<>(elements, versions);
 
         this.versionQuadTree = new AreaQuadTree<>(
@@ -70,6 +88,9 @@ public class VerkehrskanteCacheRepo implements VerkehrskanteRepo {
                     logger.warn(String.format("missing haltestelle version for VK version %s", vkV.getId()));
                 }
             });
+
+        this.progressState.updateProgressText("loading verkehrskante done");
+        this.verkehrskanteState.updateIsLoading(false);
     }
 
 

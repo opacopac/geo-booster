@@ -1,7 +1,7 @@
 package com.tschanz.geobooster.presentation_jfx.viewcontroller;
 
-import com.tschanz.geobooster.presentation.actions.LoadDrAction;
-import com.tschanz.geobooster.presentation.actions.SelectDrAction;
+import com.tschanz.geobooster.actions.LoadDrAction;
+import com.tschanz.geobooster.actions.SelectDrAction;
 import com.tschanz.geobooster.presentation.controller.ConnectionViewController;
 import com.tschanz.geobooster.presentation.presenter.ConnectionViewPresenter;
 import io.reactivex.Observable;

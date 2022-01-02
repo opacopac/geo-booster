@@ -1,7 +1,7 @@
 package com.tschanz.geobooster.presentation_jfx.viewcontroller;
 
 import com.tschanz.geobooster.presentation.presenter.StatusBarViewPresenter;
-import io.reactivex.Observable;
+import com.tschanz.geobooster.state.ProgressState;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -15,14 +15,14 @@ public class JfxStatusBarViewController implements StatusBarViewPresenter {
 
 
     @Override
-    public void bindState(Observable<Boolean> isInProgress$, Observable<String> progressText$) {
-        isInProgress$.subscribe(isInProgress -> {
+    public void bindState(ProgressState progressState) {
+        progressState.getIsInProgress$().subscribe(isInProgress -> {
             Platform.runLater(() -> {
                 this.progressBar.setVisible(isInProgress);
             });
         });
 
-        progressText$.subscribe(progressText -> {
+        progressState.getProgressText$().subscribe(progressText -> {
             Platform.runLater(() -> {
                 this.infoLabel.setText(progressText);
             });

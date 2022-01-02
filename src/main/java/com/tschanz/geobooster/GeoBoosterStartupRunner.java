@@ -1,8 +1,8 @@
 package com.tschanz.geobooster;
 
-import com.tschanz.geobooster.presentation.actions.GbActions;
-import com.tschanz.geobooster.presentation.state.GbState;
+import com.tschanz.geobooster.actions.GbActions;
 import com.tschanz.geobooster.presentation_jfx.JfxGeoBoosterApplication;
+import com.tschanz.geobooster.state.GbState;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;

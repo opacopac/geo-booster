@@ -7,10 +7,13 @@ import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
 import com.tschanz.geobooster.netz.model.Haltestelle;
 import com.tschanz.geobooster.netz.model.HaltestelleVersion;
 import com.tschanz.geobooster.netz.service.HaltestelleRepo;
+import com.tschanz.geobooster.netz.service.HaltestellenPersistenceRepo;
 import com.tschanz.geobooster.quadtree.model.QuadTree;
 import com.tschanz.geobooster.quadtree.model.QuadTreeCoordinate;
 import com.tschanz.geobooster.quadtree.model.QuadTreeExtent;
 import com.tschanz.geobooster.quadtree.model.QuadTreeItem;
+import com.tschanz.geobooster.state.ProgressState;
+import com.tschanz.geobooster.state_netz.HaltestelleState;
 import com.tschanz.geobooster.versioning.model.VersionedObjectMap;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -35,12 +38,27 @@ public class HaltestelleCacheRepo implements HaltestelleRepo {
     private static final double MAX_COORD_Y = 6108322.79 + 1;
     private static final int MAX_TREE_DEPTH = 6;
 
+    private final HaltestellenPersistenceRepo hstPersistenceRepo;
+    private final ProgressState progressState;
+    private final HaltestelleState haltestelleState;
+
     private VersionedObjectMap<Haltestelle, HaltestelleVersion> versionedObjectMap;
     private QuadTree<HaltestelleVersion> versionQuadTree;
 
 
     @Override
-    public void init(Collection<Haltestelle> elements, Collection<HaltestelleVersion> versions) {
+    public void loadAll() {
+        this.haltestelleState.updateIsLoading(true);
+
+        this.progressState.updateProgressText("loading haltestellen...");
+        var elements = this.hstPersistenceRepo.readAllElements();
+        this.haltestelleState.updateLoadedElementCount(elements.size());
+
+        this.progressState.updateProgressText("loading haltestelle versions...");
+        var versions = this.hstPersistenceRepo.readAllVersions();
+        this.haltestelleState.updateLoadedVersionCount(versions.size());
+
+        this.progressState.updateProgressText("initializing haltestelle repo...");
         this.versionedObjectMap = new VersionedObjectMap<>(elements, versions);
 
         this.versionQuadTree = new QuadTree<>(
@@ -57,6 +75,9 @@ public class HaltestelleCacheRepo implements HaltestelleRepo {
                     new QuadTreeItem<>(this.getQuadTreeCoordinates(hstV.getCoordinate()), hstV)
                 );
             });
+
+        this.progressState.updateProgressText("loading haltestellen done");
+        this.haltestelleState.updateIsLoading(false);
     }
 
 

@@ -1,4 +1,4 @@
-package com.tschanz.geobooster.presentation.actions;
+package com.tschanz.geobooster.actions;
 
 import com.tschanz.geobooster.presentation.service.ConnectionPropertySelector;
 import lombok.RequiredArgsConstructor;

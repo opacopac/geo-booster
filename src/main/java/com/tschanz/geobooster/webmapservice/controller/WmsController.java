@@ -2,7 +2,7 @@ package com.tschanz.geobooster.webmapservice.controller;
 
 import com.tschanz.geobooster.GbDataSourceProperties;
 import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
-import com.tschanz.geobooster.presentation.state.GbState;
+import com.tschanz.geobooster.state.GbState;
 import com.tschanz.geobooster.webmapservice.model.GetMapRequest;
 import com.tschanz.geobooster.webmapservice.service.WmsPngService;
 import com.tschanz.geobooster.webmapservice.service.WmsUtfGridService;

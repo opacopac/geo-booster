@@ -1,8 +1,8 @@
 package com.tschanz.geobooster.presentation.presenter;
 
-import io.reactivex.Observable;
+import com.tschanz.geobooster.state.ProgressState;
 
 
 public interface StatusBarViewPresenter {
-    void bindState(Observable<Boolean> isInProgress$, Observable<String> progressText$);
+    void bindState(ProgressState progressState);
 }

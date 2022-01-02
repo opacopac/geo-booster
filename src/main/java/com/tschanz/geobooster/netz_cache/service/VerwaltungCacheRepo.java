@@ -3,7 +3,10 @@ package com.tschanz.geobooster.netz_cache.service;
 
 import com.tschanz.geobooster.netz.model.Verwaltung;
 import com.tschanz.geobooster.netz.model.VerwaltungVersion;
+import com.tschanz.geobooster.netz.service.VerwaltungPersistenceRepo;
 import com.tschanz.geobooster.netz.service.VerwaltungRepo;
+import com.tschanz.geobooster.state.ProgressState;
+import com.tschanz.geobooster.state_netz.VerwaltungState;
 import com.tschanz.geobooster.versioning.model.VersionedObjectMap;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,11 +20,30 @@ import java.util.Collection;
 public class VerwaltungCacheRepo implements VerwaltungRepo {
     private VersionedObjectMap<Verwaltung, VerwaltungVersion> versionedObjectMap;
 
+    private final VerwaltungPersistenceRepo verwaltungPersistenceRepo;
+    private final ProgressState progressState;
+    private final VerwaltungState verwaltungState;
+
 
     @Override
-    public void init(Collection<Verwaltung> elements, Collection<VerwaltungVersion> versions) {
+    public void loadAll() {
+        this.verwaltungState.updateIsLoading(true);
+
+        this.progressState.updateProgressText("loading verwaltung...");
+        var elements = this.verwaltungPersistenceRepo.readAllElements();
+        this.verwaltungState.updateLoadedElementCount(elements.size());
+
+        this.progressState.updateProgressText("loading verwaltung versions...");
+        var versions = this.verwaltungPersistenceRepo.readAllVersions();
+        this.verwaltungState.updateLoadedVersionCount(versions.size());
+
+        this.progressState.updateProgressText("initializing verwaltung repo...");
         this.versionedObjectMap = new VersionedObjectMap<>(elements, versions);
+
+        this.progressState.updateProgressText("loading verwaltung done");
+        this.verwaltungState.updateIsLoading(false);
     }
+
 
     @Override
     public Verwaltung getElement(long id) {

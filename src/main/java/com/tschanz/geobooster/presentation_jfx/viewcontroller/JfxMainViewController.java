@@ -1,9 +1,9 @@
 package com.tschanz.geobooster.presentation_jfx.viewcontroller;
 
-import com.tschanz.geobooster.presentation.actions.GbActions;
+import com.tschanz.geobooster.actions.GbActions;
 import com.tschanz.geobooster.presentation.controller.MainViewController;
 import com.tschanz.geobooster.presentation.presenter.MainViewPresenter;
-import com.tschanz.geobooster.presentation.state.GbState;
+import com.tschanz.geobooster.state.GbState;
 import javafx.fxml.FXML;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -43,8 +43,8 @@ public class JfxMainViewController implements MainViewController, MainViewPresen
     @Override
     public void bindState(GbState gbState) {
         this.connectionViewController.bindState(gbState.getConnectionList$());
-        this.cachingStatsViewController.bindState(gbState.getGbDr$());
+        this.cachingStatsViewController.bindState(gbState.getNetzState());
         this.servingStatsViewController.bindState(gbState.getWmsStats$());
-        this.statusBarViewController.bindState(gbState.getIsInProgress$(), gbState.getProgressText$());
+        this.statusBarViewController.bindState(gbState.getProgressState());
     }
 }
