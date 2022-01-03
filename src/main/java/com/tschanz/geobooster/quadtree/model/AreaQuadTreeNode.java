@@ -1,17 +1,19 @@
 package com.tschanz.geobooster.quadtree.model;
 
+import com.tschanz.geobooster.versioning.model.HasId;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
 @Getter
 @RequiredArgsConstructor
-public class AreaQuadTreeNode<T> {
+public class AreaQuadTreeNode<T extends HasId> {
     private final QuadTreeExtent extent;
     private final AreaQuadTreeNode<T> parentNode;
     private final int maxDepth;
@@ -45,9 +47,10 @@ public class AreaQuadTreeNode<T> {
     }
 
 
-    public boolean addItem(AreaQuadTreeItem<T> item) {
+    public void addItem(AreaQuadTreeItem<T> item, Map<Long, AreaQuadTreeNode<T>> idLookupMap) {
         if (this.isLeafNode()) {
             this.items.add(item);
+            idLookupMap.put(item.getItem().getId(), this);
         } else {
             if (this.childNodes.size() == 0) {
                 this.createChildNodes();
@@ -55,13 +58,20 @@ public class AreaQuadTreeNode<T> {
 
             var child = this.getChildForArea(item.getExtent());
             if (child != null) {
-                child.addItem(item);
+                child.addItem(item, idLookupMap);
             } else {
                 this.items.add(item);
+                idLookupMap.put(item.getItem().getId(), this);
             }
         }
+    }
 
-        return true;
+
+    public void removeItem(long itemId) {
+        this.items.stream()
+            .filter(item -> item.getItem().getId() == itemId)
+            .findFirst()
+            .ifPresent(this.items::remove);
     }
 
 

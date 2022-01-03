@@ -2,19 +2,20 @@ package com.tschanz.geobooster.netz_persistence_sql.service;
 
 import com.tschanz.geobooster.netz.model.Tarifkante;
 import com.tschanz.geobooster.netz.model.TarifkanteVersion;
+import com.tschanz.geobooster.netz_persistence.model.ReadFilter;
 import com.tschanz.geobooster.netz_persistence.service.TarifkantePersistence;
 import com.tschanz.geobooster.netz_persistence_sql.model.SqlTarifkanteElementConverter;
 import com.tschanz.geobooster.netz_persistence_sql.model.SqlTarifkanteVersionConverter;
 import com.tschanz.geobooster.persistence_sql.service.SqlConnectionFactory;
 import com.tschanz.geobooster.persistence_sql.service.SqlHelper;
 import com.tschanz.geobooster.util.model.Timer;
+import com.tschanz.geobooster.versioning_persistence_sql.model.SqlElementConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -23,20 +24,19 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TarifkanteSqlPersistence implements TarifkantePersistence {
     private static final Logger logger = LogManager.getLogger(TarifkanteSqlPersistence.class);
-    private static final int MAX_COUNT_TKV_CHANGED_SINCE = 1000; // limit for IN clause
 
     private final SqlConnectionFactory connectionFactory;
 
 
     @Override
     public Collection<Tarifkante> readAllElements() {
-        return this.readChangedElements(null);
+        return this.readElements(null);
     }
 
 
     @Override
     @SneakyThrows
-    public Collection<Tarifkante> readChangedElements(LocalDate changedSince) {
+    public Collection<Tarifkante> readElements(ReadFilter filter) {
         var sqlReader = new SqlReader<>(
             this.connectionFactory,
             new SqlTarifkanteElementConverter(),
@@ -49,8 +49,8 @@ public class TarifkanteSqlPersistence implements TarifkantePersistence {
             String.join(",", SqlTarifkanteElementConverter.SELECT_COLS)
         );
 
-        if (changedSince != null) {
-            query += this.getWhereClause(changedSince);
+        if (filter != null) {
+            query += this.getWhereClauseForFilter(filter);
         }
 
         return sqlReader.read(query);
@@ -59,13 +59,13 @@ public class TarifkanteSqlPersistence implements TarifkantePersistence {
 
     @Override
     public Collection<TarifkanteVersion> readAllVersions() {
-        return this.readChangedVersions(null);
+        return this.readVersions(null);
     }
 
 
     @Override
     @SneakyThrows
-    public Collection<TarifkanteVersion> readChangedVersions(LocalDate changedSince) {
+    public Collection<TarifkanteVersion> readVersions(ReadFilter filter) {
         var sqlReader = new SqlReader<>(
             this.connectionFactory,
             new SqlTarifkanteVersionConverter(),
@@ -78,15 +78,15 @@ public class TarifkanteSqlPersistence implements TarifkantePersistence {
             String.join(",", SqlTarifkanteVersionConverter.SELECT_COLS)
         );
 
-        if (changedSince != null) {
-            query += this.getWhereClause(changedSince);
+        if (filter != null) {
+            query += this.getWhereClauseForFilter(filter);
         }
 
         var tkVs = sqlReader.read(query);
 
         // add linked vks
         List<Long> onlyTkVIds = null;
-        if (changedSince != null && tkVs.size() > 0 && tkVs.size() < MAX_COUNT_TKV_CHANGED_SINCE) {
+        if (filter != null && tkVs.size() > 0) {
             onlyTkVIds = tkVs.stream().map(TarifkanteVersion::getId).collect(Collectors.toList());
         }
         var tkVkMap = this.readTkVkMap(onlyTkVIds);
@@ -138,15 +138,32 @@ public class TarifkanteSqlPersistence implements TarifkantePersistence {
     }
 
 
-    private String getWhereClause(LocalDate changedSince) {
-        var dialect = this.connectionFactory.getSqlDialect();
-        var dateString = SqlHelper.getToDate(dialect, changedSince);
-        return String.format(
-            " WHERE %s >= %s OR %s >= %s",
-            SqlTarifkanteElementConverter.COL_CREATED_AT,
-            dateString,
-            SqlTarifkanteElementConverter.COL_MODIFIED_AT,
-            dateString
-        );
+    private String getWhereClauseForFilter(ReadFilter filter) {
+        List<String> conditions = new ArrayList<>();
+
+        if (filter.getIdList() != null) {
+            var idStrings = filter.getIdList().stream().map(Object::toString).collect(Collectors.toList());
+            conditions.add(String.format("(%s IN (%s))",
+                SqlElementConverter.COL_ID,
+                String.join(",", idStrings)
+            ));
+        }
+
+        if (filter.getChangedSince() != null) {
+            var dialect = this.connectionFactory.getSqlDialect();
+            var dateString = SqlHelper.getToDate(dialect, filter.getChangedSince());
+            conditions.add(String.format("(%s >= %s OR %s >= %s)",
+                SqlTarifkanteElementConverter.COL_CREATED_AT,
+                dateString,
+                SqlTarifkanteElementConverter.COL_MODIFIED_AT,
+                dateString
+            ));
+        }
+
+        if (conditions.size() > 0) {
+            return " WHERE " + String.join(" AND ", conditions);
+        } else {
+            return "";
+        }
     }
 }

@@ -1,12 +1,13 @@
 package com.tschanz.geobooster.quadtree.model;
 
+import com.tschanz.geobooster.versioning.model.HasId;
 import lombok.Getter;
 
 import java.util.List;
 
 
 @Getter
-public class QuadTree<T> {
+public class QuadTree<T extends HasId> {
     private final int maxDepth;
     private final QuadTreeExtent extent;
     private final QuadTreeNode<T> rootNode;

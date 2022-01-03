@@ -16,13 +16,33 @@ public class VersionedObjectMap<E extends Element, V extends Version> {
 
 
     public VersionedObjectMap(Collection<E> elements, Collection<V> versions) {
-        elements.forEach(e -> elementMap.put(e.getId(), e));
-        versions.forEach(version -> {
-            versionMap.put(version.getId(), version);
+        elements.forEach(this::putElement);
+        versions.forEach(this::putVersion);
+    }
 
-            var evIds = this.elementVersionIds.computeIfAbsent(version.getElementId(), k -> new ArrayList<>());
-            evIds.add(version.getId());
-        });
+
+    public void putElement(E element) {
+        this.elementMap.put(element.getId(), element);
+    }
+
+
+    public void putVersion(V version) {
+        this.versionMap.put(version.getId(), version);
+        var evIds = this.elementVersionIds.computeIfAbsent(version.getElementId(), k -> new ArrayList<>());
+        evIds.add(version.getId());
+    }
+
+
+    public void deleteElement(long id) {
+        this.elementMap.remove(id);
+    }
+
+
+    public void deleteVersion(long id) {
+        var elementId = this.versionMap.get(id).getElementId();
+        var evIds = this.elementVersionIds.get(elementId);
+        evIds.remove(id);
+        this.versionMap.remove(id);
     }
 
 
