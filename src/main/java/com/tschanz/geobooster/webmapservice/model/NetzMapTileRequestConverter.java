@@ -16,6 +16,7 @@ public class NetzMapTileRequestConverter {
             mapRequest.hasLayerHaltestellen(),
             mapRequest.hasLayerVerkehrskanten(),
             mapRequest.hasLayerTarifkanten(),
+            mapRequest.hasLayerUnmappedTarifkanten(),
             mapRequest.getViewparams().isShowTerminiert(),
             mapRequest.isTransparent()
         );

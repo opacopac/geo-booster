@@ -97,7 +97,7 @@ public class TarifkanteRepoImpl implements TarifkanteRepo {
 
 
     @Override
-    public List<TarifkanteVersion> searchVersions(LocalDate date, Extent extent, List<VerkehrsmittelTyp> vmTypes, List<Long> verwaltungVersionIds) {
+    public List<TarifkanteVersion> searchVersions(LocalDate date, Extent extent, List<VerkehrsmittelTyp> vmTypes, List<Long> verwaltungVersionIds, boolean showUnmapped) {
         if (this.connectionState.isTrackChanges()) {
             this.updateWhenChanged();
         }
@@ -113,7 +113,13 @@ public class TarifkanteRepoImpl implements TarifkanteRepo {
             .filter(tkV -> date.isEqual(tkV.getGueltigVon()) || date.isAfter(tkV.getGueltigVon()))
             .filter(tkV -> date.isEqual(tkV.getGueltigBis()) || date.isBefore(tkV.getGueltigBis()))
             .filter(tkV -> vmTypes.isEmpty() || this.hasOneOfVmTypes(tkV, vmTypes))
-            .filter(tkV -> verwaltungIds.isEmpty() || this.hasOneOfVerwaltungIds(tkV, verwaltungIds))
+            .filter(tkV -> {
+                if (showUnmapped) {
+                    return tkV.getVerkehrskanteIds().size() == 0;
+                } else {
+                    return verwaltungIds.isEmpty() || this.hasOneOfVerwaltungIds(tkV, verwaltungIds);
+                }
+            })
             .collect(Collectors.toList());
     }
 

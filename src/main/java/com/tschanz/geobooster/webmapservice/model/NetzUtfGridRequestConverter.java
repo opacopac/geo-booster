@@ -16,6 +16,7 @@ public class NetzUtfGridRequestConverter {
             mapRequest.hasLayerHaltestellen(),
             mapRequest.hasLayerVerkehrskanten(),
             mapRequest.hasLayerTarifkanten(),
+            mapRequest.hasLayerUnmappedTarifkanten(),
             mapRequest.getViewparams().isShowTerminiert()
         );
     }

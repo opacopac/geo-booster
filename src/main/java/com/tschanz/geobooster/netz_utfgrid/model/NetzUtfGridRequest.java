@@ -22,5 +22,6 @@ public class NetzUtfGridRequest {
     private final boolean showHaltestellen;
     private final boolean showVerkehrskanten;
     private final boolean showTarifkanten;
+    private final boolean showUnmappedTarifkanten;
     private final boolean showTerminiert;
 }
