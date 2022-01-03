@@ -34,6 +34,8 @@ public class WmsController {
     private static final String RESP_CACHE_CONTROL_VALUE = "no-cache, no-store, max-age=0, must-revalidate";
     private static final String RESP_PRAGMA_KEY = "Pragma";
     private static final String RESP_PRAGMA_VALUE = "no-cache";
+    private static final String RESP_EXPIRES_KEY = "Expires";
+    private static final String RESP_EXPIRES_VALUE = "0";
     private static final Logger logger = LogManager.getLogger(WmsController.class);
 
     private final NetzUtfGridService netzUtfGridService;
@@ -59,9 +61,7 @@ public class WmsController {
         this.wmsState.incPngRequestCount();
         this.wmsState.nextPngRequestMs(msElapsed);
 
-        response.setHeader(RESP_CONTENT_DISPO_KEY, RESP_CONTENT_DISPO_VALUE + this.getFilename(mapRequest) + ".png");
-        response.setHeader(RESP_CACHE_CONTROL_KEY, RESP_CACHE_CONTROL_VALUE);
-        response.setHeader(RESP_PRAGMA_KEY, RESP_PRAGMA_VALUE);
+        this.setHeaders(response, this.getFilename(mapRequest) + ".png");
 
         return mapTileResponse.getImgBytes();
     }
@@ -85,9 +85,7 @@ public class WmsController {
         this.wmsState.incUtfGridRequestCount();
         this.wmsState.nextUtfGridRequestMs(msElapsed);
 
-        response.setHeader(RESP_CONTENT_DISPO_KEY, RESP_CONTENT_DISPO_VALUE + this.getFilename(mapRequest));
-        response.setHeader(RESP_CACHE_CONTROL_KEY, RESP_CACHE_CONTROL_VALUE);
-        response.setHeader(RESP_PRAGMA_KEY, RESP_PRAGMA_VALUE);
+        this.setHeaders(response, this.getFilename(mapRequest));
 
         return utfGridResponse.getText();
     }
@@ -118,5 +116,13 @@ public class WmsController {
             CoordinateConverter.convertToEpsg4326(mapRequest.getBbox().getMaxCoordinate()).getLatitude(),
             CoordinateConverter.convertToEpsg4326(mapRequest.getBbox().getMaxCoordinate()).getLongitude()
         ));
+    }
+
+
+    private void setHeaders(HttpServletResponse response, String filename) {
+        response.setHeader(RESP_CONTENT_DISPO_KEY, RESP_CONTENT_DISPO_VALUE + filename);
+        response.setHeader(RESP_CACHE_CONTROL_KEY, RESP_CACHE_CONTROL_VALUE);
+        response.setHeader(RESP_PRAGMA_KEY, RESP_PRAGMA_VALUE);
+        response.setHeader(RESP_EXPIRES_KEY, RESP_EXPIRES_VALUE);
     }
 }
