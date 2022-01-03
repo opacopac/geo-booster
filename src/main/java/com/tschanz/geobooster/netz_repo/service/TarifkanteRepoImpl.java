@@ -260,6 +260,7 @@ public class TarifkanteRepoImpl implements TarifkanteRepo {
 
     @SneakyThrows
     private synchronized void updateWhenChanged() {
+        // skip check in subsequent requests within 5 seconds
         if (LocalDateTime.now().isBefore(this.lastChangeCheck.plusSeconds(DEBOUNCE_TIME_LAST_CHANGE_CHECK_SEC))) {
             return;
         }
