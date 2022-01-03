@@ -17,9 +17,8 @@ public class SqlConnection {
 
 
     @SneakyThrows
-    public void closeAll() {
+    public void closeResultsetAndStatement() {
         this.statement.getResultSet().close();
         this.statement.close();
-        this.connection.close();
     }
 }

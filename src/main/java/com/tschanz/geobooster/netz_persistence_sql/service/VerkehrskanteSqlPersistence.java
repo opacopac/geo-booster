@@ -17,7 +17,7 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-public class VerkehrskanteSql implements VerkehrskantePersistence {
+public class VerkehrskanteSqlPersistence implements VerkehrskantePersistence {
     private final SqlConnectionFactory connectionFactory;
     private final VerkehrskanteAuspraegungPersistence vkaPersistenceRepo;
 

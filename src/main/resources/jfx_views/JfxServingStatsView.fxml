@@ -13,6 +13,7 @@
             <ColumnConstraints hgrow="ALWAYS"/>
             <ColumnConstraints hgrow="ALWAYS"/>
             <ColumnConstraints hgrow="ALWAYS"/>
+            <ColumnConstraints hgrow="ALWAYS"/>
         </columnConstraints>
         <rowConstraints>
             <RowConstraints vgrow="ALWAYS"/>
@@ -29,5 +30,7 @@
         <Label fx:id="utfGridResponseTimeMs1" text="-" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
         <Label fx:id="pngResponseTimeMs2" text="-" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
         <Label fx:id="utfGridResponseTimeMs2" text="-" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+        <Label fx:id="pngResponseTimeMs3" text="-" GridPane.columnIndex="4" GridPane.rowIndex="0"/>
+        <Label fx:id="utfGridResponseTimeMs3" text="-" GridPane.columnIndex="4" GridPane.rowIndex="1"/>
     </GridPane>
 </AnchorPane>

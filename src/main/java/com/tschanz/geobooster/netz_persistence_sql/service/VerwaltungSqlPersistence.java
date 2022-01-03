@@ -15,7 +15,7 @@ import java.util.Collection;
 
 @Service
 @RequiredArgsConstructor
-public class VerwaltungSql implements VerwaltungPersistence {
+public class VerwaltungSqlPersistence implements VerwaltungPersistence {
     private final SqlConnectionFactory connectionFactory;
 
 

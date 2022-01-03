@@ -6,6 +6,7 @@ import com.tschanz.geobooster.netz_persistence.service.TarifkantePersistence;
 import com.tschanz.geobooster.netz_persistence_sql.model.SqlTarifkanteElementConverter;
 import com.tschanz.geobooster.netz_persistence_sql.model.SqlTarifkanteVersionConverter;
 import com.tschanz.geobooster.persistence_sql.service.SqlConnectionFactory;
+import com.tschanz.geobooster.persistence_sql.service.SqlHelper;
 import com.tschanz.geobooster.util.model.Timer;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -14,15 +15,14 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
 
 @Service
 @RequiredArgsConstructor
-public class TarifkanteSql implements TarifkantePersistence {
-    private static final Logger logger = LogManager.getLogger(TarifkanteSql.class);
+public class TarifkanteSqlPersistence implements TarifkantePersistence {
+    private static final Logger logger = LogManager.getLogger(TarifkanteSqlPersistence.class);
     private static final int MAX_COUNT_TKV_CHANGED_SINCE = 1000; // limit for IN clause
 
     private final SqlConnectionFactory connectionFactory;
@@ -30,12 +30,13 @@ public class TarifkanteSql implements TarifkantePersistence {
 
     @Override
     public Collection<Tarifkante> readAllElements() {
-        return this.readAllElements(null);
+        return this.readChangedElements(null);
     }
 
 
+    @Override
     @SneakyThrows
-    public Collection<Tarifkante> readAllElements(LocalDate changedSince) {
+    public Collection<Tarifkante> readChangedElements(LocalDate changedSince) {
         var sqlReader = new SqlReader<>(
             this.connectionFactory,
             new SqlTarifkanteElementConverter(),
@@ -58,12 +59,13 @@ public class TarifkanteSql implements TarifkantePersistence {
 
     @Override
     public Collection<TarifkanteVersion> readAllVersions() {
-        return this.readAllVersions(null);
+        return this.readChangedVersions(null);
     }
 
 
+    @Override
     @SneakyThrows
-    public Collection<TarifkanteVersion> readAllVersions(LocalDate changedSince) {
+    public Collection<TarifkanteVersion> readChangedVersions(LocalDate changedSince) {
         var sqlReader = new SqlReader<>(
             this.connectionFactory,
             new SqlTarifkanteVersionConverter(),
@@ -84,7 +86,7 @@ public class TarifkanteSql implements TarifkantePersistence {
 
         // add linked vks
         List<Long> onlyTkVIds = null;
-        if (changedSince != null && tkVs.size() < MAX_COUNT_TKV_CHANGED_SINCE) {
+        if (changedSince != null && tkVs.size() > 0 && tkVs.size() < MAX_COUNT_TKV_CHANGED_SINCE) {
             onlyTkVIds = tkVs.stream().map(TarifkanteVersion::getId).collect(Collectors.toList());
         }
         var tkVkMap = this.readTkVkMap(onlyTkVIds);
@@ -101,7 +103,7 @@ public class TarifkanteSql implements TarifkantePersistence {
 
     @SneakyThrows
     private Map<Long, List<Long>> readTkVkMap(List<Long> onlyTkVIds) {
-        var connection = this.connectionFactory.createConnection();
+        var connection = this.connectionFactory.getConnection();
         var query = "SELECT ID_TARIFKANTE_V, ID_VERKEHRS_KANTE_E FROM N_TARIFKANTE_X_N_VERK_KANTE_E";
         if (onlyTkVIds != null) {
             query += String.format(" WHERE ID_TARIFKANTE_V IN (%s)", onlyTkVIds.stream().map(Object::toString).collect(Collectors.joining(",")));
@@ -130,19 +132,21 @@ public class TarifkanteSql implements TarifkantePersistence {
             }
         }
 
-        connection.closeAll();
+        connection.closeResultsetAndStatement();
 
         return tkVkMap;
     }
 
 
     private String getWhereClause(LocalDate changedSince) {
+        var dialect = this.connectionFactory.getSqlDialect();
+        var dateString = SqlHelper.getToDate(dialect, changedSince);
         return String.format(
-            " WHERE %s >= TO_DATE(%s, 'YYYY-MM-DD') OR %s >= TO_DATE(%s, 'YYYY-MM-DD')",
+            " WHERE %s >= %s OR %s >= %s",
             SqlTarifkanteElementConverter.COL_CREATED_AT,
-            changedSince.format(DateTimeFormatter.ISO_DATE),
+            dateString,
             SqlTarifkanteElementConverter.COL_MODIFIED_AT,
-            changedSince.format(DateTimeFormatter.ISO_DATE)
+            dateString
         );
     }
 }

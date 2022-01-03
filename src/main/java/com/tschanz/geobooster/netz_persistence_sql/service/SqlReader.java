@@ -27,7 +27,7 @@ public class SqlReader<T, K> {
         logger.debug(String.format("executing query %s", query));
 
         var entries = new ArrayList<T>();
-        var connection = connectionFactory.createConnection();
+        var connection = connectionFactory.getConnection();
 
         if (connection.getStatement().execute(query)) {
             var i = 0;
@@ -44,7 +44,7 @@ public class SqlReader<T, K> {
             }
         }
 
-        connection.closeAll();
+        connection.closeResultsetAndStatement();
 
         return entries;
     }

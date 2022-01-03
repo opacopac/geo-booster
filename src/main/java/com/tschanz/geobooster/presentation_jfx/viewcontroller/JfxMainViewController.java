@@ -34,8 +34,7 @@ public class JfxMainViewController implements MainViewController, MainViewPresen
     @Override
     public void bindActions(GbActions gbActions) {
         this.connectionViewController.bindActions(
-            gbActions.getSelectDrAction(),
-            gbActions.getLoadDrAction()
+            gbActions.getConnectionActions()
         );
     }
 

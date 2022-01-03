@@ -1,5 +1,7 @@
 package com.tschanz.geobooster.persistence_sql.model;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -10,7 +12,8 @@ import java.util.stream.Collectors;
 @Component
 public class ConnectionState {
     private final DataSourceProperties dataSourceProperties;
-    private SqlConnectionProperties selectedConnection;
+    private SqlConnectionProperties selectedConnectionProperties;
+    @Getter @Setter private boolean trackChanges = false;
 
 
     public ConnectionState(DataSourceProperties dataSourceProperties) {
@@ -26,11 +29,11 @@ public class ConnectionState {
 
 
     public void selectConnection(int index) {
-        this.selectedConnection = this.dataSourceProperties.getConnection()[index];
+        this.selectedConnectionProperties = this.dataSourceProperties.getConnection()[index];
     }
 
 
     public SqlConnectionProperties getConnectionProperties() {
-        return this.selectedConnection;
+        return this.selectedConnectionProperties;
     }
 }

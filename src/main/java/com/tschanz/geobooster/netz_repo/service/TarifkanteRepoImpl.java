@@ -10,6 +10,7 @@ import com.tschanz.geobooster.netz_persistence.service.TarifkantePersistence;
 import com.tschanz.geobooster.netz_repo.model.ProgressState;
 import com.tschanz.geobooster.netz_repo.model.QuadTreeConfig;
 import com.tschanz.geobooster.netz_repo.model.TarifkanteRepoState;
+import com.tschanz.geobooster.persistence_sql.model.ConnectionState;
 import com.tschanz.geobooster.quadtree.model.AreaQuadTree;
 import com.tschanz.geobooster.quadtree.model.AreaQuadTreeItem;
 import com.tschanz.geobooster.quadtree.model.QuadTreeCoordinate;
@@ -38,6 +39,7 @@ public class TarifkanteRepoImpl implements TarifkanteRepo {
     private final VerkehrskanteRepo vkRepo;
     private final ProgressState progressState;
     private final TarifkanteRepoState tarifkanteRepoState;
+    private final ConnectionState connectionState;
 
     private VersionedObjectMap<Tarifkante, TarifkanteVersion> versionedObjectMap;
     private AreaQuadTree<TarifkanteVersion> versionQuadTree;
@@ -110,6 +112,10 @@ public class TarifkanteRepoImpl implements TarifkanteRepo {
 
     @Override
     public List<TarifkanteVersion> searchVersions(LocalDate date, Extent extent, List<VerkehrsmittelTyp> vmTypes, List<Long> verwaltungVersionIds) {
+        if (this.connectionState.isTrackChanges()) {
+            this.checkForChanges();
+        }
+
         var verwaltungIds = verwaltungVersionIds.stream()
             .map(verwVId -> this.verwaltungRepo.getVersion(verwVId).getElementId())
             .collect(Collectors.toList());
@@ -229,5 +235,24 @@ public class TarifkanteRepoImpl implements TarifkanteRepo {
         );
 
         return new QuadTreeExtent(minCoord, maxCoord);
+    }
+
+
+    private void checkForChanges() {
+        logger.info("checking for changes in tk elements...");
+        var newTkEs = this.tkPersistenceRepo.readChangedElements(LocalDate.now().minusDays(1));
+        if (newTkEs.size() > 0) {
+            logger.info(String.format("new tk elements found: %s", newTkEs.stream().map(Tarifkante::getId).collect(Collectors.toList())));
+            // TODO: update index
+        }
+        logger.info("done.");
+
+        logger.info("checking for changes in tk versions...");
+        var newTkVs = this.tkPersistenceRepo.readChangedVersions(LocalDate.now().minusDays(1));
+        if (newTkVs.size() > 0) {
+            logger.info(String.format("new tk versions found: %s", newTkVs.stream().map(TarifkanteVersion::getId).collect(Collectors.toList())));
+            // TODO: update index
+        }
+        logger.info("done.");
     }
 }

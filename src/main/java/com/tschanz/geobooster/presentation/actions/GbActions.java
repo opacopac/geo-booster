@@ -9,6 +9,5 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class GbActions {
-    private final SelectDrAction selectDrAction;
-    private final LoadDrAction loadDrAction;
+    private final ConnectionActions connectionActions;
 }

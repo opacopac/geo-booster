@@ -15,7 +15,7 @@ import java.util.Collection;
 
 @Service
 @RequiredArgsConstructor
-public class HaltestelleSql implements HaltestellenPersistence {
+public class HaltestelleSqlPersistence implements HaltestellenPersistence {
     private final SqlConnectionFactory connectionFactory;
 
 

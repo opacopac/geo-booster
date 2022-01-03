@@ -15,7 +15,7 @@ import java.util.Collection;
 
 @Service
 @RequiredArgsConstructor
-public class BetreiberSql implements BetreiberPersistence {
+public class BetreiberSqlPersistence implements BetreiberPersistence {
     private final SqlConnectionFactory connectionFactory;
 
 

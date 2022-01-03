@@ -1,5 +1,6 @@
 package com.tschanz.geobooster.presentation.actions;
 
+import com.tschanz.geobooster.TestSqlPersistence;
 import com.tschanz.geobooster.netz_persistence.service.*;
 import com.tschanz.geobooster.netz_repo.service.*;
 import com.tschanz.geobooster.presentation.model.GbState;
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class LoadDrAction {
+public class ConnectionActions {
     private final BetreiberPersistence betreiberPersistence;
     private final VerwaltungPersistence verwaltungPersistence;
     private final HaltestellenPersistence haltestellenPersistence;
@@ -21,6 +22,17 @@ public class LoadDrAction {
     private final VerkehrskanteRepo verkehrskanteRepo;
     private final TarifkanteRepo tarifkanteRepo;
     private final GbState gbState;
+    private final TestSqlPersistence testSqlPersistence;
+
+
+    public void selectConnection(int index) {
+        this.gbState.getConnectionState().selectConnection(index);
+    }
+
+
+    public void setTrackChanges(boolean trackChanges) {
+        this.gbState.getConnectionState().setTrackChanges(trackChanges);
+    }
 
 
     public void loadDr() {
@@ -38,6 +50,17 @@ public class LoadDrAction {
                 this.gbState.getProgressState().updateProgressText(String.format("ERROR loading dr: %s", e.getMessage()));
                 this.gbState.getProgressState().updateIsInProgress(false);
             }
+        }).start();
+    }
+
+
+    public void test() {
+        new Thread(() -> {
+            this.testSqlPersistence.test1();
+            this.testSqlPersistence.test2();
+            this.testSqlPersistence.test3();
+            this.testSqlPersistence.test4();
+            this.testSqlPersistence.test5();
         }).start();
     }
 }

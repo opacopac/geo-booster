@@ -14,6 +14,8 @@ public class JfxServingStatsViewController implements ServingStatsViewPresenter 
     @FXML private Label utfGridResponseTimeMs1;
     @FXML private Label pngResponseTimeMs2;
     @FXML private Label utfGridResponseTimeMs2;
+    @FXML private Label pngResponseTimeMs3;
+    @FXML private Label utfGridResponseTimeMs3;
 
     @Override
     public void bindState(WmsState wmsState) {
@@ -28,25 +30,36 @@ public class JfxServingStatsViewController implements ServingStatsViewPresenter 
             });
         });
 
-        wmsState.getPngRequestMs$(10).subscribe(timeMs -> {
+        wmsState.getPngRequestMs$(1).subscribe(timeMs -> {
             Platform.runLater(() -> {
                 this.pngResponseTimeMs1.setText(timeMs + "ms");
             });
         });
-        wmsState.getUtfGridRequestMs$(10).subscribe(timeMs -> {
+        wmsState.getUtfGridRequestMs$(1).subscribe(timeMs -> {
             Platform.runLater(() -> {
                 this.utfGridResponseTimeMs1.setText(timeMs + "ms");
             });
         });
 
-        wmsState.getPngRequestMs$(50).subscribe(timeMs -> {
+        wmsState.getPngRequestMs$(10).subscribe(timeMs -> {
             Platform.runLater(() -> {
                 this.pngResponseTimeMs2.setText(timeMs + "ms");
             });
         });
-        wmsState.getUtfGridRequestMs$(50).subscribe(timeMs -> {
+        wmsState.getUtfGridRequestMs$(10).subscribe(timeMs -> {
             Platform.runLater(() -> {
                 this.utfGridResponseTimeMs2.setText(timeMs + "ms");
+            });
+        });
+
+        wmsState.getPngRequestMs$(50).subscribe(timeMs -> {
+            Platform.runLater(() -> {
+                this.pngResponseTimeMs3.setText(timeMs + "ms");
+            });
+        });
+        wmsState.getUtfGridRequestMs$(50).subscribe(timeMs -> {
+            Platform.runLater(() -> {
+                this.utfGridResponseTimeMs3.setText(timeMs + "ms");
             });
         });
     }

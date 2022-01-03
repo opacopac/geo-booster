@@ -15,7 +15,7 @@ import java.util.Collection;
 
 @Service
 @RequiredArgsConstructor
-public class VerkehrskanteAuspraegungSql implements VerkehrskanteAuspraegungPersistence {
+public class VerkehrskanteAuspraegungSqlPersistence implements VerkehrskanteAuspraegungPersistence {
     private final SqlConnectionFactory connectionFactory;
 
 
