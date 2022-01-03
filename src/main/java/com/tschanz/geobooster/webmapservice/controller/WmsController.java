@@ -30,6 +30,10 @@ public class WmsController {
     private static final String RESP_UTFGRID_CONTENT_TYPE = "application/json;type=utfgrid";
     private static final String RESP_CONTENT_DISPO_KEY = "Content-Disposition";
     private static final String RESP_CONTENT_DISPO_VALUE = "inline; filename=";
+    private static final String RESP_CACHE_CONTROL_KEY = "Cache-Control";
+    private static final String RESP_CACHE_CONTROL_VALUE = "no-cache, no-store, max-age=0, must-revalidate";
+    private static final String RESP_PRAGMA_KEY = "Pragma";
+    private static final String RESP_PRAGMA_VALUE = "no-cache";
     private static final Logger logger = LogManager.getLogger(WmsController.class);
 
     private final NetzUtfGridService netzUtfGridService;
@@ -48,15 +52,16 @@ public class WmsController {
         var mapRequest = GetMapRequest.fromParams(allParams);
         this.logMapRequest("PNG", mapRequest);
 
-        var fileName = this.getFilename(mapRequest) + ".png";
-        response.setHeader(RESP_CONTENT_DISPO_KEY, RESP_CONTENT_DISPO_VALUE + fileName);
-
         var mapTileRequest = NetzMapTileRequestConverter.fromMapRequest(mapRequest);
         var mapTileResponse = this.netzMapTileService.getResponse(mapTileRequest);
 
         var msElapsed = Instant.now().toEpochMilli() - startMs;
         this.wmsState.incPngRequestCount();
         this.wmsState.nextPngRequestMs(msElapsed);
+
+        response.setHeader(RESP_CONTENT_DISPO_KEY, RESP_CONTENT_DISPO_VALUE + this.getFilename(mapRequest) + ".png");
+        response.setHeader(RESP_CACHE_CONTROL_KEY, RESP_CACHE_CONTROL_VALUE);
+        response.setHeader(RESP_PRAGMA_KEY, RESP_PRAGMA_VALUE);
 
         return mapTileResponse.getImgBytes();
     }
@@ -73,15 +78,16 @@ public class WmsController {
         var mapRequest = GetMapRequest.fromParams(allParams);
         this.logMapRequest("UTF grid", mapRequest);
 
-        var fileName = this.getFilename(mapRequest);
-        response.setHeader(RESP_CONTENT_DISPO_KEY, RESP_CONTENT_DISPO_VALUE + fileName);
-
         var utfGridRequest = NetzUtfGridRequestConverter.fromMapRequest(mapRequest);
         var utfGridResponse = this.netzUtfGridService.getResponse(utfGridRequest);
 
         var msElapsed = Instant.now().toEpochMilli() - startMs;
         this.wmsState.incUtfGridRequestCount();
         this.wmsState.nextUtfGridRequestMs(msElapsed);
+
+        response.setHeader(RESP_CONTENT_DISPO_KEY, RESP_CONTENT_DISPO_VALUE + this.getFilename(mapRequest));
+        response.setHeader(RESP_CACHE_CONTROL_KEY, RESP_CACHE_CONTROL_VALUE);
+        response.setHeader(RESP_PRAGMA_KEY, RESP_PRAGMA_VALUE);
 
         return utfGridResponse.getText();
     }

@@ -17,6 +17,7 @@ public class GetMapRequest {
     private static final String LAYER_HALTESTELLEN = "novap:HALTESTELLEN";
     private static final String LAYER_VERKEHRSKANTEN = "novap:VERKEHRSKANTEN";
     private static final String LAYER_TARIFKANTEN = "novap:TARIFKANTEN";
+    private static final String LAYER_UNMAPPED_TARIFKANTEN = "novap:UNMAPPED_TARIFKANTEN";
     private static final String PARAM_VERSION = "version";
     private static final String PARAM_LAYERS = "layers";
     private static final String PARAM_STYLES = "styles";
@@ -76,5 +77,10 @@ public class GetMapRequest {
 
     public boolean hasLayerTarifkanten() {
         return this.layers.contains(GetMapRequest.LAYER_TARIFKANTEN);
+    }
+
+
+    public boolean hasLayerUnmappedTarifkanten() {
+        return this.layers.contains(GetMapRequest.LAYER_UNMAPPED_TARIFKANTEN);
     }
 }
