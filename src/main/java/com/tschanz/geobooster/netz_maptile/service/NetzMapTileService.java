@@ -50,7 +50,7 @@ public class NetzMapTileService {
         logger.info(String.format("found %d vk versions", vkVersions.size()));
 
         logger.info("searching tk versions...");
-        List<TarifkanteVersion> tkVersions = request.isShowTarifkanten()
+        List<TarifkanteVersion> tkVersions = request.isShowTarifkanten() || request.isShowUnmappedTarifkanten()
             ? this.tarifkanteRepo.searchVersions(request.getDate(), request.getBbox(), request.getVmTypes(), request.getVerwaltungVersionIds(), request.isShowUnmappedTarifkanten())
             : Collections.emptyList();
         logger.info(String.format("found %d tk versions", tkVersions.size()));

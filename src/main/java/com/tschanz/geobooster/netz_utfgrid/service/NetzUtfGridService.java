@@ -46,7 +46,7 @@ public class NetzUtfGridService {
         logger.info(String.format("found %d vk versions", vkVersions.size()));
 
         logger.info("searching tk versions...");
-        List<TarifkanteVersion> tkVersions = request.isShowTarifkanten()
+        List<TarifkanteVersion> tkVersions = request.isShowTarifkanten() || request.isShowUnmappedTarifkanten()
             ? this.tarifkanteRepo.searchVersions(request.getDate(), request.getBbox(), request.getVmTypes(), request.getVerwaltungVersionIds(), request.isShowUnmappedTarifkanten())
             : Collections.emptyList();
         logger.info(String.format("found %d tk versions", tkVersions.size()));
@@ -60,7 +60,7 @@ public class NetzUtfGridService {
         var utfGridTkConverter = new UtfGridTarifkanteConverter(this.tarifkanteRepo);
         var utfGridVkConverter = new UtfGridVerkehrskanteConverter(this.verkehrskanteRepo);
         var lineItems = Stream.concat(
-            tkVersions.stream().map(tkV -> utfGridTkConverter.toUtfGrid(tkV, request.getZoomLevel())),
+            tkVersions.stream().map(tkV -> utfGridTkConverter.toUtfGrid(tkV, request.getZoomLevel(), request.isShowUnmappedTarifkanten())),
             vkVersions.stream().map(vkV -> utfGridVkConverter.toUtfGrid(vkV, request.getZoomLevel()))
         ).collect(Collectors.toList());
 
