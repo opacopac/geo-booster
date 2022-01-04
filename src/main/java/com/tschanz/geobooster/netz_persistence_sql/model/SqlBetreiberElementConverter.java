@@ -14,8 +14,8 @@ public class SqlBetreiberElementConverter implements SqlResultsetConverter<Betre
     public final static String[] SELECT_COLS = ArrayHelper.appendTo(SqlElementConverter.SELECT_COLS, COL_NAME, COL_ABK);
 
 
-    @SneakyThrows
     @Override
+    @SneakyThrows
     public Betreiber fromResultSet(ResultSet row) {
         return new Betreiber(
             SqlElementConverter.getId(row),

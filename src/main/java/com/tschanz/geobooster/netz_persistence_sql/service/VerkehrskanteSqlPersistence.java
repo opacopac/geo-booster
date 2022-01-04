@@ -25,12 +25,7 @@ public class VerkehrskanteSqlPersistence implements VerkehrskantePersistence {
     @Override
     @SneakyThrows
     public Collection<Verkehrskante> readAllElements() {
-        var sqlReader = new SqlReader<>(
-            this.connectionFactory,
-            new SqlVerkehrskanteElementConverter(),
-            "%d vk elements loaded...",
-            2
-        );
+        var sqlReader = new SqlReader<>(this.connectionFactory, new SqlVerkehrskanteElementConverter());
         var query = String.format(
             "SELECT %s FROM N_VERKEHRSKANTE_E",
             String.join(",", SqlVerkehrskanteElementConverter.SELECT_COLS)
@@ -43,17 +38,11 @@ public class VerkehrskanteSqlPersistence implements VerkehrskantePersistence {
     @Override
     @SneakyThrows
     public Collection<VerkehrskanteVersion> readAllVersions() {
-        // read vkas
         var vkaList = this.vkaPersistenceRepo.readAllElements();
         //var vkaVList = this.vkaPersistenceRepo.readAllVersions(); // TODO: version map not needed?
         var vkVkasMap = this.createVkVkasMap(vkaList);
 
-        var sqlReader = new SqlReader<>(
-            this.connectionFactory,
-            new SqlVerkehrskanteVersionConverter(vkVkasMap),
-            "%d vk versions loaded...",
-            2
-        );
+        var sqlReader = new SqlReader<>(this.connectionFactory, new SqlVerkehrskanteVersionConverter(vkVkasMap));
         var query = String.format(
             "SELECT %s FROM N_VERKEHRSKANTE_V",
             String.join(",", SqlVerkehrskanteVersionConverter.SELECT_COLS)

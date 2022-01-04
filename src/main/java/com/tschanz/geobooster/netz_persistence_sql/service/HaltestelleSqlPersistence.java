@@ -22,12 +22,7 @@ public class HaltestelleSqlPersistence implements HaltestellenPersistence {
     @Override
     @SneakyThrows
     public Collection<Haltestelle> readAllElements() {
-        var sqlReader = new SqlReader<>(
-            this.connectionFactory,
-            new SqlHaltestelleElementConverter(),
-            "%d hst elements loaded...",
-            2
-        );
+        var sqlReader = new SqlReader<>(this.connectionFactory, new SqlHaltestelleElementConverter());
         var query = String.format(
             "SELECT %s FROM N_HALTESTELLE_E",
             String.join(",", SqlHaltestelleElementConverter.SELECT_COLS)
@@ -40,12 +35,7 @@ public class HaltestelleSqlPersistence implements HaltestellenPersistence {
     @Override
     @SneakyThrows
     public Collection<HaltestelleVersion> readAllVersions() {
-        var sqlReader = new SqlReader<>(
-            this.connectionFactory,
-            new SqlHaltestelleVersionConverter(),
-            "%d hst versions loaded...",
-            2
-        );
+        var sqlReader = new SqlReader<>(this.connectionFactory, new SqlHaltestelleVersionConverter());
         var query = String.format(
             "SELECT %s FROM N_HALTESTELLE_V",
             String.join(",", SqlHaltestelleVersionConverter.SELECT_COLS)

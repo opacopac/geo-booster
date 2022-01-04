@@ -118,17 +118,6 @@ public class VerkehrskanteRepoImpl implements VerkehrskanteRepo {
             .map(verwVId -> this.verwaltungRepo.getVersion(verwVId).getElementId())
             .collect(Collectors.toList());
 
-        var vkvs = this.versionQuadTree
-            .findItems(this.getQuadTreeExtent(extent.getMinCoordinate(), extent.getMaxCoordinate()))
-            .stream()
-            .map(AreaQuadTreeItem::getItem)
-            .collect(Collectors.toList());
-
-        var vkeIds = vkvs.stream().map(VerkehrskanteVersion::getElementId).collect(Collectors.toList());
-        var kiesenUttigen = vkeIds.contains(1646591L);
-        var wichtrachKiesen = vkeIds.contains(1652195L);
-        var bernMuensingen = vkeIds.contains(1652027L);
-
         return this.versionQuadTree
             .findItems(this.getQuadTreeExtent(extent.getMinCoordinate(), extent.getMaxCoordinate()))
             .stream()

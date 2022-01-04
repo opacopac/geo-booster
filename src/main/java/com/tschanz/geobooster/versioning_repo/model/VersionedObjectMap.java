@@ -51,8 +51,18 @@ public class VersionedObjectMap<E extends Element, V extends Version> {
     }
 
 
+    public Collection<Long> getAllElementKeys() {
+        return this.elementMap.keySet();
+    }
+
+
     public Collection<V> getAllVersions() {
         return this.versionMap.values();
+    }
+
+
+    public Collection<Long> getAllVersionKeys() {
+        return this.versionMap.keySet();
     }
 
 
@@ -61,9 +71,15 @@ public class VersionedObjectMap<E extends Element, V extends Version> {
     }
 
 
+    public boolean containsElement(long id) { return this.elementMap.containsKey(id); }
+
+
     public V getVersion(long id) {
         return this.versionMap.get(id);
     }
+
+
+    public boolean containsVersion(long id) { return this.elementMap.containsKey(id); }
 
 
     public List<V> getElementVersions(long elementId) {

@@ -2,7 +2,6 @@ package com.tschanz.geobooster.netz_persistence_sql.service;
 
 import com.tschanz.geobooster.netz_persistence_sql.model.SqlResultsetConverter;
 import com.tschanz.geobooster.persistence_sql.service.SqlConnectionFactory;
-import com.tschanz.geobooster.util.model.Timer;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.logging.log4j.LogManager;
@@ -13,13 +12,11 @@ import java.util.Collection;
 
 
 @RequiredArgsConstructor
-public class SqlReader<T, K> {
+public class SqlReader<T> {
     private static final Logger logger = LogManager.getLogger(SqlReader.class);
 
     private final SqlConnectionFactory connectionFactory;
     private final SqlResultsetConverter<T> resultsetConverter;
-    private final String logText;
-    private final int logIntervalSec;
 
 
     @SneakyThrows
@@ -30,14 +27,7 @@ public class SqlReader<T, K> {
         var connection = connectionFactory.getConnection();
 
         if (connection.getStatement().execute(query)) {
-            var i = 0;
-            var timer = new Timer();
             while (connection.getStatement().getResultSet().next()) {
-                i++;
-                if (timer.checkSecElapsed(logIntervalSec)) {
-                    logger.info(String.format(logText, i));
-                }
-
                 var resultSet = connection.getStatement().getResultSet();
                 var entry = resultsetConverter.fromResultSet(resultSet);
                 entries.add(entry);

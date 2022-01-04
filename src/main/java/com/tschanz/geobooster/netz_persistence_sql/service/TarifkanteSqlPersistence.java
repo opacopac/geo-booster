@@ -8,8 +8,8 @@ import com.tschanz.geobooster.netz_persistence_sql.model.SqlTarifkanteElementCon
 import com.tschanz.geobooster.netz_persistence_sql.model.SqlTarifkanteVersionConverter;
 import com.tschanz.geobooster.persistence_sql.service.SqlConnectionFactory;
 import com.tschanz.geobooster.persistence_sql.service.SqlHelper;
-import com.tschanz.geobooster.util.model.Timer;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlElementConverter;
+import com.tschanz.geobooster.versioning_persistence_sql.model.SqlVersionIdConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.logging.log4j.LogManager;
@@ -37,18 +37,11 @@ public class TarifkanteSqlPersistence implements TarifkantePersistence {
     @Override
     @SneakyThrows
     public Collection<Tarifkante> readElements(ReadFilter filter) {
-        var sqlReader = new SqlReader<>(
-            this.connectionFactory,
-            new SqlTarifkanteElementConverter(),
-            "%d tk elements loaded...",
-            2
-        );
-
+        var sqlReader = new SqlReader<>(this.connectionFactory, new SqlTarifkanteElementConverter());
         var query = String.format(
             "SELECT %s FROM N_TARIFKANTE_E",
             String.join(",", SqlTarifkanteElementConverter.SELECT_COLS)
         );
-
         if (filter != null) {
             query += this.getWhereClauseForFilter(filter);
         }
@@ -66,13 +59,7 @@ public class TarifkanteSqlPersistence implements TarifkantePersistence {
     @Override
     @SneakyThrows
     public Collection<TarifkanteVersion> readVersions(ReadFilter filter) {
-        var sqlReader = new SqlReader<>(
-            this.connectionFactory,
-            new SqlTarifkanteVersionConverter(),
-            "%d tk versions loaded...",
-            2
-        );
-
+        var sqlReader = new SqlReader<>(this.connectionFactory, new SqlTarifkanteVersionConverter());
         var query = String.format(
             "SELECT %s FROM N_TARIFKANTE_V",
             String.join(",", SqlTarifkanteVersionConverter.SELECT_COLS)
@@ -101,6 +88,38 @@ public class TarifkanteSqlPersistence implements TarifkantePersistence {
     }
 
 
+    @Override
+    @SneakyThrows
+    public long readVersionCount() {
+        var connection = this.connectionFactory.getConnection();
+        var query = "SELECT COUNT(*) AS TKV_COUNT FROM N_TARIFKANTE_V";
+
+        var tkvCount = 0L;
+        if (connection.getStatement().execute(query)) {
+            connection.getStatement().getResultSet().next();
+            var resultSet = connection.getStatement().getResultSet();
+            tkvCount = resultSet.getLong("TKV_COUNT");
+        }
+
+        connection.closeResultsetAndStatement();
+
+        return tkvCount;
+    }
+
+
+    @Override
+    @SneakyThrows
+    public Collection<Long> readAllVersionIds() {
+        var sqlReader = new SqlReader<>(this.connectionFactory, new SqlVersionIdConverter());
+        var query = String.format(
+            "SELECT %s FROM N_TARIFKANTE_V",
+            String.join(",", SqlVersionIdConverter.SELECT_COLS)
+        );
+
+        return sqlReader.read(query);
+    }
+
+
     @SneakyThrows
     private Map<Long, List<Long>> readTkVkMap(List<Long> onlyTkVIds) {
         var connection = this.connectionFactory.getConnection();
@@ -111,14 +130,7 @@ public class TarifkanteSqlPersistence implements TarifkantePersistence {
 
         var tkVkMap = new HashMap<Long, List<Long>>();
         if (connection.getStatement().execute(query)) {
-            var i = 0;
-            var timer = new Timer();
             while (connection.getStatement().getResultSet().next()) {
-                i++;
-                if (timer.checkSecElapsed(2)) {
-                    logger.info(i + " tk-vk mappings loaded...");
-                }
-
                 var resultSet = connection.getStatement().getResultSet();
                 var tkVId = resultSet.getLong("ID_TARIFKANTE_V");
                 var vkEId = resultSet.getLong("ID_VERKEHRS_KANTE_E");

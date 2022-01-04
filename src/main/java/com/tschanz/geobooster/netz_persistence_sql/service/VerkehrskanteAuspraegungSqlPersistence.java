@@ -22,12 +22,7 @@ public class VerkehrskanteAuspraegungSqlPersistence implements VerkehrskanteAusp
     @Override
     @SneakyThrows
     public Collection<VerkehrskanteAuspraegung> readAllElements() {
-        var sqlReader = new SqlReader<>(
-            this.connectionFactory,
-            new SqlVerkehrskanteAuspraegungElementConverter(),
-            "%d vka elements loaded...",
-            2
-        );
+        var sqlReader = new SqlReader<>(this.connectionFactory, new SqlVerkehrskanteAuspraegungElementConverter());
         var query = String.format(
             "SELECT %s FROM N_VERKEHRS_KANTE_AUSPR_E",
             String.join(",", SqlVerkehrskanteAuspraegungElementConverter.SELECT_COLS)
@@ -40,17 +35,11 @@ public class VerkehrskanteAuspraegungSqlPersistence implements VerkehrskanteAusp
     @Override
     @SneakyThrows
     public Collection<VerkehrskanteAuspraegungVersion> readAllVersions() {
-        var sqlReader = new SqlReader<>(
-            this.connectionFactory,
-            new SqlVerkehrskanteAuspraegungVersionConverter(),
-            "%d vka versions loaded...",
-            2
-        );
+        var sqlReader = new SqlReader<>(this.connectionFactory, new SqlVerkehrskanteAuspraegungVersionConverter());
         var query = String.format(
             "SELECT %s FROM N_VERKEHRS_KANTE_AUSPR_V",
             String.join(",", SqlVerkehrskanteAuspraegungVersionConverter.SELECT_COLS)
         );
-
 
         return sqlReader.read(query);
     }

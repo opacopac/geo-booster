@@ -22,12 +22,7 @@ public class BetreiberSqlPersistence implements BetreiberPersistence {
     @Override
     @SneakyThrows
     public Collection<Betreiber> readAllElements() {
-        var sqlReader = new SqlReader<>(
-            this.connectionFactory,
-            new SqlBetreiberElementConverter(),
-            "%d betreiber elements loaded...",
-            2
-        );
+        var sqlReader = new SqlReader<>(this.connectionFactory, new SqlBetreiberElementConverter());
         var query = String.format(
             "SELECT %s FROM N_BETREIBER_E",
             String.join(",", SqlBetreiberElementConverter.SELECT_COLS)
@@ -40,12 +35,7 @@ public class BetreiberSqlPersistence implements BetreiberPersistence {
     @Override
     @SneakyThrows
     public Collection<BetreiberVersion> readAllVersions() {
-        var sqlReader = new SqlReader<>(
-            this.connectionFactory,
-            new SqlBetreiberVersionConverter(),
-            "%d betreiber versions loaded...",
-            2
-        );
+        var sqlReader = new SqlReader<>(this.connectionFactory, new SqlBetreiberVersionConverter());
         var query = String.format(
             "SELECT %s FROM N_BETREIBER_V",
             String.join(",", SqlBetreiberVersionConverter.SELECT_COLS)

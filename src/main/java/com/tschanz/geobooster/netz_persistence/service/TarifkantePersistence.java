@@ -12,4 +12,8 @@ public interface TarifkantePersistence extends VersionedObjectPersistence<Tarifk
     Collection<Tarifkante> readElements(ReadFilter filter);
 
     Collection<TarifkanteVersion> readVersions(ReadFilter filter);
+
+    Collection<Long> readAllVersionIds();
+
+    long readVersionCount();
 }

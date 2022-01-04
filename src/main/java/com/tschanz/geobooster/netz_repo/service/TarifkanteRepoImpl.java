@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -272,27 +273,50 @@ public class TarifkanteRepoImpl implements TarifkanteRepo {
         }
 
         logger.info("checking for changes in tks...");
-        var versions = this.tkPersistenceRepo.readVersions(new ReadFilter(null, this.lastChangeCheck));
-        if (versions.size() > 0) {
-            logger.info(String.format("new/changed tk versions found: %s", versions.stream().map(TarifkanteVersion::getId).collect(Collectors.toList())));
-            // TODO: read all versions of same element
-            var elementIds = versions.stream().map(TarifkanteVersion::getElementId).distinct().collect(Collectors.toList());
+        // check for modified & added version
+        var changedVersions = this.tkPersistenceRepo.readVersions(new ReadFilter(null, this.lastChangeCheck));
+
+        // check for deleted versions
+        var versionCount = this.tkPersistenceRepo.readVersionCount();
+        if (this.versionedObjectMap.getAllVersions().size() + changedVersions.size() > versionCount) {
+            var allPreviousVersionIds = this.versionedObjectMap.getAllVersionKeys();
+            var allNewVersionIds = this.tkPersistenceRepo.readAllVersionIds();
+            var allNewVersionIdsMap = new HashMap<Long, Integer>();
+            allNewVersionIds.forEach(id -> allNewVersionIdsMap.put(id, 0));
+            var removedVersionIds = allPreviousVersionIds.stream()
+                .filter(vid -> !allNewVersionIdsMap.containsKey(vid))
+                .collect(Collectors.toList());
+
+            if (removedVersionIds.size() > 0) {
+                logger.info(String.format("removed tk versions found: %s", removedVersionIds));
+
+                removedVersionIds.forEach(vId -> {
+                    this.versionedObjectMap.deleteVersion(vId);
+                    this.versionQuadTree.removeItem(vId);
+                });
+            }
+        }
+
+        if (changedVersions.size() > 0) {
+            logger.info(String.format("new/changed tk versions found: %s", changedVersions.stream().map(TarifkanteVersion::getId).collect(Collectors.toList())));
+            // TODO: read all versions of same element?
+            var elementIds = changedVersions.stream().map(TarifkanteVersion::getElementId).distinct().collect(Collectors.toList());
             var elements = this.tkPersistenceRepo.readElements(new ReadFilter(elementIds, null));
 
             // update versioned object map
             elements.forEach(e -> this.versionedObjectMap.putElement(e));
-            versions.forEach(v -> this.versionedObjectMap.putVersion(v));
+            changedVersions.forEach(v -> this.versionedObjectMap.putVersion(v));
 
             // update quad tree
-            versions.forEach(tkV -> {
+            changedVersions.forEach(tkV -> {
                 this.versionQuadTree.removeItem(tkV.getId());
                 var item = this.createQuadTreeItem(tkV);
                 if (item != null) {
                     this.versionQuadTree.addItem(item);
                 }
             });
-
         }
+
 
         this.lastChangeCheck = LocalDateTime.now();
         logger.info("done.");
