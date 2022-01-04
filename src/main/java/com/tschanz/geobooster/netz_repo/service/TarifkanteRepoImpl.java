@@ -19,6 +19,7 @@ import com.tschanz.geobooster.quadtree.model.QuadTreeExtent;
 import com.tschanz.geobooster.versioning_repo.model.VersionedObjectMap;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.Synchronized;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
@@ -266,7 +267,8 @@ public class TarifkanteRepoImpl implements TarifkanteRepo {
 
 
     @SneakyThrows
-    private synchronized void updateWhenChanged() {
+    @Synchronized
+    private void updateWhenChanged() {
         // skip check in subsequent requests within 5 seconds
         if (LocalDateTime.now().isBefore(this.lastChangeCheck.plusSeconds(DEBOUNCE_TIME_LAST_CHANGE_CHECK_SEC))) {
             return;

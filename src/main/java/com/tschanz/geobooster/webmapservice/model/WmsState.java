@@ -2,6 +2,7 @@ package com.tschanz.geobooster.webmapservice.model;
 
 import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
+import lombok.Synchronized;
 import org.springframework.stereotype.Component;
 
 
@@ -41,6 +42,7 @@ public class WmsState {
     }
 
 
+    @Synchronized
     public void incPngRequestCount() {
         var currentValue = this.pngRequestCount$.getValue();
         var newValue = currentValue == null ? 1 : currentValue + 1;
@@ -48,6 +50,7 @@ public class WmsState {
     }
 
 
+    @Synchronized
     public void incUtfGridRequestCount() {
         var currentValue = this.utfGridRequestCount$.getValue();
         var newValue = currentValue == null ? 1 : currentValue + 1;
@@ -55,11 +58,13 @@ public class WmsState {
     }
 
 
+    @Synchronized
     public void nextPngRequestMs(long valueMs) {
         this.pngResponseTimeMs$.onNext(valueMs);
     }
 
 
+    @Synchronized
     public void nextUtfGridRequestMs(long valueMs) {
         this.utfGridResponseTimeMs$.onNext(valueMs);
     }
