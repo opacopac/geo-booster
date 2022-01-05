@@ -5,6 +5,7 @@ import com.tschanz.geobooster.netz.model.HaltestelleVersion;
 import com.tschanz.geobooster.netz.model.TarifkanteVersion;
 import com.tschanz.geobooster.netz.model.VerkehrskanteVersion;
 import com.tschanz.geobooster.netz_repo.service.HaltestelleRepo;
+import com.tschanz.geobooster.netz_repo.service.LinieVarianteRepo;
 import com.tschanz.geobooster.netz_repo.service.TarifkanteRepo;
 import com.tschanz.geobooster.netz_repo.service.VerkehrskanteRepo;
 import com.tschanz.geobooster.netz_utfgrid.model.*;
@@ -15,6 +16,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,27 +31,32 @@ public class NetzUtfGridService {
     private final HaltestelleRepo haltestelleRepo;
     private final VerkehrskanteRepo verkehrskanteRepo;
     private final TarifkanteRepo tarifkanteRepo;
+    private final LinieVarianteRepo linieVarianteRepo;
     private final UtfGridService utfGridService;
 
 
     public NetzUtfGridResponse getResponse(NetzUtfGridRequest request) {
-        logger.info("searching hst versions...");
         List<HaltestelleVersion> hstVersions = request.isShowHaltestellen()
             ? this.haltestelleRepo.searchVersions(request.getDate(), request.getBbox())
             : Collections.emptyList();
-        logger.info(String.format("found %d hst versions", hstVersions.size()));
 
-        logger.info("searching vk versions...");
-        List<VerkehrskanteVersion> vkVersions = request.isShowVerkehrskanten()
-            ? this.verkehrskanteRepo.searchVersions(request.getDate(), request.getBbox(), request.getVmTypes(), request.getVerwaltungVersionIds(), request.isShowTerminiert())
-            : Collections.emptyList();
-        logger.info(String.format("found %d vk versions", vkVersions.size()));
-
-        logger.info("searching tk versions...");
-        List<TarifkanteVersion> tkVersions = request.isShowTarifkanten() || request.isShowUnmappedTarifkanten()
-            ? this.tarifkanteRepo.searchVersions(request.getDate(), request.getBbox(), request.getVmTypes(), request.getVerwaltungVersionIds(), request.isShowUnmappedTarifkanten())
-            : Collections.emptyList();
-        logger.info(String.format("found %d tk versions", tkVersions.size()));
+        Collection<VerkehrskanteVersion> vkVersions;
+        Collection<TarifkanteVersion> tkVersions;
+        if (request.getLinieVarianteIds().size() > 0 && (request.isShowVerkehrskanten() || request.isShowTarifkanten() || request.isShowUnmappedTarifkanten())) {
+            vkVersions = request.isShowVerkehrskanten()
+                ? this.linieVarianteRepo.searchVerkehrskanteVersions(request.getLinieVarianteIds(), request.getVmTypes(), request.getDate())
+                : Collections.emptyList();
+            tkVersions = request.isShowTarifkanten() || request.isShowUnmappedTarifkanten()
+                ? this.linieVarianteRepo.searchTarifkanteVersions(request.getLinieVarianteIds(), request.getVmTypes(), request.getDate())
+                : Collections.emptyList();
+        } else {
+            vkVersions = request.isShowVerkehrskanten()
+                ? this.verkehrskanteRepo.searchVersionsByExtent(request.getDate(), request.getBbox(), request.getVmTypes(), request.getVerwaltungVersionIds(), request.isShowTerminiert())
+                : Collections.emptyList();
+            tkVersions = request.isShowTarifkanten() || request.isShowUnmappedTarifkanten()
+                ? this.tarifkanteRepo.searchVersionsByExtent(request.getDate(), request.getBbox(), request.getVmTypes(), request.getVerwaltungVersionIds(), request.isShowUnmappedTarifkanten())
+                : Collections.emptyList();
+        }
 
         logger.info("initializing utf grid...");
         var utfGridHstConverter = new UtfGridHaltestelleConverter(this.haltestelleRepo);

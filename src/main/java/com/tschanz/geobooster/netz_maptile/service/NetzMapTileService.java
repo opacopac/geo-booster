@@ -48,16 +48,19 @@ public class NetzMapTileService {
 
         Collection<VerkehrskanteVersion> vkVersions;
         Collection<TarifkanteVersion> tkVersions;
-        if (request.getLinieVarianteIds().size() > 0) {
-            vkVersions = this.linieVarianteRepo.searchLinienVarianteVerkehrskantenVersions(request.getLinieVarianteIds(), request.getDate());
-            tkVersions = Collections.emptyList(); // TODO
+        if (request.getLinieVarianteIds().size() > 0 && (request.isShowVerkehrskanten() || request.isShowTarifkanten() || request.isShowUnmappedTarifkanten())) {
+            vkVersions = request.isShowVerkehrskanten()
+                ? this.linieVarianteRepo.searchVerkehrskanteVersions(request.getLinieVarianteIds(), request.getVmTypes(), request.getDate())
+                : Collections.emptyList();
+            tkVersions = request.isShowTarifkanten() || request.isShowUnmappedTarifkanten()
+                ? this.linieVarianteRepo.searchTarifkanteVersions(request.getLinieVarianteIds(), request.getVmTypes(), request.getDate())
+                : Collections.emptyList();
         } else {
             vkVersions = request.isShowVerkehrskanten()
-                ? this.verkehrskanteRepo.searchVersions(request.getDate(), request.getBbox(), request.getVmTypes(), request.getVerwaltungVersionIds(), request.isShowTerminiert())
+                ? this.verkehrskanteRepo.searchVersionsByExtent(request.getDate(), request.getBbox(), request.getVmTypes(), request.getVerwaltungVersionIds(), request.isShowTerminiert())
                 : Collections.emptyList();
-
             tkVersions = request.isShowTarifkanten() || request.isShowUnmappedTarifkanten()
-                ? this.tarifkanteRepo.searchVersions(request.getDate(), request.getBbox(), request.getVmTypes(), request.getVerwaltungVersionIds(), request.isShowUnmappedTarifkanten())
+                ? this.tarifkanteRepo.searchVersionsByExtent(request.getDate(), request.getBbox(), request.getVmTypes(), request.getVerwaltungVersionIds(), request.isShowUnmappedTarifkanten())
                 : Collections.emptyList();
         }
 

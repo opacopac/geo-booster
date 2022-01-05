@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 
@@ -20,7 +21,7 @@ public enum VerkehrsmittelTyp {
     private final byte bitMask;
 
 
-    public static byte getBitMask(List<VerkehrsmittelTyp> vmTypes) {
+    public static byte getBitMask(Collection<VerkehrsmittelTyp> vmTypes) {
         var bitMask = 0b00000000;
         for (VerkehrsmittelTyp vmType : vmTypes) {
             bitMask = (bitMask | vmType.bitMask);

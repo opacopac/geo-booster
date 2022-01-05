@@ -89,11 +89,6 @@ public class HaltestelleRepoImpl implements HaltestelleRepo {
             .collect(Collectors.toList());
     }
 
-    @Override
-    public VersionedObjectMap<Haltestelle, HaltestelleVersion> getVersionedObjectMap() {
-        return this.versionedObjectMap;
-    }
-
 
     private QuadTreeCoordinate getQuadTreeCoordinates(Coordinate coordinate) {
         var coord = CoordinateConverter.convertToEpsg3857(coordinate);

@@ -107,11 +107,11 @@ public class VerkehrskanteRepoImpl implements VerkehrskanteRepo {
 
 
     @Override
-    public List<VerkehrskanteVersion> searchVersions(
+    public List<VerkehrskanteVersion> searchVersionsByExtent(
         LocalDate date,
         Extent extent,
-        List<VerkehrsmittelTyp> vmTypes,
-        List<Long> verwaltungVersionIds,
+        Collection<VerkehrsmittelTyp> vmTypes,
+        Collection<Long> verwaltungVersionIds,
         boolean showTerminiert
     ) {
         var verwaltungIds = verwaltungVersionIds.stream()
@@ -176,12 +176,6 @@ public class VerkehrskanteRepoImpl implements VerkehrskanteRepo {
         var hst2V = this.getEndHaltestelleVersion(vkVersion);
 
         return hst2V.getCoordinate();
-    }
-
-
-    @Override
-    public VersionedObjectMap<Verkehrskante, VerkehrskanteVersion> getVersionedObjectMap() {
-        return this.versionedObjectMap;
     }
 
 

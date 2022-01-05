@@ -1,6 +1,8 @@
 package com.tschanz.geobooster.netz_repo.service;
 
+import com.tschanz.geobooster.netz.model.TarifkanteVersion;
 import com.tschanz.geobooster.netz.model.VerkehrskanteVersion;
+import com.tschanz.geobooster.netz.model.VerkehrsmittelTyp;
 import com.tschanz.geobooster.netz_persistence.service.LinieVariantePersistence;
 import com.tschanz.geobooster.netz_repo.model.LinieVarianteRepoState;
 import com.tschanz.geobooster.netz_repo.model.ProgressState;
@@ -18,20 +20,26 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class LinieVarianteRepoImpl implements LinieVarianteRepo {
     private final VerkehrskanteRepo verkehrskanteRepo;
+    private final TarifkanteRepo tarifkanteRepo;
     private final LinieVariantePersistence linieVariantePersistence;
     private final ProgressState progressState;
     private final LinieVarianteRepoState linieVarianteRepoState;
     private final Map<Collection<Long>, Collection<Long>> linienVariantenVkIdCache = new HashMap<>();
+    private final Map<Collection<Long>, Collection<Long>> linienVariantenTkIdCache = new HashMap<>();
 
 
     @Override
-    public Collection<VerkehrskanteVersion> searchLinienVarianteVerkehrskantenVersions(Collection<Long> linienVarianteIds, LocalDate date) {
+    public Collection<VerkehrskanteVersion> searchVerkehrskanteVersions(
+        Collection<Long> linienVarianteIds,
+        Collection<VerkehrsmittelTyp> vmTypes,
+        LocalDate date
+    ) {
         var vkIds = this.linienVariantenVkIdCache.get(linienVarianteIds);
         if (vkIds == null) {
             this.linieVarianteRepoState.updateIsLoading(true);
             this.progressState.updateProgressText("loading linienvariante vks...");
 
-            vkIds = this.linieVariantePersistence.searchVerkehrskantenIdsByLinienVarianteIds(linienVarianteIds);
+            vkIds = this.linieVariantePersistence.searchVerkehrskanteIds(linienVarianteIds);
             this.linienVariantenVkIdCache.put(linienVarianteIds, vkIds);
 
             this.progressState.updateProgressText("loading linienvariante vks done");
@@ -40,6 +48,32 @@ public class LinieVarianteRepoImpl implements LinieVarianteRepo {
 
         return vkIds.stream()
             .map(vkId -> this.verkehrskanteRepo.getElementVersionAtDate(vkId, date))
+            .filter(vkV -> vmTypes.isEmpty() || vkV.hasOneOfVmTypes(vmTypes))
+            .collect(Collectors.toList());
+    }
+
+
+    @Override
+    public Collection<TarifkanteVersion> searchTarifkanteVersions(
+        Collection<Long> linienVarianteIds,
+        Collection<VerkehrsmittelTyp> vmTypes,
+        LocalDate date
+    ) {
+        var tkIds = this.linienVariantenTkIdCache.get(linienVarianteIds);
+        if (tkIds == null) {
+            this.linieVarianteRepoState.updateIsLoading(true);
+            this.progressState.updateProgressText("loading linienvariante tks...");
+
+            tkIds = this.linieVariantePersistence.searchTarifkanteIds(linienVarianteIds, date);
+            this.linienVariantenTkIdCache.put(linienVarianteIds, tkIds);
+
+            this.progressState.updateProgressText("loading linienvariante tks done");
+            this.linieVarianteRepoState.updateIsLoading(false);
+        }
+
+        return tkIds.stream()
+            .map(vkId -> this.tarifkanteRepo.getElementVersionAtDate(vkId, date))
+            //.filter(tkV -> vmTypes.isEmpty() || tkV.hasOneOfVmTypes(vmTypes))
             .collect(Collectors.toList());
     }
 }

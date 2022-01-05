@@ -99,7 +99,7 @@ public class TarifkanteRepoImpl implements TarifkanteRepo {
 
 
     @Override
-    public List<TarifkanteVersion> searchVersions(LocalDate date, Extent extent, List<VerkehrsmittelTyp> vmTypes, List<Long> verwaltungVersionIds, boolean showUnmapped) {
+    public List<TarifkanteVersion> searchVersionsByExtent(LocalDate date, Extent extent, List<VerkehrsmittelTyp> vmTypes, List<Long> verwaltungVersionIds, boolean showUnmapped) {
         if (this.connectionState.isTrackChanges()) {
             this.updateWhenChanged();
         }
@@ -125,7 +125,7 @@ public class TarifkanteRepoImpl implements TarifkanteRepo {
             .collect(Collectors.toList());
     }
 
-    
+
     @Override
     public Haltestelle getStartHaltestelle(TarifkanteVersion tkVersion) {
         var tkE = this.getElement(tkVersion.getElementId());
@@ -171,12 +171,6 @@ public class TarifkanteRepoImpl implements TarifkanteRepo {
         var hst2V = this.getEndHaltestelleVersion(tkVersion);
 
         return hst2V.getCoordinate();
-    }
-
-
-    @Override
-    public VersionedObjectMap<Tarifkante, TarifkanteVersion> getVersionedObjectMap() {
-        return this.versionedObjectMap;
     }
 
 
