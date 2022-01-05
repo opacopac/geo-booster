@@ -2,7 +2,6 @@ package com.tschanz.geobooster.netz_repo.service;
 
 import com.tschanz.geobooster.netz.model.TarifkanteVersion;
 import com.tschanz.geobooster.netz.model.VerkehrskanteVersion;
-import com.tschanz.geobooster.netz.model.VerkehrsmittelTyp;
 import com.tschanz.geobooster.netz_persistence.service.LinieVariantePersistence;
 import com.tschanz.geobooster.netz_repo.model.LinieVarianteRepoState;
 import com.tschanz.geobooster.netz_repo.model.ProgressState;
@@ -31,7 +30,6 @@ public class LinieVarianteRepoImpl implements LinieVarianteRepo {
     @Override
     public Collection<VerkehrskanteVersion> searchVerkehrskanteVersions(
         Collection<Long> linienVarianteIds,
-        Collection<VerkehrsmittelTyp> vmTypes,
         LocalDate date
     ) {
         var vkIds = this.linienVariantenVkIdCache.get(linienVarianteIds);
@@ -48,7 +46,6 @@ public class LinieVarianteRepoImpl implements LinieVarianteRepo {
 
         return vkIds.stream()
             .map(vkId -> this.verkehrskanteRepo.getElementVersionAtDate(vkId, date))
-            .filter(vkV -> vmTypes.isEmpty() || vkV.hasOneOfVmTypes(vmTypes))
             .collect(Collectors.toList());
     }
 
@@ -56,7 +53,6 @@ public class LinieVarianteRepoImpl implements LinieVarianteRepo {
     @Override
     public Collection<TarifkanteVersion> searchTarifkanteVersions(
         Collection<Long> linienVarianteIds,
-        Collection<VerkehrsmittelTyp> vmTypes,
         LocalDate date
     ) {
         var tkIds = this.linienVariantenTkIdCache.get(linienVarianteIds);
@@ -73,7 +69,6 @@ public class LinieVarianteRepoImpl implements LinieVarianteRepo {
 
         return tkIds.stream()
             .map(vkId -> this.tarifkanteRepo.getElementVersionAtDate(vkId, date))
-            //.filter(tkV -> vmTypes.isEmpty() || tkV.hasOneOfVmTypes(vmTypes))
             .collect(Collectors.toList());
     }
 }

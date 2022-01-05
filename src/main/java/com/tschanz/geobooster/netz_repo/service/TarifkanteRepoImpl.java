@@ -5,7 +5,10 @@ import com.tschanz.geobooster.geofeature.model.Coordinate;
 import com.tschanz.geobooster.geofeature.model.Epsg4326Coordinate;
 import com.tschanz.geobooster.geofeature.model.Extent;
 import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
-import com.tschanz.geobooster.netz.model.*;
+import com.tschanz.geobooster.netz.model.Haltestelle;
+import com.tschanz.geobooster.netz.model.HaltestelleVersion;
+import com.tschanz.geobooster.netz.model.Tarifkante;
+import com.tschanz.geobooster.netz.model.TarifkanteVersion;
 import com.tschanz.geobooster.netz_persistence.model.ReadFilter;
 import com.tschanz.geobooster.netz_persistence.service.TarifkantePersistence;
 import com.tschanz.geobooster.netz_repo.model.ProgressState;
@@ -29,7 +32,6 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -40,9 +42,7 @@ public class TarifkanteRepoImpl implements TarifkanteRepo {
     private static final int DEBOUNCE_TIME_LAST_CHANGE_CHECK_SEC = 5;
 
     private final TarifkantePersistence tkPersistenceRepo;
-    private final VerwaltungRepo verwaltungRepo;
     private final HaltestelleRepo hstRepo;
-    private final VerkehrskanteRepo vkRepo;
     private final ProgressState progressState;
     private final TarifkanteRepoState tarifkanteRepoState;
     private final ConnectionState connectionState;
@@ -99,29 +99,15 @@ public class TarifkanteRepoImpl implements TarifkanteRepo {
 
 
     @Override
-    public List<TarifkanteVersion> searchVersionsByExtent(LocalDate date, Extent extent, List<VerkehrsmittelTyp> vmTypes, List<Long> verwaltungVersionIds, boolean showUnmapped) {
+    public List<TarifkanteVersion> searchByExtent(Extent extent) {
         if (this.connectionState.isTrackChanges()) {
             this.updateWhenChanged();
         }
-
-        var verwaltungIds = verwaltungVersionIds.stream()
-            .map(verwVId -> this.verwaltungRepo.getVersion(verwVId).getElementId())
-            .collect(Collectors.toList());
 
         return this.versionQuadTree
             .findItems(this.getQuadTreeExtent(extent.getMinCoordinate(), extent.getMaxCoordinate()))
             .stream()
             .map(AreaQuadTreeItem::getItem)
-            .filter(tkV -> date.isEqual(tkV.getGueltigVon()) || date.isAfter(tkV.getGueltigVon()))
-            .filter(tkV -> date.isEqual(tkV.getGueltigBis()) || date.isBefore(tkV.getGueltigBis()))
-            .filter(tkV -> vmTypes.isEmpty() || this.hasOneOfVmTypes(tkV, vmTypes))
-            .filter(tkV -> {
-                if (showUnmapped) {
-                    return tkV.getVerkehrskanteIds().size() == 0;
-                } else {
-                    return verwaltungIds.isEmpty() || this.hasOneOfVerwaltungIds(tkV, verwaltungIds);
-                }
-            })
             .collect(Collectors.toList());
     }
 
@@ -171,42 +157,6 @@ public class TarifkanteRepoImpl implements TarifkanteRepo {
         var hst2V = this.getEndHaltestelleVersion(tkVersion);
 
         return hst2V.getCoordinate();
-    }
-
-
-    private List<VerkehrskanteVersion> getVerkehrskanteVersions(TarifkanteVersion tkVersion) {
-        return tkVersion.getVerkehrskanteIds()
-            .stream()
-            .map(vkId -> this.vkRepo.getElementVersionAtDate(vkId, tkVersion.getGueltigBis()))
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
-    }
-
-
-    private boolean hasOneOfVmTypes(TarifkanteVersion tkVersion, List<VerkehrsmittelTyp> vmTypes) {
-        var tkVmTypes = this.getVerkehrskanteVersions(tkVersion)
-            .stream()
-            .flatMap(vkv -> vkv.getVmTypes().stream())
-            .collect(Collectors.toList());
-
-        var vmTypeBitmask = VerkehrsmittelTyp.getBitMask(tkVmTypes);
-        return (VerkehrsmittelTyp.getBitMask(vmTypes) & vmTypeBitmask) > 0;
-    }
-
-
-    private boolean hasOneOfVerwaltungIds(TarifkanteVersion tkVersion, List<Long> verwaltungIds) {
-        var tkVerwaltungen = this.getVerkehrskanteVersions(tkVersion)
-            .stream()
-            .flatMap(vkv -> vkv.getVerwaltungIds().stream())
-            .collect(Collectors.toList());
-
-        for (var verwaltungId: verwaltungIds) {
-            if (tkVerwaltungen.contains(verwaltungId)) {
-                return true;
-            }
-        };
-
-        return false;
     }
 
 

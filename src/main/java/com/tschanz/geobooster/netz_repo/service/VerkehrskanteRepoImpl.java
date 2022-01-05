@@ -5,7 +5,10 @@ import com.tschanz.geobooster.geofeature.model.Coordinate;
 import com.tschanz.geobooster.geofeature.model.Epsg4326Coordinate;
 import com.tschanz.geobooster.geofeature.model.Extent;
 import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
-import com.tschanz.geobooster.netz.model.*;
+import com.tschanz.geobooster.netz.model.Haltestelle;
+import com.tschanz.geobooster.netz.model.HaltestelleVersion;
+import com.tschanz.geobooster.netz.model.Verkehrskante;
+import com.tschanz.geobooster.netz.model.VerkehrskanteVersion;
 import com.tschanz.geobooster.netz_persistence.service.VerkehrskantePersistence;
 import com.tschanz.geobooster.netz_repo.model.ProgressState;
 import com.tschanz.geobooster.netz_repo.model.QuadTreeConfig;
@@ -107,26 +110,11 @@ public class VerkehrskanteRepoImpl implements VerkehrskanteRepo {
 
 
     @Override
-    public List<VerkehrskanteVersion> searchVersionsByExtent(
-        LocalDate date,
-        Extent extent,
-        Collection<VerkehrsmittelTyp> vmTypes,
-        Collection<Long> verwaltungVersionIds,
-        boolean showTerminiert
-    ) {
-        var verwaltungIds = verwaltungVersionIds.stream()
-            .map(verwVId -> this.verwaltungRepo.getVersion(verwVId).getElementId())
-            .collect(Collectors.toList());
-
+    public List<VerkehrskanteVersion> searchByExtent(Extent extent) {
         return this.versionQuadTree
             .findItems(this.getQuadTreeExtent(extent.getMinCoordinate(), extent.getMaxCoordinate()))
             .stream()
             .map(AreaQuadTreeItem::getItem)
-            .filter(vkV -> date.isAfter(vkV.getGueltigVon()) || date.isEqual(vkV.getGueltigVon()))
-            .filter(vkV -> date.isBefore(vkV.getGueltigBis()) || date.isEqual(vkV.getGueltigBis()))
-            .filter(vkV -> vmTypes.isEmpty() || vkV.hasOneOfVmTypes(vmTypes))
-            .filter(vkV -> verwaltungIds.isEmpty() || vkV.hasOneOfVerwaltungIds(verwaltungIds))
-            .filter(vkV -> showTerminiert || vkV.getTerminiertPer() == null || vkV.getTerminiertPer().isAfter(date))
             .collect(Collectors.toList());
     }
 

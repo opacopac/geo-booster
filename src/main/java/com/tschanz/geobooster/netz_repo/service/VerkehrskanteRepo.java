@@ -2,22 +2,17 @@ package com.tschanz.geobooster.netz_repo.service;
 
 import com.tschanz.geobooster.geofeature.model.Epsg4326Coordinate;
 import com.tschanz.geobooster.geofeature.model.Extent;
-import com.tschanz.geobooster.netz.model.*;
+import com.tschanz.geobooster.netz.model.Haltestelle;
+import com.tschanz.geobooster.netz.model.HaltestelleVersion;
+import com.tschanz.geobooster.netz.model.Verkehrskante;
+import com.tschanz.geobooster.netz.model.VerkehrskanteVersion;
 import com.tschanz.geobooster.versioning_repo.service.VersionedObjectRepo;
 
-import java.time.LocalDate;
-import java.util.Collection;
 import java.util.List;
 
 
 public interface VerkehrskanteRepo extends VersionedObjectRepo<Verkehrskante, VerkehrskanteVersion> {
-    List<VerkehrskanteVersion> searchVersionsByExtent(
-        LocalDate date,
-        Extent extent,
-        Collection<VerkehrsmittelTyp> vmTypes,
-        Collection<Long> verwaltungIds,
-        boolean showTerminiert
-    );
+    List<VerkehrskanteVersion> searchByExtent(Extent extent);
 
     Haltestelle getStartHaltestelle(VerkehrskanteVersion vkVersion);
 

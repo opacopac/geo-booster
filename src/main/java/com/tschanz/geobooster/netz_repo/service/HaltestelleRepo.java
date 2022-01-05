@@ -5,10 +5,9 @@ import com.tschanz.geobooster.netz.model.Haltestelle;
 import com.tschanz.geobooster.netz.model.HaltestelleVersion;
 import com.tschanz.geobooster.versioning_repo.service.VersionedObjectRepo;
 
-import java.time.LocalDate;
 import java.util.List;
 
 
 public interface HaltestelleRepo extends VersionedObjectRepo<Haltestelle, HaltestelleVersion> {
-    List<HaltestelleVersion> searchVersions(LocalDate date, Extent extent);
+    List<HaltestelleVersion> searchByExtent(Extent extent);
 }
