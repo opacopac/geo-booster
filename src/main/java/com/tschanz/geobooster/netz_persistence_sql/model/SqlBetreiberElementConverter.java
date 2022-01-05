@@ -3,6 +3,7 @@ package com.tschanz.geobooster.netz_persistence_sql.model;
 import com.tschanz.geobooster.netz.model.Betreiber;
 import com.tschanz.geobooster.util.service.ArrayHelper;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlElementConverter;
+import com.tschanz.geobooster.versioning_persistence_sql.model.SqlHasIdConverter;
 import lombok.SneakyThrows;
 
 import java.sql.ResultSet;
@@ -18,7 +19,7 @@ public class SqlBetreiberElementConverter implements SqlResultsetConverter<Betre
     @SneakyThrows
     public Betreiber fromResultSet(ResultSet row) {
         return new Betreiber(
-            SqlElementConverter.getId(row),
+            SqlHasIdConverter.getId(row),
             row.getString(COL_NAME),
             row.getString(COL_ABK)
         );

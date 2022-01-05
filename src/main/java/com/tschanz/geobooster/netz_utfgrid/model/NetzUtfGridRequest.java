@@ -19,6 +19,7 @@ public class NetzUtfGridRequest {
     private final float zoomLevel;
     private final List<VerkehrsmittelTyp> vmTypes;
     private final List<Long> verwaltungVersionIds;
+    private final List<Long> linieVarianteIds;
     private final boolean showHaltestellen;
     private final boolean showVerkehrskanten;
     private final boolean showTarifkanten;

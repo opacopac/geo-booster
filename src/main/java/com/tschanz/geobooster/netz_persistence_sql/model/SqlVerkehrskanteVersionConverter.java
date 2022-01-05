@@ -5,6 +5,7 @@ import com.tschanz.geobooster.netz.model.VerkehrskanteVersion;
 import com.tschanz.geobooster.netz.model.VerkehrsmittelTyp;
 import com.tschanz.geobooster.util.service.ArrayHelper;
 import com.tschanz.geobooster.versioning_persistence.service.FlyWeightDateFactory;
+import com.tschanz.geobooster.versioning_persistence_sql.model.SqlHasIdConverter;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlVersionConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -29,7 +30,7 @@ public class SqlVerkehrskanteVersionConverter implements SqlResultsetConverter<V
     public VerkehrskanteVersion fromResultSet(ResultSet row) {
         var vkEId = SqlVersionConverter.getElementId(row);
         return new VerkehrskanteVersion(
-            SqlVersionConverter.getId(row),
+            SqlHasIdConverter.getId(row),
             vkEId,
             SqlVersionConverter.getGueltigVon(row),
             SqlVersionConverter.getGueltigBis(row),

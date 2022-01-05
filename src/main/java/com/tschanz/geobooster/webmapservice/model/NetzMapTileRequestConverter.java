@@ -13,6 +13,7 @@ public class NetzMapTileRequestConverter {
             mapRequest.getZoomLevel(),
             mapRequest.getViewparams().getTypes(),
             mapRequest.getViewparams().getVerwaltungVersionIds(),
+            mapRequest.getViewparams().getLinienVariantenIds(),
             mapRequest.hasLayerHaltestellen(),
             mapRequest.hasLayerVerkehrskanten(),
             mapRequest.hasLayerTarifkanten(),

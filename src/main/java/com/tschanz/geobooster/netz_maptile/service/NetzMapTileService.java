@@ -10,6 +10,7 @@ import com.tschanz.geobooster.netz.model.TarifkanteVersion;
 import com.tschanz.geobooster.netz.model.VerkehrskanteVersion;
 import com.tschanz.geobooster.netz_maptile.model.*;
 import com.tschanz.geobooster.netz_repo.service.HaltestelleRepo;
+import com.tschanz.geobooster.netz_repo.service.LinieVarianteRepo;
 import com.tschanz.geobooster.netz_repo.service.TarifkanteRepo;
 import com.tschanz.geobooster.netz_repo.service.VerkehrskanteRepo;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,6 +33,7 @@ public class NetzMapTileService {
 
     private final HaltestelleRepo haltestelleRepo;
     private final VerkehrskanteRepo verkehrskanteRepo;
+    private final LinieVarianteRepo linieVarianteRepo;
     private final TarifkanteRepo tarifkanteRepo;
     private final MapTileService mapTileService;
 
@@ -43,17 +46,20 @@ public class NetzMapTileService {
             : Collections.emptyList();
         logger.info(String.format("found %d hst versions", hstVersions.size()));
 
-        logger.info("searching vk versions...");
-        List<VerkehrskanteVersion> vkVersions = request.isShowVerkehrskanten()
-            ? this.verkehrskanteRepo.searchVersions(request.getDate(), request.getBbox(), request.getVmTypes(), request.getVerwaltungVersionIds(), request.isShowTerminiert())
-            : Collections.emptyList();
-        logger.info(String.format("found %d vk versions", vkVersions.size()));
+        Collection<VerkehrskanteVersion> vkVersions;
+        Collection<TarifkanteVersion> tkVersions;
+        if (request.getLinieVarianteIds().size() > 0) {
+            vkVersions = this.linieVarianteRepo.searchLinienVarianteVerkehrskantenVersions(request.getLinieVarianteIds(), request.getDate());
+            tkVersions = Collections.emptyList(); // TODO
+        } else {
+            vkVersions = request.isShowVerkehrskanten()
+                ? this.verkehrskanteRepo.searchVersions(request.getDate(), request.getBbox(), request.getVmTypes(), request.getVerwaltungVersionIds(), request.isShowTerminiert())
+                : Collections.emptyList();
 
-        logger.info("searching tk versions...");
-        List<TarifkanteVersion> tkVersions = request.isShowTarifkanten() || request.isShowUnmappedTarifkanten()
-            ? this.tarifkanteRepo.searchVersions(request.getDate(), request.getBbox(), request.getVmTypes(), request.getVerwaltungVersionIds(), request.isShowUnmappedTarifkanten())
-            : Collections.emptyList();
-        logger.info(String.format("found %d tk versions", tkVersions.size()));
+            tkVersions = request.isShowTarifkanten() || request.isShowUnmappedTarifkanten()
+                ? this.tarifkanteRepo.searchVersions(request.getDate(), request.getBbox(), request.getVmTypes(), request.getVerwaltungVersionIds(), request.isShowUnmappedTarifkanten())
+                : Collections.emptyList();
+        }
 
 
         // TMP: mem profiling

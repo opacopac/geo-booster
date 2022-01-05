@@ -3,6 +3,7 @@ package com.tschanz.geobooster.netz_persistence_sql.model;
 import com.tschanz.geobooster.netz.model.Verwaltung;
 import com.tschanz.geobooster.util.service.ArrayHelper;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlElementConverter;
+import com.tschanz.geobooster.versioning_persistence_sql.model.SqlHasIdConverter;
 import lombok.SneakyThrows;
 
 import java.sql.ResultSet;
@@ -21,7 +22,7 @@ public class SqlVerwaltungElementConverter implements SqlResultsetConverter<Verw
     @Override
     public Verwaltung fromResultSet(ResultSet row) {
         return new Verwaltung(
-            SqlElementConverter.getId(row),
+            SqlHasIdConverter.getId(row),
             row.getString(COL_CODE),
             row.getLong(COL_IDBETREIBER),
             row.getString(COL_INFOPLUSTC)

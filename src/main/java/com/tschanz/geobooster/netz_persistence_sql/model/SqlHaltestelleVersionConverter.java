@@ -3,6 +3,7 @@ package com.tschanz.geobooster.netz_persistence_sql.model;
 import com.tschanz.geobooster.geofeature.model.Epsg4326Coordinate;
 import com.tschanz.geobooster.netz.model.HaltestelleVersion;
 import com.tschanz.geobooster.util.service.ArrayHelper;
+import com.tschanz.geobooster.versioning_persistence_sql.model.SqlHasIdConverter;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlVersionConverter;
 import lombok.SneakyThrows;
 
@@ -20,7 +21,7 @@ public class SqlHaltestelleVersionConverter implements SqlResultsetConverter<Hal
     @Override
     public HaltestelleVersion fromResultSet(ResultSet row) {
         return new HaltestelleVersion(
-            SqlVersionConverter.getId(row),
+            SqlHasIdConverter.getId(row),
             SqlVersionConverter.getElementId(row),
             SqlVersionConverter.getGueltigVon(row),
             SqlVersionConverter.getGueltigBis(row),

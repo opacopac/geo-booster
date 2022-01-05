@@ -2,7 +2,7 @@ package com.tschanz.geobooster.netz_persistence_sql.model;
 
 import com.tschanz.geobooster.netz.model.VerkehrskanteAuspraegung;
 import com.tschanz.geobooster.netz.model.VerkehrsmittelTyp;
-import com.tschanz.geobooster.versioning_persistence_sql.model.SqlElementConverter;
+import com.tschanz.geobooster.versioning_persistence_sql.model.SqlHasIdConverter;
 import lombok.SneakyThrows;
 
 import java.sql.ResultSet;
@@ -20,7 +20,7 @@ public class SqlVerkehrskanteAuspraegungElementConverter implements SqlResultset
     @Override
     public VerkehrskanteAuspraegung fromResultSet(ResultSet row) {
         return new VerkehrskanteAuspraegung(
-            SqlElementConverter.getId(row),
+            SqlHasIdConverter.getId(row),
             row.getLong(COL_VK_E_ID),
             row.getLong(COL_VERW_E_ID),
             VerkehrsmittelTyp.valueOf(row.getString(COL_AUSPTYP))

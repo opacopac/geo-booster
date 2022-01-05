@@ -23,13 +23,11 @@ import java.util.Map;
 
 
 @Controller
-@CrossOrigin
+@CrossOrigin()
 @RequiredArgsConstructor
 public class WmsController {
     private static final String REQ_SERVICE_WMS = "WMS";
     private static final String RESP_UTFGRID_CONTENT_TYPE = "application/json;type=utfgrid";
-    private static final String RESP_EXPOSE_HEADERS_KEY = "Access-Control-Expose-Headers";
-    private static final String RESP_EXPOSE_HEADERS_VALUE = "*";
     private static final String RESP_CONTENT_DISPO_KEY = "Content-Disposition";
     private static final String RESP_CONTENT_DISPO_VALUE = "inline; filename=";
     private static final String RESP_CACHE_CONTROL_KEY = "Cache-Control";
@@ -123,7 +121,6 @@ public class WmsController {
 
     private void setHeaders(HttpServletResponse response, String filename) {
         response.setHeader(RESP_CONTENT_DISPO_KEY, RESP_CONTENT_DISPO_VALUE + filename);
-        response.setHeader(RESP_EXPOSE_HEADERS_KEY, RESP_EXPOSE_HEADERS_VALUE);
         response.setHeader(RESP_CACHE_CONTROL_KEY, RESP_CACHE_CONTROL_VALUE);
         response.setHeader(RESP_PRAGMA_KEY, RESP_PRAGMA_VALUE);
         response.setHeader(RESP_EXPIRES_KEY, RESP_EXPIRES_VALUE);

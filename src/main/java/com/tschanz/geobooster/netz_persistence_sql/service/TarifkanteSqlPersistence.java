@@ -8,8 +8,7 @@ import com.tschanz.geobooster.netz_persistence_sql.model.SqlTarifkanteElementCon
 import com.tschanz.geobooster.netz_persistence_sql.model.SqlTarifkanteVersionConverter;
 import com.tschanz.geobooster.persistence_sql.service.SqlConnectionFactory;
 import com.tschanz.geobooster.persistence_sql.service.SqlHelper;
-import com.tschanz.geobooster.versioning_persistence_sql.model.SqlElementConverter;
-import com.tschanz.geobooster.versioning_persistence_sql.model.SqlVersionIdConverter;
+import com.tschanz.geobooster.versioning_persistence_sql.model.SqlHasIdConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.logging.log4j.LogManager;
@@ -110,10 +109,10 @@ public class TarifkanteSqlPersistence implements TarifkantePersistence {
     @Override
     @SneakyThrows
     public Collection<Long> readAllVersionIds() {
-        var sqlReader = new SqlReader<>(this.connectionFactory, new SqlVersionIdConverter());
+        var sqlReader = new SqlReader<>(this.connectionFactory, new SqlHasIdConverter());
         var query = String.format(
             "SELECT %s FROM N_TARIFKANTE_V",
-            String.join(",", SqlVersionIdConverter.SELECT_COLS)
+            String.join(",", SqlHasIdConverter.SELECT_COLS)
         );
 
         return sqlReader.read(query);
@@ -156,7 +155,7 @@ public class TarifkanteSqlPersistence implements TarifkantePersistence {
         if (filter.getIdList() != null) {
             var idStrings = filter.getIdList().stream().map(Object::toString).collect(Collectors.toList());
             conditions.add(String.format("(%s IN (%s))",
-                SqlElementConverter.COL_ID,
+                SqlHasIdConverter.COL_ID,
                 String.join(",", idStrings)
             ));
         }
