@@ -7,10 +7,12 @@ import com.tschanz.geobooster.netz_repo.service.HaltestelleRepo;
 import com.tschanz.geobooster.utfgrid.model.UtfGridPointItem;
 import com.tschanz.geobooster.util.model.KeyValue;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 
 
+@Component
 @RequiredArgsConstructor
 public class UtfGridHaltestelleConverter {
     private final HaltestelleRepo hstRepo;

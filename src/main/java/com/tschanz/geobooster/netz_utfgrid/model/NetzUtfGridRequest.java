@@ -2,6 +2,7 @@ package com.tschanz.geobooster.netz_utfgrid.model;
 
 import com.tschanz.geobooster.geofeature.model.Extent;
 import com.tschanz.geobooster.netz.model.VerkehrsmittelTyp;
+import com.tschanz.geobooster.netz_repo.model.SearchNetzObjectsRequest;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -11,7 +12,7 @@ import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
-public class NetzUtfGridRequest {
+public class NetzUtfGridRequest implements SearchNetzObjectsRequest {
     private final LocalDate date;
     private final Extent bbox;
     private final int width;

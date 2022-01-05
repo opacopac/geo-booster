@@ -5,23 +5,14 @@ import com.tschanz.geobooster.maptile.model.MapTile;
 import com.tschanz.geobooster.maptile.model.MapTileLine;
 import com.tschanz.geobooster.maptile.model.MapTilePoint;
 import com.tschanz.geobooster.maptile.service.MapTileService;
-import com.tschanz.geobooster.netz.model.HaltestelleVersion;
-import com.tschanz.geobooster.netz.model.TarifkanteVersion;
-import com.tschanz.geobooster.netz.model.VerkehrskanteVersion;
 import com.tschanz.geobooster.netz_maptile.model.*;
-import com.tschanz.geobooster.netz_repo.service.HaltestelleRepo;
-import com.tschanz.geobooster.netz_repo.service.LinieVarianteRepo;
+import com.tschanz.geobooster.netz_repo.service.NetzSearchService;
 import com.tschanz.geobooster.netz_repo.service.TarifkanteRepo;
 import com.tschanz.geobooster.netz_repo.service.VerkehrskanteRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -29,50 +20,22 @@ import java.util.stream.Stream;
 @Service
 @RequiredArgsConstructor
 public class NetzMapTileService {
-    private static final Logger logger = LogManager.getLogger(NetzMapTileService.class);
-
-    private final HaltestelleRepo haltestelleRepo;
+    private final NetzSearchService netzSearchService;
     private final VerkehrskanteRepo verkehrskanteRepo;
-    private final LinieVarianteRepo linieVarianteRepo;
     private final TarifkanteRepo tarifkanteRepo;
     private final MapTileService mapTileService;
 
 
     @SneakyThrows
     public NetzMapTileResponse getResponse(NetzMapTileRequest request) {
-        logger.info("searching hst versions...");
-        List<HaltestelleVersion> hstVersions = request.isShowHaltestellen()
-            ? this.haltestelleRepo.searchVersions(request.getDate(), request.getBbox())
-            : Collections.emptyList();
-        logger.info(String.format("found %d hst versions", hstVersions.size()));
-
-        Collection<VerkehrskanteVersion> vkVersions;
-        Collection<TarifkanteVersion> tkVersions;
-        if (request.getLinieVarianteIds().size() > 0 && (request.isShowVerkehrskanten() || request.isShowTarifkanten() || request.isShowUnmappedTarifkanten())) {
-            vkVersions = request.isShowVerkehrskanten()
-                ? this.linieVarianteRepo.searchVerkehrskanteVersions(request.getLinieVarianteIds(), request.getVmTypes(), request.getDate())
-                : Collections.emptyList();
-            tkVersions = request.isShowTarifkanten() || request.isShowUnmappedTarifkanten()
-                ? this.linieVarianteRepo.searchTarifkanteVersions(request.getLinieVarianteIds(), request.getVmTypes(), request.getDate())
-                : Collections.emptyList();
-        } else {
-            vkVersions = request.isShowVerkehrskanten()
-                ? this.verkehrskanteRepo.searchVersionsByExtent(request.getDate(), request.getBbox(), request.getVmTypes(), request.getVerwaltungVersionIds(), request.isShowTerminiert())
-                : Collections.emptyList();
-            tkVersions = request.isShowTarifkanten() || request.isShowUnmappedTarifkanten()
-                ? this.tarifkanteRepo.searchVersionsByExtent(request.getDate(), request.getBbox(), request.getVmTypes(), request.getVerwaltungVersionIds(), request.isShowUnmappedTarifkanten())
-                : Collections.emptyList();
-        }
-
+        var netzObjects = this.netzSearchService.searchNetzObjects(request);
 
         // TMP: mem profiling
         /* System.out.println(GraphLayout.parseInstance(this.haltestelleRepo.getVersionedObjectMap()).toFootprint());
         System.out.println(GraphLayout.parseInstance(this.verkehrskanteRepo.getVersionedObjectMap()).toFootprint());
         System.out.println(GraphLayout.parseInstance(this.tarifkanteRepo.getVersionedObjectMap()).toFootprint()); */
 
-
-        logger.info("prepare map tile...");
-        var mapTilePoints = hstVersions.stream()
+        var mapTilePoints = netzObjects.getHaltestelleVersions().stream()
             .map(hstV -> new MapTilePoint(
                 CoordinateConverter.convertToEpsg3857(hstV.getCoordinate()),
                 HaltestelleStyle.getStyle(request.getZoomLevel())
@@ -80,14 +43,14 @@ public class NetzMapTileService {
             .collect(Collectors.toList());
 
         var mapTileLines = Stream.concat(
-            tkVersions
+            netzObjects.getTarifkanteVersions()
                 .stream()
                 .map(tkV -> new MapTileLine(
                     CoordinateConverter.convertToEpsg3857(this.tarifkanteRepo.getStartCoordinate(tkV)),
                     CoordinateConverter.convertToEpsg3857(this.tarifkanteRepo.getEndCoordinate(tkV)),
                     TarifkanteStyle.getStyle(request.getZoomLevel())
                 )),
-                vkVersions
+                netzObjects.getVerkehrskanteVersions()
                     .stream()
                     .map(vkV -> new MapTileLine(
                         CoordinateConverter.convertToEpsg3857(this.verkehrskanteRepo.getStartCoordinate(vkV)),
@@ -106,15 +69,8 @@ public class NetzMapTileService {
             mapTilePoints,
             mapTileLines
         );
-        logger.info("done.");
-
-        logger.info("rendering tile...");
         var img = mapTileService.renderTile(tile);
-        logger.info("done.");
-
-        logger.info("getting image bytes...");
         var bos = img.getBytes();
-        logger.info("done.");
 
         return new NetzMapTileResponse(bos);
     }
