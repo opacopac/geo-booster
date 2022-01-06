@@ -26,10 +26,10 @@ public class GetMapRequestLayers {
         return Arrays.stream(layerStrings)
             .map(layerString -> {
                 switch (layerString) {
-                    case LAYER_HALTESTELLEN: return MapLayer.Haltestelle;
-                    case LAYER_VERKEHRSKANTEN: return MapLayer.Verkehrskante;
-                    case LAYER_TARIFKANTEN: return MapLayer.Tarifkante;
-                    case LAYER_UNMAPPED_TARIFKANTEN: return MapLayer.UnmappedTarifkante;
+                    case LAYER_HALTESTELLEN: return MapLayer.HALTESTELLE;
+                    case LAYER_VERKEHRSKANTEN: return MapLayer.VERKEHRSKANTE;
+                    case LAYER_TARIFKANTEN: return MapLayer.TARIFKANTE;
+                    case LAYER_UNMAPPED_TARIFKANTEN: return MapLayer.UNMAPPED_TARIFKANTE;
                     default: return null;
                 }
             })

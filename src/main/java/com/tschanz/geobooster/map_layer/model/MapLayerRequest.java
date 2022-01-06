@@ -10,7 +10,6 @@ import java.util.Collection;
 public interface MapLayerRequest {
     LocalDate getDate();
     Extent getBbox();
-    float getZoomLevel();
     long getAwbVersionId();
     Collection<VerkehrsmittelTyp> getVmTypes();
     Collection<Long> getVerwaltungVersionIds();

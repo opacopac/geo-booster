@@ -1,6 +1,5 @@
 package com.tschanz.geobooster.map_layer.service;
 
-import com.tschanz.geobooster.map_layer.model.MapLayer;
 import com.tschanz.geobooster.map_layer.model.MapLayerRequest;
 import com.tschanz.geobooster.netz.model.TarifkanteVersion;
 import com.tschanz.geobooster.netz.model.VerkehrskanteVersion;
@@ -44,13 +43,7 @@ public class TarifkanteLayerServiceImpl implements TarifkanteLayerService {
             .filter(tkV -> request.getDate().isEqual(tkV.getGueltigVon()) || request.getDate().isAfter(tkV.getGueltigVon()))
             .filter(tkV -> request.getDate().isEqual(tkV.getGueltigBis()) || request.getDate().isBefore(tkV.getGueltigBis()))
             .filter(tkV -> request.getVmTypes().isEmpty() || this.hasOneOfVmTypes(tkV, request.getVmTypes()))
-            .filter(tkV -> {
-                if (request.getMapLayers().contains(MapLayer.UnmappedTarifkante)) {
-                    return tkV.getVerkehrskanteIds().size() == 0;
-                } else {
-                    return verwaltungIds.isEmpty() || this.hasOneOfVerwaltungIds(tkV, verwaltungIds);
-                }
-            })
+            .filter(tkV -> verwaltungIds.isEmpty() || this.hasOneOfVerwaltungIds(tkV, verwaltungIds))
             .collect(Collectors.toList());
     }
 

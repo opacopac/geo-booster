@@ -31,7 +31,7 @@ public class NetzUtfGridService {
             .collect(Collectors.toList());
 
         var lineItems = Stream.concat(
-            netzObjects.getTarifkanteVersions().stream().map(tkV -> this.utfGridTkConverter.toUtfGrid(tkV, request.getZoomLevel(), request.getMapLayers().contains(MapLayer.UnmappedTarifkante))),
+            netzObjects.getTarifkanteVersions().stream().map(tkV -> this.utfGridTkConverter.toUtfGrid(tkV, request.getZoomLevel(), request.getMapLayers().contains(MapLayer.UNMAPPED_TARIFKANTE))),
             netzObjects.getVerkehrskanteVersions().stream().map(vkV -> this.utfGridVkConverter.toUtfGrid(vkV, request.getZoomLevel()))
         ).collect(Collectors.toList());
 

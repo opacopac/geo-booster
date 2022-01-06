@@ -93,15 +93,15 @@ public class WmsController {
 
 
     private String getFilename(GetMapRequest getMapRequest) {
-        if (getMapRequest.getMapLayers().contains(MapLayer.Haltestelle)) {
+        if (getMapRequest.getMapLayers().contains(MapLayer.HALTESTELLE)) {
             return "novap-HALTESTELLEN";
         }
 
-        if (getMapRequest.getMapLayers().contains(MapLayer.Verkehrskante)) {
+        if (getMapRequest.getMapLayers().contains(MapLayer.VERKEHRSKANTE)) {
             return "novap-VERKEHRSKANTEN";
         }
 
-        if (getMapRequest.getMapLayers().contains(MapLayer.Tarifkante)) {
+        if (getMapRequest.getMapLayers().contains(MapLayer.TARIFKANTE)) {
             return "novap-TARIFKANTEN";
         }
 

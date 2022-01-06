@@ -14,6 +14,7 @@ public class MapLayerServiceImpl implements MapLayerService {
     private final HaltestelleLayerService haltestelleLayerService;
     private final VerkehrskanteLayerService verkehrskanteLayerService;
     private final TarifkanteLayerService tarifkanteLayerService;
+    private final UnmappedTarifkanteLayerService unmappedTarifkanteLayerService;
 
 
     @Override
@@ -22,19 +23,21 @@ public class MapLayerServiceImpl implements MapLayerService {
 
         for (var layer: request.getMapLayers()) {
             switch (layer) {
-                case Haltestelle:
+                case HALTESTELLE:
                     var hstVersions = this.haltestelleLayerService.searchObjects(request);
                     response.getHaltestelleVersions().addAll(hstVersions);
                     break;
-                case Verkehrskante:
+                case VERKEHRSKANTE:
                     var vkVersions = this.verkehrskanteLayerService.searchObjects(request);
                     response.getVerkehrskanteVersions().addAll(vkVersions);
                     break;
-                case Tarifkante:
+                case TARIFKANTE:
                     var tkVersions = this.tarifkanteLayerService.searchObjects(request);
                     response.getTarifkanteVersions().addAll(tkVersions);
                     break;
-                case UnmappedTarifkante:
+                case UNMAPPED_TARIFKANTE:
+                    var unmTkVersions = this.unmappedTarifkanteLayerService.searchObjects(request);
+                    response.getTarifkanteVersions().addAll(unmTkVersions);
                     break;
             }
         }
