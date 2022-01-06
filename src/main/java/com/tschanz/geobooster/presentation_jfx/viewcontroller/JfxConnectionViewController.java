@@ -14,7 +14,6 @@ import javafx.scene.control.ChoiceBox;
 public class JfxConnectionViewController implements ConnectionViewPresenter, ConnectionViewController {
     @FXML private Button loadDrButton;
     @FXML private ChoiceBox<String> connectionChoiceBox;
-    @FXML private Button testButton;
     @FXML private CheckBox trackChangesCheckBox;
     private ConnectionActions connectionActions;
 
@@ -51,11 +50,5 @@ public class JfxConnectionViewController implements ConnectionViewPresenter, Con
     @FXML
     private void onCheckForChangesClicked(ActionEvent actionEvent) {
         this.connectionActions.setTrackChanges(this.trackChangesCheckBox.isSelected());
-    }
-
-
-    @FXML
-    private void onTestButtonClicked(ActionEvent actionEvent) {
-        this.connectionActions.test();
     }
 }

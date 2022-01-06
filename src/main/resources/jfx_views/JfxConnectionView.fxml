@@ -11,7 +11,6 @@
         <HBox spacing="5">
             <ChoiceBox fx:id="connectionChoiceBox" onAction="#onConnectionSelected" />
             <Button fx:id="loadDrButton" disable="true" mnemonicParsing="false" onAction="#onLoadDrButtonClicked" text="Load DR..."/>
-            <Button fx:id="testButton" mnemonicParsing="false" onAction="#onTestButtonClicked" text="Test..."/>
         </HBox>
         <CheckBox fx:id="trackChangesCheckBox" onAction="#onCheckForChangesClicked" text="track changes" selected="true"/>
     </VBox>

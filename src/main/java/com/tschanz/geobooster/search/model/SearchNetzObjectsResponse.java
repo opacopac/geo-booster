@@ -1,4 +1,4 @@
-package com.tschanz.geobooster.netz_repo.model;
+package com.tschanz.geobooster.search.model;
 
 import com.tschanz.geobooster.netz.model.HaltestelleVersion;
 import com.tschanz.geobooster.netz.model.TarifkanteVersion;

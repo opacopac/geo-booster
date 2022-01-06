@@ -1,11 +1,12 @@
-package com.tschanz.geobooster.netz_repo.service;
+package com.tschanz.geobooster.search.service;
 
 import com.tschanz.geobooster.netz.model.HaltestelleVersion;
 import com.tschanz.geobooster.netz.model.TarifkanteVersion;
 import com.tschanz.geobooster.netz.model.VerkehrskanteVersion;
 import com.tschanz.geobooster.netz.model.VerkehrsmittelTyp;
-import com.tschanz.geobooster.netz_repo.model.SearchNetzObjectsRequest;
-import com.tschanz.geobooster.netz_repo.model.SearchNetzObjectsResponse;
+import com.tschanz.geobooster.netz_repo.service.*;
+import com.tschanz.geobooster.search.model.SearchNetzObjectsRequest;
+import com.tschanz.geobooster.search.model.SearchNetzObjectsResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

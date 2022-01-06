@@ -14,20 +14,24 @@ public class JfxCachingStatsViewController implements CachingStatsViewPresenter 
     @FXML private Label hstCountLabel;
     @FXML private Label vkCountLabel;
     @FXML private Label tkCountLabel;
+    @FXML private Label awbCountLabel;
     @FXML private Label betrVersionCountLabel;
     @FXML private Label verwVersionCountLabel;
     @FXML private Label hstVersionCountLabel;
     @FXML private Label vkVersionCountLabel;
     @FXML private Label tkVersionCountLabel;
+    @FXML private Label awbVersionCountLabel;
     @FXML private ProgressIndicator betrProgressIndicator;
     @FXML private ProgressIndicator verwProgressIndicator;
     @FXML private ProgressIndicator hstProgressIndicator;
     @FXML private ProgressIndicator vkProgressIndicator;
     @FXML private ProgressIndicator tkProgressIndicator;
+    @FXML private ProgressIndicator awbProgressIndicator;
 
 
     @Override
     public void bindState(NetzRepoState netzRepoState) {
+        // betreiber
         netzRepoState.getBetreiberRepoState().getLoadedElementCount$().subscribe(elementCount -> {
             Platform.runLater(() -> betrCountLabel.setText(elementCount.toString()));
         });
@@ -38,6 +42,7 @@ public class JfxCachingStatsViewController implements CachingStatsViewPresenter 
             Platform.runLater(() -> betrProgressIndicator.setVisible(isLoading));
         });
 
+        // verwaltung
         netzRepoState.getVerwaltungRepoState().getLoadedElementCount$().subscribe(elementCount -> {
             Platform.runLater(() -> verwCountLabel.setText(elementCount.toString()));
         });
@@ -48,6 +53,7 @@ public class JfxCachingStatsViewController implements CachingStatsViewPresenter 
             Platform.runLater(() -> verwProgressIndicator.setVisible(isLoading));
         });
 
+        // hst
         netzRepoState.getHaltestelleRepoState().getLoadedElementCount$().subscribe(elementCount -> {
             Platform.runLater(() -> hstCountLabel.setText(elementCount.toString()));
         });
@@ -58,6 +64,7 @@ public class JfxCachingStatsViewController implements CachingStatsViewPresenter 
             Platform.runLater(() -> hstProgressIndicator.setVisible(isLoading));
         });
 
+        // vk
         netzRepoState.getVerkehrskanteRepoState().getLoadedElementCount$().subscribe(elementCount -> {
             Platform.runLater(() -> vkCountLabel.setText(elementCount.toString()));
         });
@@ -68,6 +75,7 @@ public class JfxCachingStatsViewController implements CachingStatsViewPresenter 
             Platform.runLater(() -> vkProgressIndicator.setVisible(isLoading));
         });
 
+        // tk
         netzRepoState.getTarifkanteRepoState().getLoadedElementCount$().subscribe(elementCount -> {
             Platform.runLater(() -> tkCountLabel.setText(elementCount.toString()));
         });
@@ -76,6 +84,17 @@ public class JfxCachingStatsViewController implements CachingStatsViewPresenter 
         });
         netzRepoState.getTarifkanteRepoState().getIsLoading$().subscribe(isLoading -> {
             Platform.runLater(() -> tkProgressIndicator.setVisible(isLoading));
+        });
+
+        // awb
+        netzRepoState.getAwbRepoState().getLoadedElementCount$().subscribe(elementCount -> {
+            Platform.runLater(() -> awbCountLabel.setText(elementCount.toString()));
+        });
+        netzRepoState.getAwbRepoState().getLoadedVersionCount$().subscribe(versionCount -> {
+            Platform.runLater(() -> awbVersionCountLabel.setText(versionCount.toString()));
+        });
+        netzRepoState.getAwbRepoState().getIsLoading$().subscribe(isLoading -> {
+            Platform.runLater(() -> awbProgressIndicator.setVisible(isLoading));
         });
     }
 }

@@ -2,7 +2,7 @@ package com.tschanz.geobooster.netz_utfgrid.model;
 
 import com.tschanz.geobooster.geofeature.model.Extent;
 import com.tschanz.geobooster.netz.model.VerkehrsmittelTyp;
-import com.tschanz.geobooster.netz_repo.model.SearchNetzObjectsRequest;
+import com.tschanz.geobooster.search.model.SearchNetzObjectsRequest;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

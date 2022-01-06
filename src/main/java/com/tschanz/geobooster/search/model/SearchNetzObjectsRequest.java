@@ -1,4 +1,4 @@
-package com.tschanz.geobooster.netz_repo.model;
+package com.tschanz.geobooster.search.model;
 
 import com.tschanz.geobooster.geofeature.model.Extent;
 import com.tschanz.geobooster.netz.model.VerkehrsmittelTyp;

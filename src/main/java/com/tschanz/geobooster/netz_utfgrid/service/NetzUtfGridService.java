@@ -1,8 +1,8 @@
 package com.tschanz.geobooster.netz_utfgrid.service;
 
 import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
-import com.tschanz.geobooster.netz_repo.service.NetzSearchService;
 import com.tschanz.geobooster.netz_utfgrid.model.*;
+import com.tschanz.geobooster.search.service.NetzSearchService;
 import com.tschanz.geobooster.utfgrid.model.UtfGrid;
 import com.tschanz.geobooster.utfgrid.service.UtfGridService;
 import lombok.RequiredArgsConstructor;
