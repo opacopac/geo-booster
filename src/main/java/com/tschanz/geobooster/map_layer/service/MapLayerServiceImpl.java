@@ -15,6 +15,8 @@ public class MapLayerServiceImpl implements MapLayerService {
     private final VerkehrskanteLayerService verkehrskanteLayerService;
     private final TarifkanteLayerService tarifkanteLayerService;
     private final UnmappedTarifkanteLayerService unmappedTarifkanteLayerService;
+    private final AwbVkLayerService awbVkLayerService;
+    private final AwbTkLayerService awbTkLayerService;
 
 
     @Override
@@ -38,6 +40,14 @@ public class MapLayerServiceImpl implements MapLayerService {
                 case UNMAPPED_TARIFKANTE:
                     var unmTkVersions = this.unmappedTarifkanteLayerService.searchObjects(request);
                     response.getTarifkanteVersions().addAll(unmTkVersions);
+                    break;
+                case ANWENDUNGSBEREICH_VK:
+                    var awbVkVersions = this.awbVkLayerService.searchObjects(request);
+                    response.getVerkehrskanteVersions().addAll(awbVkVersions);
+                    break;
+                case ANWENDUNGSBEREICH_TK:
+                    var awbTkVersions = this.awbTkLayerService.searchObjects(request);
+                    response.getTarifkanteVersions().addAll(awbTkVersions);
                     break;
             }
         }

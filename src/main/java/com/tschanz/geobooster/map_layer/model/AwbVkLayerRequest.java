@@ -7,13 +7,11 @@ import java.time.LocalDate;
 import java.util.Collection;
 
 
-public interface MapLayerRequest extends HaltestelleLayerRequest, VerkehrskanteLayerRequest, TarifkanteLayerRequest, UnmappedTarifkanteLayerRequest, AwbVkLayerRequest, AwbTkLayerRequest {
+public interface AwbVkLayerRequest {
     LocalDate getDate();
     Extent getBbox();
     long getAwbVersionId();
     Collection<VerkehrsmittelTyp> getVmTypes();
     Collection<Long> getVerwaltungVersionIds();
     Collection<Long> getLinieVarianteIds();
-    boolean isShowTerminiert();
-    Collection<MapLayer> getMapLayers();
 }

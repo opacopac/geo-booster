@@ -1,6 +1,6 @@
 package com.tschanz.geobooster.map_layer.service;
 
-import com.tschanz.geobooster.map_layer.model.MapLayerRequest;
+import com.tschanz.geobooster.map_layer.model.HaltestelleLayerRequest;
 import com.tschanz.geobooster.netz.model.HaltestelleVersion;
 import com.tschanz.geobooster.netz_repo.service.HaltestelleRepo;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ public class HaltestelleLayerServiceImpl implements HaltestelleLayerService {
 
 
     @Override
-    public Collection<HaltestelleVersion> searchObjects(MapLayerRequest request) {
+    public Collection<HaltestelleVersion> searchObjects(HaltestelleLayerRequest request) {
         var hstVersions = this.haltestelleRepo.searchByExtent(request.getBbox());
 
         return hstVersions.stream()

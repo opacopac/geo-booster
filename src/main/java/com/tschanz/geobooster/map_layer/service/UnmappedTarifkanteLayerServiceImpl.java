@@ -1,6 +1,6 @@
 package com.tschanz.geobooster.map_layer.service;
 
-import com.tschanz.geobooster.map_layer.model.MapLayerRequest;
+import com.tschanz.geobooster.map_layer.model.UnmappedTarifkanteLayerRequest;
 import com.tschanz.geobooster.netz.model.TarifkanteVersion;
 import com.tschanz.geobooster.netz_repo.service.LinieVarianteRepo;
 import com.tschanz.geobooster.netz_repo.service.TarifkanteRepo;
@@ -19,13 +19,8 @@ public class UnmappedTarifkanteLayerServiceImpl implements UnmappedTarifkanteLay
 
 
     @Override
-    public Collection<TarifkanteVersion> searchObjects(MapLayerRequest request) {
-        Collection<TarifkanteVersion> tkVersions;
-        if (request.getLinieVarianteIds().size() > 0) {
-            tkVersions = this.linieVarianteRepo.searchTarifkanteVersions(request.getLinieVarianteIds(), request.getDate());
-        } else {
-            tkVersions = this.tarifkanteRepo.searchByExtent(request.getBbox());
-        }
+    public Collection<TarifkanteVersion> searchObjects(UnmappedTarifkanteLayerRequest request) {
+        var tkVersions = this.tarifkanteRepo.searchByExtent(request.getBbox());
 
         return tkVersions.stream()
             .filter(tkV -> request.getDate().isEqual(tkV.getGueltigVon()) || request.getDate().isAfter(tkV.getGueltigVon()))

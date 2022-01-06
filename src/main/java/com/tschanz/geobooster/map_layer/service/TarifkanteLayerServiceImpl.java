@@ -1,6 +1,6 @@
 package com.tschanz.geobooster.map_layer.service;
 
-import com.tschanz.geobooster.map_layer.model.MapLayerRequest;
+import com.tschanz.geobooster.map_layer.model.TarifkanteLayerRequest;
 import com.tschanz.geobooster.netz.model.TarifkanteVersion;
 import com.tschanz.geobooster.netz.model.VerkehrskanteVersion;
 import com.tschanz.geobooster.netz.model.VerkehrsmittelTyp;
@@ -27,7 +27,7 @@ public class TarifkanteLayerServiceImpl implements TarifkanteLayerService {
 
 
     @Override
-    public Collection<TarifkanteVersion> searchObjects(MapLayerRequest request) {
+    public Collection<TarifkanteVersion> searchObjects(TarifkanteLayerRequest request) {
         Collection<TarifkanteVersion> tkVersions;
         if (request.getLinieVarianteIds().size() > 0) {
             tkVersions = this.linieVarianteRepo.searchTarifkanteVersions(request.getLinieVarianteIds(), request.getDate());
