@@ -7,31 +7,30 @@ import com.tschanz.geobooster.netz_persistence.service.VerkehrskanteAuspraegungP
 import com.tschanz.geobooster.netz_persistence.service.VerkehrskantePersistence;
 import com.tschanz.geobooster.netz_persistence_sql.model.SqlVerkehrskanteElementConverter;
 import com.tschanz.geobooster.netz_persistence_sql.model.SqlVerkehrskanteVersionConverter;
-import com.tschanz.geobooster.persistence_sql.service.SqlConnectionFactory;
+import com.tschanz.geobooster.persistence_sql.service.SqlReader;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
 
-@Service
+@Repository
 @RequiredArgsConstructor
 public class VerkehrskanteSqlPersistence implements VerkehrskantePersistence {
-    private final SqlConnectionFactory connectionFactory;
+    private final SqlReader sqlReader;
     private final VerkehrskanteAuspraegungPersistence vkaPersistenceRepo;
 
 
     @Override
     @SneakyThrows
     public Collection<Verkehrskante> readAllElements() {
-        var sqlReader = new SqlReader<>(this.connectionFactory, new SqlVerkehrskanteElementConverter());
         var query = String.format(
             "SELECT %s FROM N_VERKEHRSKANTE_E",
             String.join(",", SqlVerkehrskanteElementConverter.SELECT_COLS)
         );
 
-        return sqlReader.read(query);
+        return this.sqlReader.read(query, new SqlVerkehrskanteElementConverter());
     }
 
 
@@ -42,13 +41,12 @@ public class VerkehrskanteSqlPersistence implements VerkehrskantePersistence {
         //var vkaVList = this.vkaPersistenceRepo.readAllVersions(); // TODO: version map not needed?
         var vkVkasMap = this.createVkVkasMap(vkaList);
 
-        var sqlReader = new SqlReader<>(this.connectionFactory, new SqlVerkehrskanteVersionConverter(vkVkasMap));
         var query = String.format(
             "SELECT %s FROM N_VERKEHRSKANTE_V",
             String.join(",", SqlVerkehrskanteVersionConverter.SELECT_COLS)
         );
 
-        return sqlReader.read(query);
+        return this.sqlReader.read(query, new SqlVerkehrskanteVersionConverter(vkVkasMap));
     }
 
 

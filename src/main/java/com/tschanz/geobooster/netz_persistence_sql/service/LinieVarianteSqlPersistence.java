@@ -4,26 +4,27 @@ import com.tschanz.geobooster.netz_persistence.service.LinieVariantePersistence;
 import com.tschanz.geobooster.netz_persistence_sql.model.SqlDynamicIdConverter;
 import com.tschanz.geobooster.persistence_sql.service.SqlConnectionFactory;
 import com.tschanz.geobooster.persistence_sql.service.SqlHelper;
+import com.tschanz.geobooster.persistence_sql.service.SqlReader;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
 
-@Service
+@Repository
 @RequiredArgsConstructor
 public class LinieVarianteSqlPersistence implements LinieVariantePersistence {
     private final SqlConnectionFactory connectionFactory;
+    private final SqlReader sqlReader;
 
 
     @Override
     @SneakyThrows
     public Collection<Long> searchVerkehrskanteIds(Collection<Long> linieVarianteIds) {
         var idColName = "VK_ID";
-        var sqlReader = new SqlReader<>(this.connectionFactory, new SqlDynamicIdConverter(idColName));
         var query = String.format(
             "SELECT vk_e.ID as %s FROM N_VERKEHRSKANTE_E vk_e"
             + " INNER JOIN N_VERKEHRS_KANTE_AUSPR_E vka_e ON vka_e.ID_VERKEHRSKANTE_E = vk_e.ID"
@@ -33,14 +34,13 @@ public class LinieVarianteSqlPersistence implements LinieVariantePersistence {
             linieVarianteIds.stream().map(Object::toString).collect(Collectors.joining(","))
         );
 
-        return sqlReader.read(query);
+        return this.sqlReader.read(query, new SqlDynamicIdConverter(idColName));
     }
 
 
     @Override
     public Collection<Long> searchTarifkanteIds(Collection<Long> linieVarianteIds, LocalDate date) {
         var idColName = "TK_ID";
-        var sqlReader = new SqlReader<>(this.connectionFactory, new SqlDynamicIdConverter(idColName));
         var dateString = SqlHelper.getToDate(this.connectionFactory.getSqlDialect(), date);
         var query = String.format(
             "SELECT tk_e.ID as %s FROM N_TARIFKANTE_E tk_e"
@@ -56,6 +56,6 @@ public class LinieVarianteSqlPersistence implements LinieVariantePersistence {
             dateString
         );
 
-        return sqlReader.read(query);
+        return this.sqlReader.read(query, new SqlDynamicIdConverter(idColName));
     }
 }

@@ -1,27 +1,27 @@
-package com.tschanz.geobooster.netz_persistence_sql.service;
+package com.tschanz.geobooster.persistence_sql.service;
 
 import com.tschanz.geobooster.netz_persistence_sql.model.SqlResultsetConverter;
-import com.tschanz.geobooster.persistence_sql.service.SqlConnectionFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
 
+@Component
 @RequiredArgsConstructor
-public class SqlReader<T> {
+public class SqlReader {
     private static final Logger logger = LogManager.getLogger(SqlReader.class);
 
     private final SqlConnectionFactory connectionFactory;
-    private final SqlResultsetConverter<T> resultsetConverter;
 
 
     @SneakyThrows
-    public Collection<T> read(String query) {
-        logger.debug(String.format("executing query %s", query));
+    public <T> Collection<T> read(String query, SqlResultsetConverter<T> resultsetConverter) {
+        logger.info(String.format("executing query '%s'", query));
 
         var entries = new ArrayList<T>();
         var connection = connectionFactory.getConnection();
@@ -33,8 +33,9 @@ public class SqlReader<T> {
                 entries.add(entry);
             }
         }
-
         connection.closeResultsetAndStatement();
+
+        logger.info(String.format("%d entries read", entries.size()));
 
         return entries;
     }

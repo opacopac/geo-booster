@@ -5,42 +5,40 @@ import com.tschanz.geobooster.netz.model.VerkehrskanteAuspraegungVersion;
 import com.tschanz.geobooster.netz_persistence.service.VerkehrskanteAuspraegungPersistence;
 import com.tschanz.geobooster.netz_persistence_sql.model.SqlVerkehrskanteAuspraegungElementConverter;
 import com.tschanz.geobooster.netz_persistence_sql.model.SqlVerkehrskanteAuspraegungVersionConverter;
-import com.tschanz.geobooster.persistence_sql.service.SqlConnectionFactory;
+import com.tschanz.geobooster.persistence_sql.service.SqlReader;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 
 
-@Service
+@Repository
 @RequiredArgsConstructor
 public class VerkehrskanteAuspraegungSqlPersistence implements VerkehrskanteAuspraegungPersistence {
-    private final SqlConnectionFactory connectionFactory;
+    private final SqlReader sqlReader;
 
 
     @Override
     @SneakyThrows
     public Collection<VerkehrskanteAuspraegung> readAllElements() {
-        var sqlReader = new SqlReader<>(this.connectionFactory, new SqlVerkehrskanteAuspraegungElementConverter());
         var query = String.format(
             "SELECT %s FROM N_VERKEHRS_KANTE_AUSPR_E",
             String.join(",", SqlVerkehrskanteAuspraegungElementConverter.SELECT_COLS)
         );
 
-        return sqlReader.read(query);
+        return this.sqlReader.read(query, new SqlVerkehrskanteAuspraegungElementConverter());
     }
 
 
     @Override
     @SneakyThrows
     public Collection<VerkehrskanteAuspraegungVersion> readAllVersions() {
-        var sqlReader = new SqlReader<>(this.connectionFactory, new SqlVerkehrskanteAuspraegungVersionConverter());
         var query = String.format(
             "SELECT %s FROM N_VERKEHRS_KANTE_AUSPR_V",
             String.join(",", SqlVerkehrskanteAuspraegungVersionConverter.SELECT_COLS)
         );
 
-        return sqlReader.read(query);
+        return this.sqlReader.read(query, new SqlVerkehrskanteAuspraegungVersionConverter());
     }
 }
