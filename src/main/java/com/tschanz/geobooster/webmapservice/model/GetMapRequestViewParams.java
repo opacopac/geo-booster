@@ -18,6 +18,7 @@ public class GetMapRequestViewParams {
     private static final String SUBPARAM_NAME_VALUE = ":";
     private static final String SUBPARAM_VALUE_QUOTES = "'";
     private static final String SUBPARAM_VALUE_SEPARATOR = "\\\\,";
+    private static final String SUBPARAM_AWB = "ID_ANWENDUNGSBEREICH_V";
     private static final String SUBPARAM_TYPES = "TYPEN";
     private static final String SUBPARAM_VERWALTUNGEN = "VERWALTUNGEN";
     private static final String SUBPARAM_LINIEN_VARIANTEN = "LINIE_VARIANTEN";
@@ -25,6 +26,7 @@ public class GetMapRequestViewParams {
     private static final String SUBPARAM_TERMINIERT = "TERMINIERT";
     private static final String SUBPARAM_REFRESHCOUNTER = "REFRESH_COUNTER";
 
+    private final long awbVersionId;
     private final List<VerkehrsmittelTyp> types;
     private final List<Long> verwaltungVersionIds;
     private final List<Long> linienVariantenIds;
@@ -34,6 +36,7 @@ public class GetMapRequestViewParams {
 
 
     public static GetMapRequestViewParams parse(String value) {
+        long awbVersionId = -1;
         List<VerkehrsmittelTyp> types = Collections.emptyList();
         List<Long> verwaltungVersionIds = Collections.emptyList();
         List<Long> linienVarianteIds = Collections.emptyList();
@@ -49,6 +52,9 @@ public class GetMapRequestViewParams {
             }
 
             switch (name_value[0]) {
+                case SUBPARAM_AWB:
+                    awbVersionId = Long.parseLong(stripQuotes(name_value[1]));
+                    break;
                 case SUBPARAM_TYPES:
                     var typeNames = Arrays.asList(stripQuotes(name_value[1]).split(SUBPARAM_VALUE_SEPARATOR));
                     types = typeNames.stream().map(VerkehrsmittelTyp::valueOf).collect(Collectors.toList());
@@ -74,6 +80,7 @@ public class GetMapRequestViewParams {
         }
 
         return new GetMapRequestViewParams(
+            awbVersionId,
             types,
             verwaltungVersionIds,
             linienVarianteIds,

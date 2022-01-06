@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 
 @Getter
@@ -31,9 +32,9 @@ public class VerkehrskanteVersion implements Version {
     }
 
 
-    public boolean hasOneOfVerwaltungIds(List<Long> verwaltungIds) {
-        for (var verwaltungId: verwaltungIds) {
-            if (this.verwaltungIds.contains(verwaltungId)) {
+    public boolean hasOneOfVerwaltungIds(Map<Long, Long> verwaltungIdMap) {
+        for (var verwaltungId: this.verwaltungIds) {
+            if (verwaltungIdMap.containsKey(verwaltungId)) {
                 return true;
             }
         };

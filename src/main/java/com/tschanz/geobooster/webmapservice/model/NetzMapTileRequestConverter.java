@@ -11,14 +11,12 @@ public class NetzMapTileRequestConverter {
             mapRequest.getWidth(),
             mapRequest.getHeight(),
             mapRequest.getZoomLevel(),
+            mapRequest.getViewparams().getAwbVersionId(),
             mapRequest.getViewparams().getTypes(),
             mapRequest.getViewparams().getVerwaltungVersionIds(),
             mapRequest.getViewparams().getLinienVariantenIds(),
-            mapRequest.hasLayerHaltestellen(),
-            mapRequest.hasLayerVerkehrskanten(),
-            mapRequest.hasLayerTarifkanten(),
-            mapRequest.hasLayerUnmappedTarifkanten(),
             mapRequest.getViewparams().isShowTerminiert(),
+            mapRequest.getMapLayers(),
             mapRequest.isTransparent()
         );
     }

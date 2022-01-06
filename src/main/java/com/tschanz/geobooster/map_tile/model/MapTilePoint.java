@@ -1,4 +1,4 @@
-package com.tschanz.geobooster.maptile.model;
+package com.tschanz.geobooster.map_tile.model;
 
 import com.tschanz.geobooster.geofeature.model.Epsg3857Coordinate;
 import com.tschanz.geobooster.graphics.model.GbPointStyle;

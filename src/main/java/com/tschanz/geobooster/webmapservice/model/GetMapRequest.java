@@ -2,9 +2,11 @@ package com.tschanz.geobooster.webmapservice.model;
 
 import com.tschanz.geobooster.geofeature.model.Extent;
 import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
+import com.tschanz.geobooster.map_layer.model.MapLayer;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collection;
 import java.util.Map;
 
 
@@ -14,10 +16,6 @@ public class GetMapRequest {
     public static final String REQ_GETMAP = "GetMap";
     public static final String REQ_FORMAT_PNG = "image/png8";
     public static final String REQ_FORMAT_UTFGRID = "application/json;type=utfgrid";
-    private static final String LAYER_HALTESTELLEN = "novap:HALTESTELLEN";
-    private static final String LAYER_VERKEHRSKANTEN = "novap:VERKEHRSKANTEN";
-    private static final String LAYER_TARIFKANTEN = "novap:TARIFKANTEN";
-    private static final String LAYER_UNMAPPED_TARIFKANTEN = "novap:UNMAPPED_TARIFKANTEN";
     private static final String PARAM_VERSION = "version";
     private static final String PARAM_LAYERS = "layers";
     private static final String PARAM_STYLES = "styles";
@@ -30,7 +28,7 @@ public class GetMapRequest {
     private static final String PARAM_BBOX = "bbox";
 
     private final String version;
-    private final String layers;
+    private final Collection<MapLayer> mapLayers;
     private final String styles;
     private final String format;
     private final boolean transparent;
@@ -44,7 +42,7 @@ public class GetMapRequest {
     public static GetMapRequest fromParams(Map<String,String> params) {
         return new GetMapRequest(
             params.get(PARAM_VERSION),
-            params.get(PARAM_LAYERS),
+            GetMapRequestLayers.parse(params.get(PARAM_LAYERS)),
             params.get(PARAM_STYLES),
             params.get(PARAM_FORMAT),
             Boolean.parseBoolean(params.get(PARAM_TRANSPARENT)),
@@ -62,25 +60,5 @@ public class GetMapRequest {
         var maxDeg = CoordinateConverter.convertToEpsg4326(this.getBbox().getMaxCoordinate()).getLongitude();
 
         return (float) (Math.log(360.0 / (maxDeg - minDeg)) / Math.log(2));
-    }
-
-
-    public boolean hasLayerHaltestellen() {
-        return this.layers.contains(GetMapRequest.LAYER_HALTESTELLEN);
-    }
-
-
-    public boolean hasLayerVerkehrskanten() {
-        return this.layers.contains(GetMapRequest.LAYER_VERKEHRSKANTEN);
-    }
-
-
-    public boolean hasLayerTarifkanten() {
-        return this.layers.contains(GetMapRequest.LAYER_TARIFKANTEN);
-    }
-
-
-    public boolean hasLayerUnmappedTarifkanten() {
-        return this.layers.contains(GetMapRequest.LAYER_UNMAPPED_TARIFKANTEN);
     }
 }

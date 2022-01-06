@@ -1,8 +1,8 @@
-package com.tschanz.geobooster.maptile.service;
+package com.tschanz.geobooster.map_tile.service;
 
 import com.tschanz.geobooster.graphics.model.GbImage;
 import com.tschanz.geobooster.graphics.service.ImageService;
-import com.tschanz.geobooster.maptile.model.MapTile;
+import com.tschanz.geobooster.map_tile.model.MapTile;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

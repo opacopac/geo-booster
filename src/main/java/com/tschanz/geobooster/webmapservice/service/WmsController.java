@@ -1,6 +1,7 @@
-package com.tschanz.geobooster.webmapservice.controller;
+package com.tschanz.geobooster.webmapservice.service;
 
 import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
+import com.tschanz.geobooster.map_layer.model.MapLayer;
 import com.tschanz.geobooster.netz_maptile.service.NetzMapTileService;
 import com.tschanz.geobooster.netz_utfgrid.service.NetzUtfGridService;
 import com.tschanz.geobooster.webmapservice.model.GetMapRequest;
@@ -92,15 +93,15 @@ public class WmsController {
 
 
     private String getFilename(GetMapRequest getMapRequest) {
-        if (getMapRequest.hasLayerHaltestellen()) {
+        if (getMapRequest.getMapLayers().contains(MapLayer.Haltestelle)) {
             return "novap-HALTESTELLEN";
         }
 
-        if (getMapRequest.hasLayerVerkehrskanten()) {
+        if (getMapRequest.getMapLayers().contains(MapLayer.Verkehrskante)) {
             return "novap-VERKEHRSKANTEN";
         }
 
-        if (getMapRequest.hasLayerTarifkanten()) {
+        if (getMapRequest.getMapLayers().contains(MapLayer.Tarifkante)) {
             return "novap-TARIFKANTEN";
         }
 

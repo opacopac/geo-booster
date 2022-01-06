@@ -1,4 +1,4 @@
-package com.tschanz.geobooster.search.model;
+package com.tschanz.geobooster.map_layer.model;
 
 import com.tschanz.geobooster.netz.model.HaltestelleVersion;
 import com.tschanz.geobooster.netz.model.TarifkanteVersion;
@@ -11,7 +11,7 @@ import java.util.Collection;
 
 @Getter
 @RequiredArgsConstructor
-public class SearchNetzObjectsResponse {
+public class MapLayerResponse {
     private final Collection<HaltestelleVersion> haltestelleVersions;
     private final Collection<VerkehrskanteVersion> verkehrskanteVersions;
     private final Collection<TarifkanteVersion> tarifkanteVersions;

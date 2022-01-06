@@ -1,8 +1,9 @@
 package com.tschanz.geobooster.netz_utfgrid.service;
 
 import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
+import com.tschanz.geobooster.map_layer.model.MapLayer;
+import com.tschanz.geobooster.map_layer.service.MapLayerService;
 import com.tschanz.geobooster.netz_utfgrid.model.*;
-import com.tschanz.geobooster.search.service.NetzSearchService;
 import com.tschanz.geobooster.utfgrid.model.UtfGrid;
 import com.tschanz.geobooster.utfgrid.service.UtfGridService;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,7 @@ import java.util.stream.Stream;
 @Service
 @RequiredArgsConstructor
 public class NetzUtfGridService {
-    private final NetzSearchService netzSearchService;
+    private final MapLayerService mapLayerService;
     private final UtfGridService utfGridService;
     private final UtfGridHaltestelleConverter utfGridHstConverter;
     private final UtfGridTarifkanteConverter utfGridTkConverter;
@@ -23,14 +24,14 @@ public class NetzUtfGridService {
 
 
     public NetzUtfGridResponse getResponse(NetzUtfGridRequest request) {
-        var netzObjects = this.netzSearchService.searchNetzObjects(request);
+        var netzObjects = this.mapLayerService.searchObjects(request);
 
         var pointItems = netzObjects.getHaltestelleVersions().stream()
             .map(hst -> this.utfGridHstConverter.toUtfGrid(hst, request.getZoomLevel()))
             .collect(Collectors.toList());
 
         var lineItems = Stream.concat(
-            netzObjects.getTarifkanteVersions().stream().map(tkV -> this.utfGridTkConverter.toUtfGrid(tkV, request.getZoomLevel(), request.isShowUnmappedTarifkanten())),
+            netzObjects.getTarifkanteVersions().stream().map(tkV -> this.utfGridTkConverter.toUtfGrid(tkV, request.getZoomLevel(), request.getMapLayers().contains(MapLayer.UnmappedTarifkante))),
             netzObjects.getVerkehrskanteVersions().stream().map(vkV -> this.utfGridVkConverter.toUtfGrid(vkV, request.getZoomLevel()))
         ).collect(Collectors.toList());
 

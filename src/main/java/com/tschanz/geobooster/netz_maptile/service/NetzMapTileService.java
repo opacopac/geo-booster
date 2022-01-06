@@ -1,14 +1,14 @@
 package com.tschanz.geobooster.netz_maptile.service;
 
 import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
-import com.tschanz.geobooster.maptile.model.MapTile;
-import com.tschanz.geobooster.maptile.model.MapTileLine;
-import com.tschanz.geobooster.maptile.model.MapTilePoint;
-import com.tschanz.geobooster.maptile.service.MapTileService;
+import com.tschanz.geobooster.map_layer.service.MapLayerService;
+import com.tschanz.geobooster.map_tile.model.MapTile;
+import com.tschanz.geobooster.map_tile.model.MapTileLine;
+import com.tschanz.geobooster.map_tile.model.MapTilePoint;
+import com.tschanz.geobooster.map_tile.service.MapTileService;
 import com.tschanz.geobooster.netz_maptile.model.*;
 import com.tschanz.geobooster.netz_repo.service.TarifkanteRepo;
 import com.tschanz.geobooster.netz_repo.service.VerkehrskanteRepo;
-import com.tschanz.geobooster.search.service.NetzSearchService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 @Service
 @RequiredArgsConstructor
 public class NetzMapTileService {
-    private final NetzSearchService netzSearchService;
+    private final MapLayerService mapLayerService;
     private final VerkehrskanteRepo verkehrskanteRepo;
     private final TarifkanteRepo tarifkanteRepo;
     private final MapTileService mapTileService;
@@ -28,7 +28,7 @@ public class NetzMapTileService {
 
     @SneakyThrows
     public NetzMapTileResponse getResponse(NetzMapTileRequest request) {
-        var netzObjects = this.netzSearchService.searchNetzObjects(request);
+        var netzObjects = this.mapLayerService.searchObjects(request);
 
         // TMP: mem profiling
         /* System.out.println(GraphLayout.parseInstance(this.haltestelleRepo.getVersionedObjectMap()).toFootprint());
