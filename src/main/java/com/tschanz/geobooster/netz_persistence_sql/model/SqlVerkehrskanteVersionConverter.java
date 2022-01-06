@@ -3,6 +3,7 @@ package com.tschanz.geobooster.netz_persistence_sql.model;
 import com.tschanz.geobooster.netz.model.VerkehrskanteAuspraegung;
 import com.tschanz.geobooster.netz.model.VerkehrskanteVersion;
 import com.tschanz.geobooster.netz.model.VerkehrsmittelTyp;
+import com.tschanz.geobooster.persistence_sql.model.SqlResultsetConverter;
 import com.tschanz.geobooster.util.service.ArrayHelper;
 import com.tschanz.geobooster.versioning_persistence.service.FlyWeightDateFactory;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlHasIdConverter;
@@ -19,10 +20,19 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class SqlVerkehrskanteVersionConverter implements SqlResultsetConverter<VerkehrskanteVersion> {
-    public final static String COL_TERMINIERT_PER = "TERMINIERT_PER";
-    public final static String[] SELECT_COLS = ArrayHelper.appendTo(SqlVersionConverter.SELECT_COLS, COL_TERMINIERT_PER);
+    private final static String COL_TERMINIERT_PER = "TERMINIERT_PER";
+    private final static String[] SELECT_COLS = ArrayHelper.appendTo(SqlVersionConverter.SELECT_COLS, COL_TERMINIERT_PER);
 
     public final Map<Long, List<VerkehrskanteAuspraegung>> vkVkasMap;
+
+
+    @Override
+    public String getSelectQuery() {
+        return String.format(
+            "SELECT %s FROM N_VERKEHRSKANTE_V",
+            String.join(",", SELECT_COLS)
+        );
+    }
 
 
     @Override

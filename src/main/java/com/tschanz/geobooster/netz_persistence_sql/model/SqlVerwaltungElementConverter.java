@@ -1,6 +1,7 @@
 package com.tschanz.geobooster.netz_persistence_sql.model;
 
 import com.tschanz.geobooster.netz.model.Verwaltung;
+import com.tschanz.geobooster.persistence_sql.model.SqlResultsetConverter;
 import com.tschanz.geobooster.util.service.ArrayHelper;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlElementConverter;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlHasIdConverter;
@@ -10,12 +11,19 @@ import java.sql.ResultSet;
 
 
 public class SqlVerwaltungElementConverter implements SqlResultsetConverter<Verwaltung> {
-    public final static String COL_CODE = "CODE";
-    public final static String COL_IDBETREIBER = "ID_BETREIBER";
-    public final static String COL_INFOPLUSTC = "INFO_PLUS_TC";
-    public final static String[] SELECT_COLS = ArrayHelper.appendTo(
-        SqlElementConverter.SELECT_COLS,
-        COL_CODE, COL_IDBETREIBER, COL_INFOPLUSTC);
+    private final static String COL_CODE = "CODE";
+    private final static String COL_IDBETREIBER = "ID_BETREIBER";
+    private final static String COL_INFOPLUSTC = "INFO_PLUS_TC";
+    private final static String[] SELECT_COLS = ArrayHelper.appendTo(SqlElementConverter.SELECT_COLS, COL_CODE, COL_IDBETREIBER, COL_INFOPLUSTC);
+
+
+    @Override
+    public String getSelectQuery() {
+        return String.format(
+            "SELECT %s FROM N_VERWALTUNG_E",
+            String.join(",", SELECT_COLS)
+        );
+    }
 
 
     @SneakyThrows

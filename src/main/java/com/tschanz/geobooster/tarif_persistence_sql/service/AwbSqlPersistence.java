@@ -23,12 +23,7 @@ public class AwbSqlPersistence implements AwbPersistence {
     @Override
     @SneakyThrows
     public Collection<Awb> readAllElements() {
-        var query = String.format(
-            "SELECT %s FROM T_ANWBER_E",
-            String.join(",", SqlAwbElementConverter.SELECT_COLS)
-        );
-
-        return this.sqlReader.read(query, new SqlAwbElementConverter());
+        return this.sqlReader.read(new SqlAwbElementConverter());
     }
 
 
@@ -52,89 +47,54 @@ public class AwbSqlPersistence implements AwbPersistence {
             includeRgaMap
         );
 
-        var query = String.format(
-            "SELECT %s FROM T_ANWBER_V",
-            String.join(",", SqlAwbVersionConverter.SELECT_COLS)
-        );
-
-        return this.sqlReader.read(query, converter);
+        return this.sqlReader.read(converter);
     }
 
 
     private Map<Long, Collection<Long>> readIncludeVkMap() {
-        var query = String.format(
-            "SELECT %s FROM T_ANWBER_X_INCLUDE_KANTEN",
-            String.join(",", SqlAwbIncVkConverter.SELECT_COLS)
-        );
-        var excludeVks = this.sqlReader.read(query, new SqlAwbIncVkConverter());
+        var excludeVks = this.sqlReader.read(new SqlAwbIncVkConverter());
 
         return ArrayHelper.createLookupMap(excludeVks);
     }
 
 
     private Map<Long, Collection<Long>> readExcludeVkMap() {
-        var query = String.format(
-            "SELECT %s FROM T_ANWBER_X_EXCLUDE_KANTEN",
-            String.join(",", SqlAwbExcVkConverter.SELECT_COLS)
-        );
-        var excludeVks = this.sqlReader.read(query, new SqlAwbExcVkConverter());
+        var excludeVks = this.sqlReader.read(new SqlAwbExcVkConverter());
 
         return ArrayHelper.createLookupMap(excludeVks);
     }
 
 
     private Map<Long, Collection<Long>> readIncludeTkMap() {
-        var query = String.format(
-            "SELECT %s FROM T_ANWBER_X_IN_TARIF_KANTEN",
-            String.join(",", SqlAwbIncTkConverter.SELECT_COLS)
-        );
-
-        var excludeTks = this.sqlReader.read(query, new SqlAwbIncTkConverter());
+        var excludeTks = this.sqlReader.read(new SqlAwbIncTkConverter());
 
         return ArrayHelper.createLookupMap(excludeTks);
     }
 
 
     private Map<Long, Collection<Long>> readExcludeTkMap() {
-        var query = String.format(
-            "SELECT %s FROM T_ANWBER_X_EX_TARIF_KANTEN",
-            String.join(",", SqlAwbExcTkConverter.SELECT_COLS)
-        );
-
-        var excludeTks = this.sqlReader.read(query, new SqlAwbExcTkConverter());
+        var excludeTks = this.sqlReader.read(new SqlAwbExcTkConverter());
 
         return ArrayHelper.createLookupMap(excludeTks);
     }
 
 
     private Map<Long, Collection<Long>> readIncludeVerwMap() {
-        var query = String.format(
-            "SELECT %s FROM T_ANWBER_X_INCLUDE_VERWALTUNG",
-            String.join(",", SqlAwbIncVerwConverter.SELECT_COLS)
-        );
-        var excludeVks = this.sqlReader.read(query, new SqlAwbIncVerwConverter());
+        var excludeVks = this.sqlReader.read(new SqlAwbIncVerwConverter());
 
         return ArrayHelper.createLookupMap(excludeVks);
     }
 
 
     private Map<Long, Collection<Long>> readIncludeZpMap() {
-        var query = String.format(
-            "SELECT %s FROM T_ANWBER_X_INCLUDE_ZONENPLAN",
-            String.join(",", SqlAwbIncZpConverter.SELECT_COLS)
-        );
-        var excludeVks = this.sqlReader.read(query, new SqlAwbIncZpConverter());
+        var excludeVks = this.sqlReader.read(new SqlAwbIncZpConverter());
 
         return ArrayHelper.createLookupMap(excludeVks);
     }
 
 
     private Map<Long, Collection<Long>> readIncludeRgaMap() {
-        var query = String.format(
-            "SELECT %s FROM T_ANWBER_X_RG_AUSPRAEGUNG",
-            String.join(",", SqlAwbIncRgaConverter.SELECT_COLS)
-        );
-        var excludeVks = sqlReader.read(query, new SqlAwbIncRgaConverter());
+        var excludeVks = sqlReader.read(new SqlAwbIncRgaConverter());
 
         return ArrayHelper.createLookupMap(excludeVks);
     }

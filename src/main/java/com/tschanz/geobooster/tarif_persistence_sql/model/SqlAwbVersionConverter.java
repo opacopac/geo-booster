@@ -1,6 +1,6 @@
 package com.tschanz.geobooster.tarif_persistence_sql.model;
 
-import com.tschanz.geobooster.netz_persistence_sql.model.SqlResultsetConverter;
+import com.tschanz.geobooster.persistence_sql.model.SqlResultsetConverter;
 import com.tschanz.geobooster.tarif.model.AwbVersion;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlHasIdConverter;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlVersionConverter;
@@ -14,8 +14,6 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 public class SqlAwbVersionConverter implements SqlResultsetConverter<AwbVersion> {
-    public final static String[] SELECT_COLS = SqlVersionConverter.SELECT_COLS;
-
     private final Map<Long, Collection<Long>> includeVkMap;
     private final Map<Long, Collection<Long>> excludeVkMap;
     private final Map<Long, Collection<Long>> includeTkMap;
@@ -23,6 +21,15 @@ public class SqlAwbVersionConverter implements SqlResultsetConverter<AwbVersion>
     private final Map<Long, Collection<Long>> includeVerwMap;
     private final Map<Long, Collection<Long>> includeZpMap;
     private final Map<Long, Collection<Long>> includeRgaMap;
+
+
+    @Override
+    public String getSelectQuery() {
+        return String.format(
+            "SELECT %s FROM T_ANWBER_V",
+            String.join(",", SqlVersionConverter.SELECT_COLS)
+        );
+    }
 
 
     @Override

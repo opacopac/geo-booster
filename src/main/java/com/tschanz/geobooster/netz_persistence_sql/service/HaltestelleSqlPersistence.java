@@ -22,23 +22,13 @@ public class HaltestelleSqlPersistence implements HaltestellenPersistence {
     @Override
     @SneakyThrows
     public Collection<Haltestelle> readAllElements() {
-        var query = String.format(
-            "SELECT %s FROM N_HALTESTELLE_E",
-            String.join(",", SqlHaltestelleElementConverter.SELECT_COLS)
-        );
-
-        return this.sqlReader.read(query, new SqlHaltestelleElementConverter());
+        return this.sqlReader.read(new SqlHaltestelleElementConverter());
     }
 
 
     @Override
     @SneakyThrows
     public Collection<HaltestelleVersion> readAllVersions() {
-        var query = String.format(
-            "SELECT %s FROM N_HALTESTELLE_V",
-            String.join(",", SqlHaltestelleVersionConverter.SELECT_COLS)
-        );
-
-        return sqlReader.read(query, new SqlHaltestelleVersionConverter());
+        return sqlReader.read(new SqlHaltestelleVersionConverter());
     }
 }

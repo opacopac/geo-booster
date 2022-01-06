@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Collection;
 
 
 @Getter
@@ -18,5 +18,5 @@ public class TarifkanteVersion implements Version {
     private final LocalDate gueltigVon;
     private final LocalDate gueltigBis;
     private final LocalDate terminiertPer;
-    private List<Long> verkehrskanteIds;
+    private Collection<Long> verkehrskanteIds;
 }

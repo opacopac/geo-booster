@@ -2,6 +2,7 @@ package com.tschanz.geobooster.netz_persistence_sql.model;
 
 import com.tschanz.geobooster.geofeature.model.Epsg4326Coordinate;
 import com.tschanz.geobooster.netz.model.HaltestelleVersion;
+import com.tschanz.geobooster.persistence_sql.model.SqlResultsetConverter;
 import com.tschanz.geobooster.util.service.ArrayHelper;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlHasIdConverter;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlVersionConverter;
@@ -11,10 +12,19 @@ import java.sql.ResultSet;
 
 
 public class SqlHaltestelleVersionConverter implements SqlResultsetConverter<HaltestelleVersion> {
-    public final static String COL_NAME = "NAME";
-    public final static String COL_LAT = "LAT";
-    public final static String COL_LNG = "LNG";
-    public final static String[] SELECT_COLS = ArrayHelper.appendTo(SqlVersionConverter.SELECT_COLS, COL_NAME, COL_LAT, COL_LNG);
+    private final static String COL_NAME = "NAME";
+    private final static String COL_LAT = "LAT";
+    private final static String COL_LNG = "LNG";
+    private final static String[] SELECT_COLS = ArrayHelper.appendTo(SqlVersionConverter.SELECT_COLS, COL_NAME, COL_LAT, COL_LNG);
+
+
+    @Override
+    public String getSelectQuery() {
+        return String.format(
+            "SELECT %s FROM N_HALTESTELLE_V",
+            String.join(",", SELECT_COLS)
+        );
+    }
 
 
     @SneakyThrows

@@ -22,23 +22,13 @@ public class VerwaltungSqlPersistence implements VerwaltungPersistence {
     @Override
     @SneakyThrows
     public Collection<Verwaltung> readAllElements() {
-        var query = String.format(
-            "SELECT %s FROM N_VERWALTUNG_E",
-            String.join(",", SqlVerwaltungElementConverter.SELECT_COLS)
-        );
-
-        return this.sqlReader.read(query, new SqlVerwaltungElementConverter());
+        return this.sqlReader.read(new SqlVerwaltungElementConverter());
     }
 
 
     @Override
     @SneakyThrows
     public Collection<VerwaltungVersion> readAllVersions() {
-        var query = String.format(
-            "SELECT %s FROM N_VERWALTUNG_V",
-            String.join(",", SqlVerwaltungVersionConverter.SELECT_COLS)
-        );
-
-        return this.sqlReader.read(query, new SqlVerwaltungVersionConverter());
+        return this.sqlReader.read(new SqlVerwaltungVersionConverter());
     }
 }

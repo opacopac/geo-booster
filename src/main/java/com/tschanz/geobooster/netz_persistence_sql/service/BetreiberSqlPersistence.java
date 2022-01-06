@@ -22,23 +22,13 @@ public class BetreiberSqlPersistence implements BetreiberPersistence {
     @Override
     @SneakyThrows
     public Collection<Betreiber> readAllElements() {
-        var query = String.format(
-            "SELECT %s FROM N_BETREIBER_E",
-            String.join(",", SqlBetreiberElementConverter.SELECT_COLS)
-        );
-
-        return this.sqlReader.read(query, new SqlBetreiberElementConverter());
+        return this.sqlReader.read(new SqlBetreiberElementConverter());
     }
 
 
     @Override
     @SneakyThrows
     public Collection<BetreiberVersion> readAllVersions() {
-        var query = String.format(
-            "SELECT %s FROM N_BETREIBER_V",
-            String.join(",", SqlBetreiberVersionConverter.SELECT_COLS)
-        );
-
-        return this.sqlReader.read(query, new SqlBetreiberVersionConverter());
+        return this.sqlReader.read(new SqlBetreiberVersionConverter());
     }
 }

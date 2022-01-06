@@ -1,6 +1,6 @@
 package com.tschanz.geobooster.tarif_persistence_sql.model;
 
-import com.tschanz.geobooster.netz_persistence_sql.model.SqlResultsetConverter;
+import com.tschanz.geobooster.persistence_sql.model.SqlResultsetConverter;
 import com.tschanz.geobooster.util.model.KeyValue;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -10,9 +10,18 @@ import java.sql.ResultSet;
 
 @RequiredArgsConstructor
 public class SqlAwbIncZpConverter implements SqlResultsetConverter<KeyValue<Long, Long>> {
-    public final static String COL_ID_ANWBER_V = "ID_ANWBER_V";
-    public final static String COL_ID_ZONENPLAN_E = "ID_ZONENPLAN_E";
-    public final static String[] SELECT_COLS = {COL_ID_ANWBER_V, COL_ID_ZONENPLAN_E};
+    private final static String COL_ID_ANWBER_V = "ID_ANWBER_V";
+    private final static String COL_ID_ZONENPLAN_E = "ID_ZONENPLAN_E";
+    private final static String[] SELECT_COLS = {COL_ID_ANWBER_V, COL_ID_ZONENPLAN_E};
+
+
+    @Override
+    public String getSelectQuery() {
+        return String.format(
+            "SELECT %s FROM T_ANWBER_X_INCLUDE_ZONENPLAN",
+            String.join(",", SELECT_COLS)
+        );
+    }
 
 
     @Override
