@@ -3,7 +3,7 @@ package com.tschanz.geobooster.tarif_persistence_sql.service;
 import com.tschanz.geobooster.persistence_sql.service.SqlReader;
 import com.tschanz.geobooster.tarif.model.Awb;
 import com.tschanz.geobooster.tarif.model.AwbVersion;
-import com.tschanz.geobooster.tarif_persistence.AwbPersistence;
+import com.tschanz.geobooster.tarif_persistence.service.AwbPersistence;
 import com.tschanz.geobooster.tarif_persistence_sql.model.*;
 import com.tschanz.geobooster.util.service.ArrayHelper;
 import lombok.RequiredArgsConstructor;

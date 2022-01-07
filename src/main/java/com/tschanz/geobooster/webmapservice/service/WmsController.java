@@ -1,9 +1,9 @@
 package com.tschanz.geobooster.webmapservice.service;
 
 import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
-import com.tschanz.geobooster.map_layer.model.MapLayer;
-import com.tschanz.geobooster.netz_maptile.service.NetzMapTileService;
-import com.tschanz.geobooster.netz_utfgrid.service.NetzUtfGridService;
+import com.tschanz.geobooster.map_layer.model.MapLayerType;
+import com.tschanz.geobooster.map_tile_composer.service.MapTileComposer;
+import com.tschanz.geobooster.utfgrid_composer.service.UtfGridComposer;
 import com.tschanz.geobooster.webmapservice.model.GetMapRequest;
 import com.tschanz.geobooster.webmapservice.model.NetzMapTileRequestConverter;
 import com.tschanz.geobooster.webmapservice.model.NetzUtfGridRequestConverter;
@@ -39,8 +39,8 @@ public class WmsController {
     private static final String RESP_EXPIRES_VALUE = "0";
     private static final Logger logger = LogManager.getLogger(WmsController.class);
 
-    private final NetzUtfGridService netzUtfGridService;
-    private final NetzMapTileService netzMapTileService;
+    private final UtfGridComposer utfGridComposer;
+    private final MapTileComposer mapTileComposer;
     private final WmsState wmsState;
 
 
@@ -56,7 +56,7 @@ public class WmsController {
         this.logMapRequest("PNG", mapRequest);
 
         var mapTileRequest = NetzMapTileRequestConverter.fromMapRequest(mapRequest);
-        var mapTileResponse = this.netzMapTileService.getResponse(mapTileRequest);
+        var mapTileResponse = this.mapTileComposer.getResponse(mapTileRequest);
 
         var msElapsed = Instant.now().toEpochMilli() - startMs;
         this.wmsState.incPngRequestCount();
@@ -80,7 +80,7 @@ public class WmsController {
         this.logMapRequest("UTF grid", mapRequest);
 
         var utfGridRequest = NetzUtfGridRequestConverter.fromMapRequest(mapRequest);
-        var utfGridResponse = this.netzUtfGridService.getResponse(utfGridRequest);
+        var utfGridResponse = this.utfGridComposer.getResponse(utfGridRequest);
 
         var msElapsed = Instant.now().toEpochMilli() - startMs;
         this.wmsState.incUtfGridRequestCount();
@@ -93,15 +93,15 @@ public class WmsController {
 
 
     private String getFilename(GetMapRequest getMapRequest) {
-        if (getMapRequest.getMapLayers().contains(MapLayer.HALTESTELLE)) {
+        if (getMapRequest.getMapLayerTypes().contains(MapLayerType.HALTESTELLE)) {
             return "novap-HALTESTELLEN";
         }
 
-        if (getMapRequest.getMapLayers().contains(MapLayer.VERKEHRSKANTE)) {
+        if (getMapRequest.getMapLayerTypes().contains(MapLayerType.VERKEHRSKANTE)) {
             return "novap-VERKEHRSKANTEN";
         }
 
-        if (getMapRequest.getMapLayers().contains(MapLayer.TARIFKANTE)) {
+        if (getMapRequest.getMapLayerTypes().contains(MapLayerType.TARIFKANTE)) {
             return "novap-TARIFKANTEN";
         }
 

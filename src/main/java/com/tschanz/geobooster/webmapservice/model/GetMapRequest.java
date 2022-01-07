@@ -2,7 +2,8 @@ package com.tschanz.geobooster.webmapservice.model;
 
 import com.tschanz.geobooster.geofeature.model.Extent;
 import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
-import com.tschanz.geobooster.map_layer.model.MapLayer;
+import com.tschanz.geobooster.map_layer.model.MapLayerType;
+import com.tschanz.geobooster.map_style.model.MapStyle;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -28,8 +29,8 @@ public class GetMapRequest {
     private static final String PARAM_BBOX = "bbox";
 
     private final String version;
-    private final Collection<MapLayer> mapLayers;
-    private final String styles;
+    private final Collection<MapLayerType> mapLayerTypes;
+    private final Collection<MapStyle> mapStyles;
     private final String format;
     private final boolean transparent;
     private final GetMapRequestViewParams viewparams;
@@ -43,7 +44,7 @@ public class GetMapRequest {
         return new GetMapRequest(
             params.get(PARAM_VERSION),
             GetMapRequestLayers.parse(params.get(PARAM_LAYERS)),
-            params.get(PARAM_STYLES),
+            GetMapRequestStyles.parse(params.get(PARAM_STYLES)),
             params.get(PARAM_FORMAT),
             Boolean.parseBoolean(params.get(PARAM_TRANSPARENT)),
             GetMapRequestViewParams.parse(params.get(PARAM_VIEWPARAMS)),

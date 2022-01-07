@@ -3,7 +3,7 @@ package com.tschanz.geobooster.tarif_repo.service;
 import com.tschanz.geobooster.netz_repo.model.ProgressState;
 import com.tschanz.geobooster.tarif.model.Awb;
 import com.tschanz.geobooster.tarif.model.AwbVersion;
-import com.tschanz.geobooster.tarif_persistence.AwbPersistence;
+import com.tschanz.geobooster.tarif_persistence.service.AwbPersistence;
 import com.tschanz.geobooster.tarif_repo.model.AwbRepoState;
 import com.tschanz.geobooster.versioning_repo.model.VersionedObjectMap;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,6 @@
 package com.tschanz.geobooster.webmapservice.model;
 
-import com.tschanz.geobooster.map_layer.model.MapLayer;
+import com.tschanz.geobooster.map_layer.model.MapLayerType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -22,18 +22,18 @@ public class GetMapRequestLayers {
     private static final String LAYER_AWB_TK = "novap:ANWENDUNGSBEREICHE_TARIF";
 
 
-    public static Collection<MapLayer> parse(String value) {
+    public static Collection<MapLayerType> parse(String value) {
         var layerStrings = value.split(SEPARATOR);
 
         return Arrays.stream(layerStrings)
             .map(layerString -> {
                 switch (layerString) {
-                    case LAYER_HALTESTELLEN: return MapLayer.HALTESTELLE;
-                    case LAYER_VERKEHRSKANTEN: return MapLayer.VERKEHRSKANTE;
-                    case LAYER_TARIFKANTEN: return MapLayer.TARIFKANTE;
-                    case LAYER_UNMAPPED_TARIFKANTEN: return MapLayer.UNMAPPED_TARIFKANTE;
-                    case LAYER_AWB_VK: return MapLayer.ANWENDUNGSBEREICH_VK;
-                    case LAYER_AWB_TK: return MapLayer.ANWENDUNGSBEREICH_TK;
+                    case LAYER_HALTESTELLEN: return MapLayerType.HALTESTELLE;
+                    case LAYER_VERKEHRSKANTEN: return MapLayerType.VERKEHRSKANTE;
+                    case LAYER_TARIFKANTEN: return MapLayerType.TARIFKANTE;
+                    case LAYER_UNMAPPED_TARIFKANTEN: return MapLayerType.UNMAPPED_TARIFKANTE;
+                    case LAYER_AWB_VK: return MapLayerType.ANWENDUNGSBEREICH_VK;
+                    case LAYER_AWB_TK: return MapLayerType.ANWENDUNGSBEREICH_TK;
                     default: return null;
                 }
             })

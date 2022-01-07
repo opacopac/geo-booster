@@ -1,11 +1,11 @@
 package com.tschanz.geobooster.webmapservice.model;
 
-import com.tschanz.geobooster.netz_utfgrid.model.NetzUtfGridRequest;
+import com.tschanz.geobooster.utfgrid_composer.model.UtfGridRequest;
 
 
 public class NetzUtfGridRequestConverter {
-    public static NetzUtfGridRequest fromMapRequest(GetMapRequest mapRequest) {
-        return new NetzUtfGridRequest(
+    public static UtfGridRequest fromMapRequest(GetMapRequest mapRequest) {
+        return new UtfGridRequest(
             mapRequest.getViewparams().getDate(),
             mapRequest.getBbox(),
             mapRequest.getWidth(),
@@ -16,7 +16,8 @@ public class NetzUtfGridRequestConverter {
             mapRequest.getViewparams().getVerwaltungVersionIds(),
             mapRequest.getViewparams().getLinienVariantenIds(),
             mapRequest.getViewparams().isShowTerminiert(),
-            mapRequest.getMapLayers()
+            mapRequest.getMapLayerTypes(),
+            mapRequest.getMapStyles()
         );
     }
 }

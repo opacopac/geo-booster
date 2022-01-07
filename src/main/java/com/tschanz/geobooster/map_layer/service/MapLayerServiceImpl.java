@@ -23,7 +23,7 @@ public class MapLayerServiceImpl implements MapLayerService {
     public MapLayerResponse searchObjects(MapLayerRequest request) {
         var response = new MapLayerResponse(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
 
-        for (var layer: request.getMapLayers()) {
+        for (var layer: request.getMapLayerTypes()) {
             switch (layer) {
                 case HALTESTELLE:
                     var hstVersions = this.haltestelleLayerService.searchObjects(request);

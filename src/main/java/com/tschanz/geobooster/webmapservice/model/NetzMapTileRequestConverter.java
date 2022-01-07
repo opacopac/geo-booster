@@ -1,11 +1,11 @@
 package com.tschanz.geobooster.webmapservice.model;
 
-import com.tschanz.geobooster.netz_maptile.model.NetzMapTileRequest;
+import com.tschanz.geobooster.map_tile_composer.model.MapTileRequest;
 
 
 public class NetzMapTileRequestConverter {
-    public static NetzMapTileRequest fromMapRequest(GetMapRequest mapRequest) {
-        return new NetzMapTileRequest(
+    public static MapTileRequest fromMapRequest(GetMapRequest mapRequest) {
+        return new MapTileRequest(
             mapRequest.getViewparams().getDate(),
             mapRequest.getBbox(),
             mapRequest.getWidth(),
@@ -16,7 +16,8 @@ public class NetzMapTileRequestConverter {
             mapRequest.getViewparams().getVerwaltungVersionIds(),
             mapRequest.getViewparams().getLinienVariantenIds(),
             mapRequest.getViewparams().isShowTerminiert(),
-            mapRequest.getMapLayers(),
+            mapRequest.getMapLayerTypes(),
+            mapRequest.getMapStyles(),
             mapRequest.isTransparent()
         );
     }

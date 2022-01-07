@@ -15,5 +15,5 @@ public interface MapLayerRequest extends HaltestelleLayerRequest, VerkehrskanteL
     Collection<Long> getVerwaltungVersionIds();
     Collection<Long> getLinieVarianteIds();
     boolean isShowTerminiert();
-    Collection<MapLayer> getMapLayers();
+    Collection<MapLayerType> getMapLayerTypes();
 }
