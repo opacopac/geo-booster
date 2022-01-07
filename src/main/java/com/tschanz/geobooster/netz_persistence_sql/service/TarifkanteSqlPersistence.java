@@ -7,6 +7,7 @@ import com.tschanz.geobooster.netz_persistence.service.TarifkantePersistence;
 import com.tschanz.geobooster.netz_persistence_sql.model.*;
 import com.tschanz.geobooster.persistence_sql.service.SqlConnectionFactory;
 import com.tschanz.geobooster.persistence_sql.service.SqlReader;
+import com.tschanz.geobooster.util.model.KeyValue;
 import com.tschanz.geobooster.util.service.ArrayHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -88,6 +89,6 @@ public class TarifkanteSqlPersistence implements TarifkantePersistence {
         var converter = new SqlTkVkConverter(filterTkVIds);
         var tkVkList = this.sqlReader.read(converter);
 
-        return ArrayHelper.create1toNLookupMap(tkVkList);
+        return ArrayHelper.create1toNLookupMap(tkVkList, KeyValue::getKey, KeyValue::getValue);
     }
 }

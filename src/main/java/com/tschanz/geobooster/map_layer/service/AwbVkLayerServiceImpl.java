@@ -6,6 +6,7 @@ import com.tschanz.geobooster.netz_repo.service.LinieVarianteRepo;
 import com.tschanz.geobooster.netz_repo.service.VerkehrskanteRepo;
 import com.tschanz.geobooster.netz_repo.service.VerwaltungRepo;
 import com.tschanz.geobooster.tarif_repo.service.AwbRepo;
+import com.tschanz.geobooster.versioning.service.VersioningHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -47,8 +48,7 @@ public class AwbVkLayerServiceImpl implements AwbVkLayerService {
             .forEach(verwEid -> filterVerwaltungIdMap.put(verwEid, verwEid));
 
         return vkVersions.stream()
-            .filter(vkV -> request.getDate().isAfter(vkV.getGueltigVon()) || request.getDate().isEqual(vkV.getGueltigVon()))
-            .filter(vkV -> request.getDate().isBefore(vkV.getGueltigBis()) || request.getDate().isEqual(vkV.getGueltigBis()))
+            .filter(vkV -> VersioningHelper.isVersionInTimespan(vkV, request.getDate()))
             .filter(vkV -> request.getVmTypes().isEmpty() || vkV.hasOneOfVmTypes(request.getVmTypes()))
             .filter(vkV -> {
                 // TODO: add kanten from zone & uzone

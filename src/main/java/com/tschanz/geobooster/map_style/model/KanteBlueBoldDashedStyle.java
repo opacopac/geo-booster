@@ -5,7 +5,7 @@ import com.tschanz.geobooster.graphics.model.GbLineStyle;
 import com.tschanz.geobooster.graphics.model.GbStroke;
 
 
-public class TarifkanteStyle {
+public class KanteBlueBoldDashedStyle {
     public final static ZoomVariableWidth WIDTH = new ZoomVariableWidth(3, 13, 0, 28);
 
 

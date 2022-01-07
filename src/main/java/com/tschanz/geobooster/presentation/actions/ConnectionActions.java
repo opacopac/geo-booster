@@ -3,6 +3,7 @@ package com.tschanz.geobooster.presentation.actions;
 import com.tschanz.geobooster.netz_repo.service.*;
 import com.tschanz.geobooster.presentation.model.GbState;
 import com.tschanz.geobooster.rtm_repo.service.HaltestelleWegangabeRepo;
+import com.tschanz.geobooster.rtm_repo.service.RgAuspraegungRepo;
 import com.tschanz.geobooster.tarif_repo.service.AwbRepo;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -22,6 +23,7 @@ public class ConnectionActions {
     private final TarifkanteRepo tarifkanteRepo;
     private final HaltestelleWegangabeRepo hstWegangabeRepo;
     private final AwbRepo awbRepo;
+    private final RgAuspraegungRepo rgAuspraegungRepo;
     private final GbState gbState;
 
 
@@ -46,6 +48,7 @@ public class ConnectionActions {
                 this.tarifkanteRepo.loadAll();
                 this.hstWegangabeRepo.loadAll();
                 this.awbRepo.loadAll();
+                this.rgAuspraegungRepo.loadAll();
                 this.gbState.getProgressState().updateProgressText("loading dr done");
                 this.gbState.getProgressState().updateIsInProgress(false);
             } catch (Exception e) {

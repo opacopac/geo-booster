@@ -9,11 +9,15 @@ import com.tschanz.geobooster.netz_persistence.service.VerkehrskantePersistence;
 import com.tschanz.geobooster.netz_persistence_sql.model.SqlVerkehrskanteElementConverter;
 import com.tschanz.geobooster.netz_persistence_sql.model.SqlVerkehrskanteVersionConverter;
 import com.tschanz.geobooster.persistence_sql.service.SqlReader;
+import com.tschanz.geobooster.versioning.service.VersioningHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Repository;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 
 @Repository
@@ -41,10 +45,10 @@ public class VerkehrskanteSqlPersistence implements VerkehrskantePersistence {
     }
 
 
-    private Map<Long, List<VerkehrskanteAuspraegung>> readVkVkaMap() {
+    private Map<Long, Collection<VerkehrskanteAuspraegung>> readVkVkaMap() {
         var vkaEList = this.vkaPersistenceRepo.readAllElements();
 
-        Map<Long, List<VerkehrskanteAuspraegung>> vkVkasMap = new HashMap<>();
+        Map<Long, Collection<VerkehrskanteAuspraegung>> vkVkasMap = new HashMap<>();
         vkaEList.forEach(vka -> {
             var vkId = vka.getVerkehrskanteId();
             var vkVkas = vkVkasMap.computeIfAbsent(vkId, k -> new ArrayList<>());
@@ -55,15 +59,9 @@ public class VerkehrskanteSqlPersistence implements VerkehrskantePersistence {
     }
 
 
-    private Map<Long, List<VerkehrskanteAuspraegungVersion>> readVkaVersionMap() {
+    private Map<Long, Collection<VerkehrskanteAuspraegungVersion>> readVkaVersionMap() {
         var vkaVersionList = this.vkaPersistenceRepo.readAllVersions();
 
-        Map<Long, List<VerkehrskanteAuspraegungVersion>> vkaVersionMap = new HashMap<>();
-        vkaVersionList.forEach(vkaV -> {
-            var vkaVersions = vkaVersionMap.computeIfAbsent(vkaV.getElementId(), k -> new ArrayList<>());
-            vkaVersions.add(vkaV);
-        });
-
-        return vkaVersionMap;
+        return VersioningHelper.createElementIdMap(vkaVersionList);
     }
 }

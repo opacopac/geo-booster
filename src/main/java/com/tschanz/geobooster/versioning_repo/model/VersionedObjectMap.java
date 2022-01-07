@@ -1,8 +1,8 @@
 package com.tschanz.geobooster.versioning_repo.model;
 
-import com.tschanz.geobooster.util.service.DateHelper;
 import com.tschanz.geobooster.versioning.model.Element;
 import com.tschanz.geobooster.versioning.model.Version;
+import com.tschanz.geobooster.versioning.service.VersioningHelper;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -91,10 +91,6 @@ public class VersionedObjectMap<E extends Element, V extends Version> {
 
 
     public V getElementVersionAtDate(long elementId, LocalDate date) {
-        return this.getElementVersions(elementId)
-            .stream()
-            .filter(version -> DateHelper.isInTimespan(date, version.getGueltigVon(), version.getGueltigBis()))
-            .findFirst()
-            .orElse(null);
+        return VersioningHelper.filterSingleVersion(this.getElementVersions(elementId), date);
     }
 }

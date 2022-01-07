@@ -8,6 +8,7 @@ import com.tschanz.geobooster.netz_repo.service.LinieVarianteRepo;
 import com.tschanz.geobooster.netz_repo.service.TarifkanteRepo;
 import com.tschanz.geobooster.netz_repo.service.VerkehrskanteRepo;
 import com.tschanz.geobooster.netz_repo.service.VerwaltungRepo;
+import com.tschanz.geobooster.versioning.service.VersioningHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -40,8 +41,7 @@ public class TarifkanteLayerServiceImpl implements TarifkanteLayerService {
             .collect(Collectors.toList());
 
         return tkVersions.stream()
-            .filter(tkV -> request.getDate().isEqual(tkV.getGueltigVon()) || request.getDate().isAfter(tkV.getGueltigVon()))
-            .filter(tkV -> request.getDate().isEqual(tkV.getGueltigBis()) || request.getDate().isBefore(tkV.getGueltigBis()))
+            .filter(tkV -> VersioningHelper.isVersionInTimespan(tkV, request.getDate()))
             .filter(tkV -> request.getVmTypes().isEmpty() || this.hasOneOfVmTypes(tkV, request.getVmTypes()))
             .filter(tkV -> verwaltungIds.isEmpty() || this.hasOneOfVerwaltungIds(tkV, verwaltungIds))
             .collect(Collectors.toList());

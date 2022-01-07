@@ -1,8 +1,8 @@
 package com.tschanz.geobooster.utfgrid_composer.model;
 
 import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
+import com.tschanz.geobooster.map_style.model.KanteBlueBoldDashedStyle;
 import com.tschanz.geobooster.map_style.model.MapStyle;
-import com.tschanz.geobooster.map_style.model.TarifkanteStyle;
 import com.tschanz.geobooster.netz.model.TarifkanteVersion;
 import com.tschanz.geobooster.netz_repo.service.TarifkanteRepo;
 import com.tschanz.geobooster.utfgrid.model.UtfGridLineItem;
@@ -30,7 +30,7 @@ public class UtfGridTarifkanteConverter {
         return new UtfGridLineItem(
             CoordinateConverter.convertToEpsg3857(hst1V.getCoordinate()),
             CoordinateConverter.convertToEpsg3857(hst2V.getCoordinate()),
-            TarifkanteStyle.WIDTH.getWidth(zoomLevel),
+            KanteBlueBoldDashedStyle.WIDTH.getWidth(zoomLevel),
             Arrays.asList(
                 new KeyValue<>("id", idPrefix + tkVersion.getId()),
                 new KeyValue<>("ID", tkVersion.getId()),

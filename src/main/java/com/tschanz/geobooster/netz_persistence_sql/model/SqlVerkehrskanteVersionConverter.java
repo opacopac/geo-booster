@@ -6,6 +6,7 @@ import com.tschanz.geobooster.netz.model.VerkehrskanteVersion;
 import com.tschanz.geobooster.netz.model.VerkehrsmittelTyp;
 import com.tschanz.geobooster.persistence_sql.model.SqlResultsetConverter;
 import com.tschanz.geobooster.util.service.ArrayHelper;
+import com.tschanz.geobooster.versioning.service.VersioningHelper;
 import com.tschanz.geobooster.versioning_persistence.service.FlyWeightDateFactory;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlHasIdConverter;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlVersionConverter;
@@ -14,7 +15,7 @@ import lombok.SneakyThrows;
 
 import java.sql.ResultSet;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -24,8 +25,8 @@ public class SqlVerkehrskanteVersionConverter implements SqlResultsetConverter<V
     private final static String COL_TERMINIERT_PER = "TERMINIERT_PER";
     private final static String[] SELECT_COLS = ArrayHelper.appendTo(SqlVersionConverter.SELECT_COLS, COL_TERMINIERT_PER);
 
-    public final Map<Long, List<VerkehrskanteAuspraegung>> vkVkasMap;
-    public final Map<Long, List<VerkehrskanteAuspraegungVersion>> vkaVersionMap;
+    public final Map<Long, Collection<VerkehrskanteAuspraegung>> vkVkasMap;
+    public final Map<Long, Collection<VerkehrskanteAuspraegungVersion>> vkaVersionMap;
 
 
     @Override
@@ -55,7 +56,7 @@ public class SqlVerkehrskanteVersionConverter implements SqlResultsetConverter<V
     }
 
 
-    private List<Long> getVerwaltungIds(long vkEId, LocalDate date) {
+    private Collection<Long> getVerwaltungIds(long vkEId, LocalDate date) {
         return this.vkVkasMap.get(vkEId).stream()
             .filter(vka -> this.hasValidVkaVersion(vka.getId(), date))
             .map(VerkehrskanteAuspraegung::getVerwaltungId)
@@ -91,7 +92,6 @@ public class SqlVerkehrskanteVersionConverter implements SqlResultsetConverter<V
         }
 
         return vkaVersions.stream()
-            .anyMatch(vkaV -> (date.isAfter(vkaV.getGueltigVon()) || date.isEqual(vkaV.getGueltigVon()))
-                && (date.isBefore(vkaV.getGueltigBis()) || date.isEqual(vkaV.getGueltigBis())));
+            .anyMatch(vkaV -> VersioningHelper.isVersionInTimespan(vkaV, date));
     }
 }

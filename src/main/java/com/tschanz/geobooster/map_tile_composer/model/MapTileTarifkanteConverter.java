@@ -2,7 +2,7 @@ package com.tschanz.geobooster.map_tile_composer.model;
 
 import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
 import com.tschanz.geobooster.map_style.model.MapStyle;
-import com.tschanz.geobooster.map_style.model.TarifkanteStyle;
+import com.tschanz.geobooster.map_style.service.StyleHelper;
 import com.tschanz.geobooster.map_tile.model.MapTileLine;
 import com.tschanz.geobooster.netz.model.TarifkanteVersion;
 import com.tschanz.geobooster.netz_repo.service.TarifkanteRepo;
@@ -22,7 +22,7 @@ public class MapTileTarifkanteConverter {
         return new MapTileLine(
             CoordinateConverter.convertToEpsg3857(this.tarifkanteRepo.getStartCoordinate(tkV)),
             CoordinateConverter.convertToEpsg3857(this.tarifkanteRepo.getEndCoordinate(tkV)),
-            TarifkanteStyle.getStyle(zoomLevel)
+            StyleHelper.getLineStyle(mapStyles, zoomLevel)
         );
     }
 }

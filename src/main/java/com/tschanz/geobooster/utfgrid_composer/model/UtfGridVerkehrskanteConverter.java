@@ -1,8 +1,8 @@
 package com.tschanz.geobooster.utfgrid_composer.model;
 
 import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
+import com.tschanz.geobooster.map_style.model.KanteBlackStyle;
 import com.tschanz.geobooster.map_style.model.MapStyle;
-import com.tschanz.geobooster.map_style.model.VerkehrskanteBlackStyle;
 import com.tschanz.geobooster.netz.model.VerkehrskanteVersion;
 import com.tschanz.geobooster.netz_repo.service.VerkehrskanteRepo;
 import com.tschanz.geobooster.utfgrid.model.UtfGridLineItem;
@@ -29,7 +29,7 @@ public class UtfGridVerkehrskanteConverter {
         return new UtfGridLineItem(
             CoordinateConverter.convertToEpsg3857(hst1V.getCoordinate()),
             CoordinateConverter.convertToEpsg3857(hst2V.getCoordinate()),
-            VerkehrskanteBlackStyle.WIDTH.getWidth(zoomLevel),
+            KanteBlackStyle.WIDTH.getWidth(zoomLevel),
             Arrays.asList(
                 new KeyValue<>("id", "VERKEHRSKANTEN." + vkVersion.getId()),
                 new KeyValue<>("ID", vkVersion.getId()),

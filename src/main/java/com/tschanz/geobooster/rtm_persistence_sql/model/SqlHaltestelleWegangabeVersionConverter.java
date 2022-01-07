@@ -1,4 +1,4 @@
-package com.tschanz.geobooster.rtm_persistence.service;
+package com.tschanz.geobooster.rtm_persistence_sql.model;
 
 import com.tschanz.geobooster.persistence_sql.model.SqlResultsetConverter;
 import com.tschanz.geobooster.rtm.model.HaltestelleWegangabeVersion;

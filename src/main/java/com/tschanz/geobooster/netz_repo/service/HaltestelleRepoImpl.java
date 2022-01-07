@@ -14,7 +14,6 @@ import com.tschanz.geobooster.quadtree.model.QuadTree;
 import com.tschanz.geobooster.quadtree.model.QuadTreeCoordinate;
 import com.tschanz.geobooster.quadtree.model.QuadTreeExtent;
 import com.tschanz.geobooster.quadtree.model.QuadTreeItem;
-import com.tschanz.geobooster.util.model.KeyValue;
 import com.tschanz.geobooster.util.service.ArrayHelper;
 import com.tschanz.geobooster.versioning_repo.model.VersionedObjectMap;
 import lombok.RequiredArgsConstructor;
@@ -69,8 +68,7 @@ public class HaltestelleRepoImpl implements HaltestelleRepo {
                 );
             });
 
-        var uicIds = elements.stream().map(hst -> new KeyValue<>(hst.getUicCode(), hst)).collect(Collectors.toList());
-        this.uicLookupMap = ArrayHelper.create1to1LookupMap(uicIds);
+        this.uicLookupMap = ArrayHelper.create1to1LookupMap(elements, Haltestelle::getUicCode, k -> k);
 
         this.progressState.updateProgressText("loading haltestellen done");
         this.haltestelleRepoState.updateIsLoading(false);

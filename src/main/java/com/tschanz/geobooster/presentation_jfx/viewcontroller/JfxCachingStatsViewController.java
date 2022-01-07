@@ -18,6 +18,7 @@ public class JfxCachingStatsViewController implements CachingStatsViewPresenter 
     @FXML private Label tkCountLabel;
     @FXML private Label hstWaCountLabel;
     @FXML private Label awbCountLabel;
+    @FXML private Label rgaCountLabel;
     @FXML private Label betrVersionCountLabel;
     @FXML private Label verwVersionCountLabel;
     @FXML private Label hstVersionCountLabel;
@@ -25,6 +26,7 @@ public class JfxCachingStatsViewController implements CachingStatsViewPresenter 
     @FXML private Label tkVersionCountLabel;
     @FXML private Label hstWaVersionCountLabel;
     @FXML private Label awbVersionCountLabel;
+    @FXML private Label rgaVersionCountLabel;
     @FXML private ProgressIndicator betrProgressIndicator;
     @FXML private ProgressIndicator verwProgressIndicator;
     @FXML private ProgressIndicator hstProgressIndicator;
@@ -32,6 +34,7 @@ public class JfxCachingStatsViewController implements CachingStatsViewPresenter 
     @FXML private ProgressIndicator tkProgressIndicator;
     @FXML private ProgressIndicator hstWaProgressIndicator;
     @FXML private ProgressIndicator awbProgressIndicator;
+    @FXML private ProgressIndicator rgaProgressIndicator;
 
 
     @Override
@@ -111,6 +114,17 @@ public class JfxCachingStatsViewController implements CachingStatsViewPresenter 
         });
         tarifRepoState.getAwbRepoState().getIsLoading$().subscribe(isLoading -> {
             Platform.runLater(() -> awbProgressIndicator.setVisible(isLoading));
+        });
+
+        // rga
+        rtmRepoState.getRgAuspraegungRepoState().getLoadedElementCount$().subscribe(elementCount -> {
+            Platform.runLater(() -> rgaCountLabel.setText(elementCount.toString()));
+        });
+        rtmRepoState.getRgAuspraegungRepoState().getLoadedVersionCount$().subscribe(versionCount -> {
+            Platform.runLater(() -> rgaVersionCountLabel.setText(versionCount.toString()));
+        });
+        rtmRepoState.getRgAuspraegungRepoState().getIsLoading$().subscribe(isLoading -> {
+            Platform.runLater(() -> rgaProgressIndicator.setVisible(isLoading));
         });
     }
 }

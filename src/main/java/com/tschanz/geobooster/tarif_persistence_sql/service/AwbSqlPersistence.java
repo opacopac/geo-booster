@@ -5,6 +5,7 @@ import com.tschanz.geobooster.tarif.model.Awb;
 import com.tschanz.geobooster.tarif.model.AwbVersion;
 import com.tschanz.geobooster.tarif_persistence.service.AwbPersistence;
 import com.tschanz.geobooster.tarif_persistence_sql.model.*;
+import com.tschanz.geobooster.util.model.KeyValue;
 import com.tschanz.geobooster.util.service.ArrayHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -54,48 +55,48 @@ public class AwbSqlPersistence implements AwbPersistence {
     private Map<Long, Collection<Long>> readIncludeVkMap() {
         var excludeVks = this.sqlReader.read(new SqlAwbIncVkConverter());
 
-        return ArrayHelper.create1toNLookupMap(excludeVks);
+        return ArrayHelper.create1toNLookupMap(excludeVks, KeyValue::getKey, KeyValue::getValue);
     }
 
 
     private Map<Long, Collection<Long>> readExcludeVkMap() {
         var excludeVks = this.sqlReader.read(new SqlAwbExcVkConverter());
 
-        return ArrayHelper.create1toNLookupMap(excludeVks);
+        return ArrayHelper.create1toNLookupMap(excludeVks, KeyValue::getKey, KeyValue::getValue);
     }
 
 
     private Map<Long, Collection<Long>> readIncludeTkMap() {
         var excludeTks = this.sqlReader.read(new SqlAwbIncTkConverter());
 
-        return ArrayHelper.create1toNLookupMap(excludeTks);
+        return ArrayHelper.create1toNLookupMap(excludeTks, KeyValue::getKey, KeyValue::getValue);
     }
 
 
     private Map<Long, Collection<Long>> readExcludeTkMap() {
         var excludeTks = this.sqlReader.read(new SqlAwbExcTkConverter());
 
-        return ArrayHelper.create1toNLookupMap(excludeTks);
+        return ArrayHelper.create1toNLookupMap(excludeTks, KeyValue::getKey, KeyValue::getValue);
     }
 
 
     private Map<Long, Collection<Long>> readIncludeVerwMap() {
         var excludeVks = this.sqlReader.read(new SqlAwbIncVerwConverter());
 
-        return ArrayHelper.create1toNLookupMap(excludeVks);
+        return ArrayHelper.create1toNLookupMap(excludeVks, KeyValue::getKey, KeyValue::getValue);
     }
 
 
     private Map<Long, Collection<Long>> readIncludeZpMap() {
         var excludeVks = this.sqlReader.read(new SqlAwbIncZpConverter());
 
-        return ArrayHelper.create1toNLookupMap(excludeVks);
+        return ArrayHelper.create1toNLookupMap(excludeVks, KeyValue::getKey, KeyValue::getValue);
     }
 
 
     private Map<Long, Collection<Long>> readIncludeRgaMap() {
         var excludeVks = sqlReader.read(new SqlAwbIncRgaConverter());
 
-        return ArrayHelper.create1toNLookupMap(excludeVks);
+        return ArrayHelper.create1toNLookupMap(excludeVks, KeyValue::getKey, KeyValue::getValue);
     }
 }
