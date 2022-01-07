@@ -52,9 +52,10 @@ public class AwbVkLayerServiceImpl implements AwbVkLayerService {
             .filter(vkV -> request.getVmTypes().isEmpty() || vkV.hasOneOfVmTypes(request.getVmTypes()))
             .filter(vkV -> {
                 // TODO: add kanten from zone & uzone
-                return awbVerwaltungIdMap.isEmpty() || vkV.hasOneOfVerwaltungIds(awbVerwaltungIdMap);
+                return vkV.hasOneOfVerwaltungIds(awbVerwaltungIdMap);
             })
             .filter(vkV -> filterVerwaltungIdMap.isEmpty() || vkV.hasOneOfVerwaltungIds(filterVerwaltungIdMap))
+            .filter(vkV -> request.isShowTerminiert() || vkV.getTerminiertPer() == null || vkV.getTerminiertPer().isAfter(request.getDate()))
             .collect(Collectors.toList());
     }
 }

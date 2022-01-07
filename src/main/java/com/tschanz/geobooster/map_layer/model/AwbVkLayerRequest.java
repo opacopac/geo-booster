@@ -14,4 +14,5 @@ public interface AwbVkLayerRequest {
     Collection<VerkehrsmittelTyp> getVmTypes();
     Collection<Long> getVerwaltungVersionIds();
     Collection<Long> getLinieVarianteIds();
+    boolean isShowTerminiert();
 }
