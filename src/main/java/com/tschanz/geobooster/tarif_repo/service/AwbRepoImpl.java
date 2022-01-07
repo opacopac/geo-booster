@@ -1,6 +1,9 @@
 package com.tschanz.geobooster.tarif_repo.service;
 
+import com.tschanz.geobooster.netz.model.TarifkanteVersion;
 import com.tschanz.geobooster.netz_repo.model.ProgressState;
+import com.tschanz.geobooster.netz_repo.service.TarifkanteRepo;
+import com.tschanz.geobooster.rtm_repo.service.RgAuspraegungRepo;
 import com.tschanz.geobooster.tarif.model.Awb;
 import com.tschanz.geobooster.tarif.model.AwbVersion;
 import com.tschanz.geobooster.tarif_persistence.service.AwbPersistence;
@@ -11,6 +14,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -19,6 +25,8 @@ public class AwbRepoImpl implements AwbRepo {
     private final AwbPersistence awbPersistence;
     private final ProgressState progressState;
     private final AwbRepoState awbRepoState;
+    private final RgAuspraegungRepo rgAuspraegungRepo;
+    private final TarifkanteRepo tkRepo;
 
     private VersionedObjectMap<Awb, AwbVersion> versionedObjectMap;
 
@@ -64,5 +72,20 @@ public class AwbRepoImpl implements AwbRepo {
     @Override
     public AwbVersion getElementVersionAtDate(long elementId, LocalDate date) {
         return this.versionedObjectMap.getElementVersionAtDate(elementId, date);
+    }
+
+
+    @Override
+    public Collection<TarifkanteVersion> getRgaTarifkanten(AwbVersion awbVersion, LocalDate date) {
+        var rgas = awbVersion.getIncludeRgaIds();
+        Collection<Long> tkIds = rgas == null ? Collections.emptyList() : rgas.stream()
+            .map(rgaId -> this.rgAuspraegungRepo.getElementVersionAtDate(rgaId, date))
+            .filter(Objects::nonNull)
+            .flatMap(rgaV -> rgaV.getTarifkantenIds().stream())
+            .collect(Collectors.toList());
+
+        return tkIds.stream()
+            .map(tkId -> this.tkRepo.getElementVersionAtDate(tkId, date))
+            .collect(Collectors.toList());
     }
 }
