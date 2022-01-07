@@ -16,7 +16,18 @@ public class ArrayHelper {
     }
 
 
-    public static <T,K> Map<T, Collection<K>> createLookupMap(Collection<KeyValue<T, K>> keyValueList) {
+    public static <T,K> Map<T, K> create1to1LookupMap(Collection<KeyValue<T, K>> keyValueList) {
+        Map<T, K> lookupMap = new HashMap<>();
+
+        keyValueList.forEach(keyValue -> {
+            lookupMap.put(keyValue.getKey(), keyValue.getValue());
+        });
+
+        return lookupMap;
+    }
+
+
+    public static <T,K> Map<T, Collection<K>> create1toNLookupMap(Collection<KeyValue<T, K>> keyValueList) {
         Map<T, Collection<K>> lookupMap = new HashMap<>();
 
         keyValueList.forEach(keyValue -> {

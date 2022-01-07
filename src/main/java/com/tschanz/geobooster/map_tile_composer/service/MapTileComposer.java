@@ -20,12 +20,13 @@ public class MapTileComposer {
     private final MapTileHaltestelleConverter hstConverter;
     private final MapTileVerkehrskanteConverter vkConverter;
     private final MapTileTarifkanteConverter tkConverter;
+    private final MapTileHstWegangabeConverter hstWaConverter;
     private final MapTileRenderer mapTileRenderer;
 
 
     @SneakyThrows
     public MapTileResponse getResponse(MapTileRequest request) {
-        var netzObjects = this.mapLayerService.searchObjects(request);
+        var mapObjects = this.mapLayerService.searchObjects(request);
         var zoomLevel = request.getZoomLevel();
         var mapLayerStyles = request.getMapStyles();
 
@@ -34,13 +35,14 @@ public class MapTileComposer {
         System.out.println(GraphLayout.parseInstance(this.verkehrskanteRepo.getVersionedObjectMap()).toFootprint());
         System.out.println(GraphLayout.parseInstance(this.tarifkanteRepo.getVersionedObjectMap()).toFootprint()); */
 
-        var mapTilePoints = netzObjects.getHaltestelleVersions().stream()
-            .map(hstV -> this.hstConverter.toMapTile(hstV, zoomLevel, mapLayerStyles))
-            .collect(Collectors.toList());
+        var mapTilePoints = Stream.concat(
+            mapObjects.getHaltestelleVersions().stream().map(hstV -> this.hstConverter.toMapTile(hstV, zoomLevel, mapLayerStyles)),
+            mapObjects.getHstWegangabeVersions().stream().map(hstWaV -> this.hstWaConverter.toMapTile(hstWaV, zoomLevel, mapLayerStyles))
+        ).collect(Collectors.toList());
 
         var mapTileLines = Stream.concat(
-            netzObjects.getTarifkanteVersions().stream().map(tkV -> this.tkConverter.toMapTile(tkV, zoomLevel, mapLayerStyles)),
-            netzObjects.getVerkehrskanteVersions().stream().map(vkV -> this.vkConverter.toMapTile(vkV, zoomLevel, mapLayerStyles))
+            mapObjects.getTarifkanteVersions().stream().map(tkV -> this.tkConverter.toMapTile(tkV, zoomLevel, mapLayerStyles)),
+            mapObjects.getVerkehrskanteVersions().stream().map(vkV -> this.vkConverter.toMapTile(vkV, zoomLevel, mapLayerStyles))
         ).collect(Collectors.toList());
 
         var tile = new MapTile(

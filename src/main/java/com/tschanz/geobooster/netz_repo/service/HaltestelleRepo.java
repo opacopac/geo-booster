@@ -10,4 +10,6 @@ import java.util.List;
 
 public interface HaltestelleRepo extends VersionedObjectRepo<Haltestelle, HaltestelleVersion> {
     List<HaltestelleVersion> searchByExtent(Extent extent);
+
+    Haltestelle getByUic(int uicCode);
 }

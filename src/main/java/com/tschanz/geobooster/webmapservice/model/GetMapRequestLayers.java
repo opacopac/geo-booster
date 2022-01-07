@@ -18,6 +18,7 @@ public class GetMapRequestLayers {
     private static final String LAYER_VERKEHRSKANTEN = "novap:VERKEHRSKANTEN";
     private static final String LAYER_TARIFKANTEN = "novap:TARIFKANTEN";
     private static final String LAYER_UNMAPPED_TARIFKANTEN = "novap:UNMAPPED_TARIFKANTEN";
+    private static final String LAYER_WA_HALTESTELLEN = "novap:WHALTESTELLEN";
     private static final String LAYER_AWB_VK = "novap:ANWENDUNGSBEREICHE";
     private static final String LAYER_AWB_TK = "novap:ANWENDUNGSBEREICHE_TARIF";
 
@@ -32,6 +33,7 @@ public class GetMapRequestLayers {
                     case LAYER_VERKEHRSKANTEN: return MapLayerType.VERKEHRSKANTE;
                     case LAYER_TARIFKANTEN: return MapLayerType.TARIFKANTE;
                     case LAYER_UNMAPPED_TARIFKANTEN: return MapLayerType.UNMAPPED_TARIFKANTE;
+                    case LAYER_WA_HALTESTELLEN: return MapLayerType.HALTESTELLE_WEGANGABE;
                     case LAYER_AWB_VK: return MapLayerType.ANWENDUNGSBEREICH_VK;
                     case LAYER_AWB_TK: return MapLayerType.ANWENDUNGSBEREICH_TK;
                     default: return null;

@@ -9,10 +9,13 @@ import com.tschanz.geobooster.netz.model.HaltestelleVersion;
 import com.tschanz.geobooster.netz_persistence.service.HaltestellenPersistence;
 import com.tschanz.geobooster.netz_repo.model.HaltestelleRepoState;
 import com.tschanz.geobooster.netz_repo.model.ProgressState;
+import com.tschanz.geobooster.netz_repo.model.QuadTreeConfig;
 import com.tschanz.geobooster.quadtree.model.QuadTree;
 import com.tschanz.geobooster.quadtree.model.QuadTreeCoordinate;
 import com.tschanz.geobooster.quadtree.model.QuadTreeExtent;
 import com.tschanz.geobooster.quadtree.model.QuadTreeItem;
+import com.tschanz.geobooster.util.model.KeyValue;
+import com.tschanz.geobooster.util.service.ArrayHelper;
 import com.tschanz.geobooster.versioning_repo.model.VersionedObjectMap;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,29 +23,20 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
 @Service
 @RequiredArgsConstructor
 public class HaltestelleRepoImpl implements HaltestelleRepo {
-    // TODO
-    // minLat = 43.0062910000
-    // maxLat = 53.7988520000
-    // minLon = 1x 0.6202740000, 2x 2.0794830000, rest: 4.8248030000
-    // maxLon = 14.5659700000
-    private static final double MIN_COORD_X = 556597.45 - 1;
-    private static final double MIN_COORD_Y = 5654278.34 - 1;
-    private static final double MAX_COORD_X = 1246778.30 + 1;
-    private static final double MAX_COORD_Y = 6108322.79 + 1;
-    private static final int MAX_TREE_DEPTH = 6;
-
     private final HaltestellenPersistence hstPersistenceRepo;
     private final ProgressState progressState;
     private final HaltestelleRepoState haltestelleRepoState;
 
     private VersionedObjectMap<Haltestelle, HaltestelleVersion> versionedObjectMap;
     private QuadTree<HaltestelleVersion> versionQuadTree;
+    private Map<Integer, Haltestelle> uicLookupMap;
 
 
     @Override
@@ -61,10 +55,10 @@ public class HaltestelleRepoImpl implements HaltestelleRepo {
         this.versionedObjectMap = new VersionedObjectMap<>(elements, versions);
 
         this.versionQuadTree = new QuadTree<>(
-            MAX_TREE_DEPTH,
+            QuadTreeConfig.MAX_TREE_DEPTH,
             new QuadTreeExtent(
-                new QuadTreeCoordinate(MIN_COORD_X, MIN_COORD_Y),
-                new QuadTreeCoordinate(MAX_COORD_X, MAX_COORD_Y)
+                new QuadTreeCoordinate(QuadTreeConfig.MIN_COORD_X, QuadTreeConfig.MIN_COORD_Y),
+                new QuadTreeCoordinate(QuadTreeConfig.MAX_COORD_X, QuadTreeConfig.MAX_COORD_Y)
             )
         );
 
@@ -74,6 +68,9 @@ public class HaltestelleRepoImpl implements HaltestelleRepo {
                     new QuadTreeItem<>(this.getQuadTreeCoordinates(hstV.getCoordinate()), hstV)
                 );
             });
+
+        var uicIds = elements.stream().map(hst -> new KeyValue<>(hst.getUicCode(), hst)).collect(Collectors.toList());
+        this.uicLookupMap = ArrayHelper.create1to1LookupMap(uicIds);
 
         this.progressState.updateProgressText("loading haltestellen done");
         this.haltestelleRepoState.updateIsLoading(false);
@@ -85,6 +82,12 @@ public class HaltestelleRepoImpl implements HaltestelleRepo {
         return this.versionQuadTree.findItems(this.getQuadTreeExtent(extent)).stream()
             .map(QuadTreeItem::getItem)
             .collect(Collectors.toList());
+    }
+
+
+    @Override
+    public Haltestelle getByUic(int uicCode) {
+        return this.uicLookupMap.get(uicCode);
     }
 
 

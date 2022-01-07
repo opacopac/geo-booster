@@ -2,6 +2,8 @@ package com.tschanz.geobooster.presentation_jfx.viewcontroller;
 
 import com.tschanz.geobooster.netz_repo.model.NetzRepoState;
 import com.tschanz.geobooster.presentation.presenter.CachingStatsViewPresenter;
+import com.tschanz.geobooster.rtm_repo.model.RtmRepoState;
+import com.tschanz.geobooster.tarif_repo.model.TarifRepoState;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -14,23 +16,26 @@ public class JfxCachingStatsViewController implements CachingStatsViewPresenter 
     @FXML private Label hstCountLabel;
     @FXML private Label vkCountLabel;
     @FXML private Label tkCountLabel;
+    @FXML private Label hstWaCountLabel;
     @FXML private Label awbCountLabel;
     @FXML private Label betrVersionCountLabel;
     @FXML private Label verwVersionCountLabel;
     @FXML private Label hstVersionCountLabel;
     @FXML private Label vkVersionCountLabel;
     @FXML private Label tkVersionCountLabel;
+    @FXML private Label hstWaVersionCountLabel;
     @FXML private Label awbVersionCountLabel;
     @FXML private ProgressIndicator betrProgressIndicator;
     @FXML private ProgressIndicator verwProgressIndicator;
     @FXML private ProgressIndicator hstProgressIndicator;
     @FXML private ProgressIndicator vkProgressIndicator;
     @FXML private ProgressIndicator tkProgressIndicator;
+    @FXML private ProgressIndicator hstWaProgressIndicator;
     @FXML private ProgressIndicator awbProgressIndicator;
 
 
     @Override
-    public void bindState(NetzRepoState netzRepoState) {
+    public void bindState(NetzRepoState netzRepoState, RtmRepoState rtmRepoState, TarifRepoState tarifRepoState) {
         // betreiber
         netzRepoState.getBetreiberRepoState().getLoadedElementCount$().subscribe(elementCount -> {
             Platform.runLater(() -> betrCountLabel.setText(elementCount.toString()));
@@ -86,14 +91,25 @@ public class JfxCachingStatsViewController implements CachingStatsViewPresenter 
             Platform.runLater(() -> tkProgressIndicator.setVisible(isLoading));
         });
 
+        // hst wa
+        rtmRepoState.getHstWegangabeRepoState().getLoadedElementCount$().subscribe(elementCount -> {
+            Platform.runLater(() -> hstWaCountLabel.setText(elementCount.toString()));
+        });
+        rtmRepoState.getHstWegangabeRepoState().getLoadedVersionCount$().subscribe(versionCount -> {
+            Platform.runLater(() -> hstWaVersionCountLabel.setText(versionCount.toString()));
+        });
+        rtmRepoState.getHstWegangabeRepoState().getIsLoading$().subscribe(isLoading -> {
+            Platform.runLater(() -> hstWaProgressIndicator.setVisible(isLoading));
+        });
+
         // awb
-        netzRepoState.getAwbRepoState().getLoadedElementCount$().subscribe(elementCount -> {
+        tarifRepoState.getAwbRepoState().getLoadedElementCount$().subscribe(elementCount -> {
             Platform.runLater(() -> awbCountLabel.setText(elementCount.toString()));
         });
-        netzRepoState.getAwbRepoState().getLoadedVersionCount$().subscribe(versionCount -> {
+        tarifRepoState.getAwbRepoState().getLoadedVersionCount$().subscribe(versionCount -> {
             Platform.runLater(() -> awbVersionCountLabel.setText(versionCount.toString()));
         });
-        netzRepoState.getAwbRepoState().getIsLoading$().subscribe(isLoading -> {
+        tarifRepoState.getAwbRepoState().getIsLoading$().subscribe(isLoading -> {
             Platform.runLater(() -> awbProgressIndicator.setVisible(isLoading));
         });
     }

@@ -54,48 +54,48 @@ public class AwbSqlPersistence implements AwbPersistence {
     private Map<Long, Collection<Long>> readIncludeVkMap() {
         var excludeVks = this.sqlReader.read(new SqlAwbIncVkConverter());
 
-        return ArrayHelper.createLookupMap(excludeVks);
+        return ArrayHelper.create1toNLookupMap(excludeVks);
     }
 
 
     private Map<Long, Collection<Long>> readExcludeVkMap() {
         var excludeVks = this.sqlReader.read(new SqlAwbExcVkConverter());
 
-        return ArrayHelper.createLookupMap(excludeVks);
+        return ArrayHelper.create1toNLookupMap(excludeVks);
     }
 
 
     private Map<Long, Collection<Long>> readIncludeTkMap() {
         var excludeTks = this.sqlReader.read(new SqlAwbIncTkConverter());
 
-        return ArrayHelper.createLookupMap(excludeTks);
+        return ArrayHelper.create1toNLookupMap(excludeTks);
     }
 
 
     private Map<Long, Collection<Long>> readExcludeTkMap() {
         var excludeTks = this.sqlReader.read(new SqlAwbExcTkConverter());
 
-        return ArrayHelper.createLookupMap(excludeTks);
+        return ArrayHelper.create1toNLookupMap(excludeTks);
     }
 
 
     private Map<Long, Collection<Long>> readIncludeVerwMap() {
         var excludeVks = this.sqlReader.read(new SqlAwbIncVerwConverter());
 
-        return ArrayHelper.createLookupMap(excludeVks);
+        return ArrayHelper.create1toNLookupMap(excludeVks);
     }
 
 
     private Map<Long, Collection<Long>> readIncludeZpMap() {
         var excludeVks = this.sqlReader.read(new SqlAwbIncZpConverter());
 
-        return ArrayHelper.createLookupMap(excludeVks);
+        return ArrayHelper.create1toNLookupMap(excludeVks);
     }
 
 
     private Map<Long, Collection<Long>> readIncludeRgaMap() {
         var excludeVks = sqlReader.read(new SqlAwbIncRgaConverter());
 
-        return ArrayHelper.createLookupMap(excludeVks);
+        return ArrayHelper.create1toNLookupMap(excludeVks);
     }
 }

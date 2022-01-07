@@ -7,7 +7,9 @@ import java.time.LocalDate;
 import java.util.Collection;
 
 
-public interface MapLayerRequest extends HaltestelleLayerRequest, VerkehrskanteLayerRequest, TarifkanteLayerRequest, UnmappedTarifkanteLayerRequest, AwbVkLayerRequest, AwbTkLayerRequest {
+public interface MapLayerRequest extends HaltestelleLayerRequest, VerkehrskanteLayerRequest, TarifkanteLayerRequest,
+    UnmappedTarifkanteLayerRequest, HaltestelleWegangabeLayerRequest, AwbVkLayerRequest, AwbTkLayerRequest
+{
     LocalDate getDate();
     Extent getBbox();
     long getAwbVersionId();

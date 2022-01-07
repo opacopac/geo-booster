@@ -20,6 +20,7 @@ public class UtfGridComposer {
     private final UtfGridHaltestelleConverter utfGridHstConverter;
     private final UtfGridTarifkanteConverter utfGridTkConverter;
     private final UtfGridVerkehrskanteConverter utfGridVkConverter;
+    private final UtfGridHstWegangabeConverter utfGridHstWegangabeConverter;
     private final UtfGridRenderer utfGridRenderer;
 
 
@@ -29,9 +30,10 @@ public class UtfGridComposer {
         var mapLayerStyles = request.getMapStyles();
         var isUnmappedTk = request.getMapLayerTypes().contains(MapLayerType.UNMAPPED_TARIFKANTE);
 
-        var pointItems = mapLayers.getHaltestelleVersions().stream()
-            .map(hst -> this.utfGridHstConverter.toUtfGrid(hst, zoomLevel, mapLayerStyles))
-            .collect(Collectors.toList());
+        var pointItems = Stream.concat(
+            mapLayers.getHaltestelleVersions().stream().map(hst -> this.utfGridHstConverter.toUtfGrid(hst, zoomLevel, mapLayerStyles)),
+            mapLayers.getHstWegangabeVersions().stream().map(hstWa -> this.utfGridHstWegangabeConverter.toUtfGrid(hstWa, zoomLevel, mapLayerStyles))
+        ).collect(Collectors.toList());
 
         var lineItems = Stream.concat(
             mapLayers.getTarifkanteVersions().stream().map(tkV -> this.utfGridTkConverter.toUtfGrid(tkV, zoomLevel, mapLayerStyles, isUnmappedTk)),

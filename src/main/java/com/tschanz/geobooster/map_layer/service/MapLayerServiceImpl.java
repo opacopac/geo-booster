@@ -5,8 +5,6 @@ import com.tschanz.geobooster.map_layer.model.MapLayerResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-
 
 @Service
 @RequiredArgsConstructor
@@ -15,13 +13,14 @@ public class MapLayerServiceImpl implements MapLayerService {
     private final VerkehrskanteLayerService verkehrskanteLayerService;
     private final TarifkanteLayerService tarifkanteLayerService;
     private final UnmappedTarifkanteLayerService unmappedTarifkanteLayerService;
+    private final HaltestelleWegangabeLayerService haltestelleWegangabeLayerService;
     private final AwbVkLayerService awbVkLayerService;
     private final AwbTkLayerService awbTkLayerService;
 
 
     @Override
     public MapLayerResponse searchObjects(MapLayerRequest request) {
-        var response = new MapLayerResponse(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        var response = MapLayerResponse.createEmpty();
 
         for (var layer: request.getMapLayerTypes()) {
             switch (layer) {
@@ -40,6 +39,10 @@ public class MapLayerServiceImpl implements MapLayerService {
                 case UNMAPPED_TARIFKANTE:
                     var unmTkVersions = this.unmappedTarifkanteLayerService.searchObjects(request);
                     response.getTarifkanteVersions().addAll(unmTkVersions);
+                    break;
+                case HALTESTELLE_WEGANGABE:
+                    var hstWaVersions = this.haltestelleWegangabeLayerService.searchObjects(request);
+                    response.getHstWegangabeVersions().addAll(hstWaVersions);
                     break;
                 case ANWENDUNGSBEREICH_VK:
                     var awbVkVersions = this.awbVkLayerService.searchObjects(request);

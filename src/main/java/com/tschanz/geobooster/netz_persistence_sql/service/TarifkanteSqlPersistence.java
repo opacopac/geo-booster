@@ -88,6 +88,6 @@ public class TarifkanteSqlPersistence implements TarifkantePersistence {
         var converter = new SqlTkVkConverter(filterTkVIds);
         var tkVkList = this.sqlReader.read(converter);
 
-        return ArrayHelper.createLookupMap(tkVkList);
+        return ArrayHelper.create1toNLookupMap(tkVkList);
     }
 }
