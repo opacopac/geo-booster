@@ -86,6 +86,7 @@ public class AwbRepoImpl implements AwbRepo {
 
         return tkIds.stream()
             .map(tkId -> this.tkRepo.getElementVersionAtDate(tkId, date))
+            .filter(Objects::nonNull)
             .collect(Collectors.toList());
     }
 }

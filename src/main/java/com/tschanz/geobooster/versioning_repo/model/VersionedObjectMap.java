@@ -83,7 +83,9 @@ public class VersionedObjectMap<E extends Element, V extends Version> {
 
 
     public List<V> getElementVersions(long elementId) {
-        return this.elementVersionIds.get(elementId)
+        var elementVersionIds = this.elementVersionIds.get(elementId);
+
+        return elementVersionIds == null ? Collections.emptyList() : elementVersionIds
             .stream()
             .map(this::getVersion)
             .collect(Collectors.toList());

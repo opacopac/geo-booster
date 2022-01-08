@@ -17,4 +17,16 @@ public class Epsg3857Coordinate implements Coordinate {
     public String getProjection() {
         return PROJECTION;
     }
+
+
+    @Override
+    public double getX() {
+        return this.e;
+    }
+
+
+    @Override
+    public double getY() {
+        return this.n;
+    }
 }

@@ -17,4 +17,15 @@ public class Epsg4326Coordinate implements Coordinate {
     public String getProjection() {
         return PROJECTION;
     }
+
+
+    @Override
+    public double getX() {
+        return this.longitude;
+    }
+
+    @Override
+    public double getY() {
+        return this.latitude;
+    }
 }
