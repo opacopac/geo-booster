@@ -25,6 +25,8 @@ public class StyleHelper {
                 return KanteBlueStyle.getStyle(zoomLevel);
             case KANTEN_BLUE_BOLD_DASHED:
                 return KanteBlueBoldDashedStyle.getStyle(zoomLevel);
+            case KANTEN_BLACK_DASHED:
+                return KanteBlackDashedStyle.getStyle(zoomLevel);
             case KANTEN_BLACK:
             case KANTEN_BLACK_BOLD: // TODO
             default:

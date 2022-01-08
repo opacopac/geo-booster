@@ -17,6 +17,7 @@ public class GetMapRequestStyles {
     private static final String STYLE_HALTESTELLEN = "Haltestellen";
     private static final String STYLE_KANTEN_BLACK = "kanten_black";
     private static final String STYLE_KANTEN_BLACK_BOLD = "kanten_black_bold";
+    private static final String STYLE_KANTEN_BLACK_DASHED ="kanten_black_dashed";
     private static final String STYLE_KANTEN_BLUE = "kanten_blue";
     private static final String STYLE_KANTEN_BLUE_BOLD_DASHED = "kanten_blue_bold_dashed";
     private static final String STYLE_WA_HALTESTELLEN = "WegangabeHaltestellen";
@@ -30,6 +31,7 @@ public class GetMapRequestStyles {
                 switch (styleString) {
                     case STYLE_HALTESTELLEN: return MapStyle.HALTESTELLEN;
                     case STYLE_KANTEN_BLACK: return MapStyle.KANTEN_BLACK;
+                    case STYLE_KANTEN_BLACK_DASHED: return MapStyle.KANTEN_BLACK_DASHED;
                     case STYLE_KANTEN_BLACK_BOLD: return MapStyle.KANTEN_BLACK_BOLD;
                     case STYLE_KANTEN_BLUE: return MapStyle.KANTEN_BLUE;
                     case STYLE_KANTEN_BLUE_BOLD_DASHED: return MapStyle.KANTEN_BLUE_BOLD_DASHED;
