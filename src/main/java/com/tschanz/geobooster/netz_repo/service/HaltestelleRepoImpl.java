@@ -1,7 +1,7 @@
 package com.tschanz.geobooster.netz_repo.service;
 
 
-import com.tschanz.geobooster.geofeature.model.Coordinate;
+import com.tschanz.geobooster.geofeature.model.Epsg3857Coordinate;
 import com.tschanz.geobooster.geofeature.model.Extent;
 import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
 import com.tschanz.geobooster.netz.model.Haltestelle;
@@ -11,8 +11,6 @@ import com.tschanz.geobooster.netz_repo.model.HaltestelleRepoState;
 import com.tschanz.geobooster.netz_repo.model.ProgressState;
 import com.tschanz.geobooster.netz_repo.model.QuadTreeConfig;
 import com.tschanz.geobooster.quadtree.model.QuadTree;
-import com.tschanz.geobooster.quadtree.model.QuadTreeCoordinate;
-import com.tschanz.geobooster.quadtree.model.QuadTreeExtent;
 import com.tschanz.geobooster.quadtree.model.QuadTreeItem;
 import com.tschanz.geobooster.util.service.ArrayHelper;
 import com.tschanz.geobooster.versioning_repo.model.VersionedObjectMap;
@@ -53,20 +51,8 @@ public class HaltestelleRepoImpl implements HaltestelleRepo {
         this.progressState.updateProgressText("initializing haltestelle repo...");
         this.versionedObjectMap = new VersionedObjectMap<>(elements, versions);
 
-        this.versionQuadTree = new QuadTree<>(
-            QuadTreeConfig.MAX_TREE_DEPTH,
-            new QuadTreeExtent(
-                new QuadTreeCoordinate(QuadTreeConfig.MIN_COORD_X, QuadTreeConfig.MIN_COORD_Y),
-                new QuadTreeCoordinate(QuadTreeConfig.MAX_COORD_X, QuadTreeConfig.MAX_COORD_Y)
-            )
-        );
-
-        this.versionedObjectMap.getAllVersions()
-            .forEach(hstV -> {
-                this.versionQuadTree.addItem(
-                    new QuadTreeItem<>(this.getQuadTreeCoordinates(hstV.getCoordinate()), hstV)
-                );
-            });
+        this.versionQuadTree = new QuadTree<>(QuadTreeConfig.MAX_TREE_DEPTH);
+        this.versionQuadTree.build(versions, k -> CoordinateConverter.convertToEpsg3857(k.getCoordinate())); // TODO
 
         this.uicLookupMap = ArrayHelper.create1to1LookupMap(elements, Haltestelle::getUicCode, k -> k);
 
@@ -76,8 +62,8 @@ public class HaltestelleRepoImpl implements HaltestelleRepo {
 
 
     @Override
-    public List<HaltestelleVersion> searchByExtent(Extent extent) {
-        return this.versionQuadTree.findItems(this.getQuadTreeExtent(extent)).stream()
+    public List<HaltestelleVersion> searchByExtent(Extent<Epsg3857Coordinate> extent) {
+        return this.versionQuadTree.findItems(extent).stream()
             .map(QuadTreeItem::getItem)
             .collect(Collectors.toList());
     }
@@ -86,21 +72,6 @@ public class HaltestelleRepoImpl implements HaltestelleRepo {
     @Override
     public Haltestelle getByUic(int uicCode) {
         return this.uicLookupMap.get(uicCode);
-    }
-
-
-    private QuadTreeCoordinate getQuadTreeCoordinates(Coordinate coordinate) {
-        var coord = CoordinateConverter.convertToEpsg3857(coordinate);
-
-        return new QuadTreeCoordinate(coord.getE(), coord.getN());
-    }
-
-
-    private QuadTreeExtent getQuadTreeExtent(Extent extent) {
-        return new QuadTreeExtent(
-            this.getQuadTreeCoordinates(extent.getMinCoordinate()),
-            this.getQuadTreeCoordinates(extent.getMaxCoordinate())
-        );
     }
 
 

@@ -1,7 +1,7 @@
 package com.tschanz.geobooster.rtm_repo.service;
 
-
-import com.tschanz.geobooster.geofeature.model.Coordinate;
+import com.tschanz.geobooster.geofeature.model.Epsg3857Coordinate;
+import com.tschanz.geobooster.geofeature.model.Epsg4326Coordinate;
 import com.tschanz.geobooster.geofeature.model.Extent;
 import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
 import com.tschanz.geobooster.netz.model.HaltestelleVersion;
@@ -9,8 +9,6 @@ import com.tschanz.geobooster.netz_repo.model.ProgressState;
 import com.tschanz.geobooster.netz_repo.model.QuadTreeConfig;
 import com.tschanz.geobooster.netz_repo.service.HaltestelleRepo;
 import com.tschanz.geobooster.quadtree.model.QuadTree;
-import com.tschanz.geobooster.quadtree.model.QuadTreeCoordinate;
-import com.tschanz.geobooster.quadtree.model.QuadTreeExtent;
 import com.tschanz.geobooster.quadtree.model.QuadTreeItem;
 import com.tschanz.geobooster.rtm.model.HaltestelleWegangabe;
 import com.tschanz.geobooster.rtm.model.HaltestelleWegangabeVersion;
@@ -18,8 +16,6 @@ import com.tschanz.geobooster.rtm_persistence.service.HaltestelleWegangabePersis
 import com.tschanz.geobooster.rtm_repo.model.HaltestelleWegangabeRepoState;
 import com.tschanz.geobooster.versioning_repo.model.VersionedObjectMap;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -31,8 +27,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class HaltestelleWegangabeRepoImpl implements HaltestelleWegangabeRepo {
-    private static final Logger logger = LogManager.getLogger(HaltestelleWegangabeRepoImpl.class);
-
     private final HaltestelleRepo hstRepo;
     private final HaltestelleWegangabePersistence hstWegangabePersistence;
     private final ProgressState progressState;
@@ -57,26 +51,11 @@ public class HaltestelleWegangabeRepoImpl implements HaltestelleWegangabeRepo {
         this.progressState.updateProgressText("initializing haltestelle wegangaben repo...");
         this.versionedObjectMap = new VersionedObjectMap<>(elements, versions);
 
-        this.versionQuadTree = new QuadTree<>(
-            QuadTreeConfig.MAX_TREE_DEPTH,
-            new QuadTreeExtent(
-                new QuadTreeCoordinate(QuadTreeConfig.MIN_COORD_X, QuadTreeConfig.MIN_COORD_Y),
-                new QuadTreeCoordinate(QuadTreeConfig.MAX_COORD_X, QuadTreeConfig.MAX_COORD_Y)
-            )
-        );
-
-        this.versionedObjectMap.getAllVersions()
-            .forEach(hstWegangabeV -> {
-                var hstV = this.getHaltestelleVersion(hstWegangabeV);
-                if (hstV != null) {
-                    var coord = hstV.getCoordinate();
-                    this.versionQuadTree.addItem(
-                        new QuadTreeItem<>(this.getQuadTreeCoordinates(coord), hstWegangabeV)
-                    );
-                } else {
-                    logger.warn(String.format("missing haltestelle for HST Wegangabe version %s", hstWegangabeV.getId()));
-                }
-            });
+        this.versionQuadTree = new QuadTree<>(QuadTreeConfig.MAX_TREE_DEPTH);
+        this.versionQuadTree.build(versions, k -> {
+            var coord = this.getHaltestelleCoordinate(k);
+            return coord != null ? CoordinateConverter.convertToEpsg3857(coord) : null;
+        }); // TODO
 
         this.progressState.updateProgressText("loading haltestelle wegangaben done");
         this.hstWegangabeRepoState.updateIsLoading(false);
@@ -84,8 +63,8 @@ public class HaltestelleWegangabeRepoImpl implements HaltestelleWegangabeRepo {
 
 
     @Override
-    public List<HaltestelleWegangabeVersion> searchByExtent(Extent extent) {
-        return this.versionQuadTree.findItems(this.getQuadTreeExtent(extent)).stream()
+    public List<HaltestelleWegangabeVersion> searchByExtent(Extent<Epsg3857Coordinate> extent) {
+        return this.versionQuadTree.findItems(extent).stream()
             .map(QuadTreeItem::getItem)
             .collect(Collectors.toList());
     }
@@ -97,6 +76,16 @@ public class HaltestelleWegangabeRepoImpl implements HaltestelleWegangabeRepo {
 
         return hstE != null
             ? this.hstRepo.getElementVersionAtDate(hstE.getId(), hstWegangabeVersion.getGueltigBis())
+            : null;
+    }
+
+
+    @Override
+    public Epsg4326Coordinate getHaltestelleCoordinate(HaltestelleWegangabeVersion hstWegangabeVersion) {
+        var hstV = this.getHaltestelleVersion(hstWegangabeVersion);
+
+        return hstV != null
+            ? hstV.getCoordinate()
             : null;
     }
 
@@ -122,20 +111,5 @@ public class HaltestelleWegangabeRepoImpl implements HaltestelleWegangabeRepo {
     @Override
     public HaltestelleWegangabeVersion getElementVersionAtDate(long elementId, LocalDate date) {
         return this.versionedObjectMap.getElementVersionAtDate(elementId, date);
-    }
-
-
-    private QuadTreeExtent getQuadTreeExtent(Extent extent) {
-        return new QuadTreeExtent(
-            this.getQuadTreeCoordinates(extent.getMinCoordinate()),
-            this.getQuadTreeCoordinates(extent.getMaxCoordinate())
-        );
-    }
-
-
-    private QuadTreeCoordinate getQuadTreeCoordinates(Coordinate coordinate) {
-        var coord = CoordinateConverter.convertToEpsg3857(coordinate);
-
-        return new QuadTreeCoordinate(coord.getE(), coord.getN());
     }
 }

@@ -1,5 +1,8 @@
 package com.tschanz.geobooster.quadtree.model;
 
+import com.tschanz.geobooster.geofeature.model.Coordinate;
+import com.tschanz.geobooster.geofeature.model.Epsg3857Coordinate;
+import com.tschanz.geobooster.geofeature.model.Extent;
 import com.tschanz.geobooster.versioning.model.HasId;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +16,7 @@ import java.util.stream.Stream;
 @Getter
 @RequiredArgsConstructor
 public class QuadTreeNode<T extends HasId> {
-    private final QuadTreeExtent extent;
+    private final Extent<Epsg3857Coordinate> extent;
     private final QuadTreeNode<T> parentNode;
     private final int maxDepth;
     private final List<QuadTreeNode<T>> childNodes = new ArrayList<>();
@@ -34,12 +37,12 @@ public class QuadTreeNode<T extends HasId> {
     }
 
 
-    public List<QuadTreeItem<T>> findItems(QuadTreeExtent extent) {
+    public List<QuadTreeItem<T>> findItems(Extent<Epsg3857Coordinate> extent) {
         var ownItems = this.items.stream()
-            .filter(item -> extent.isCoordinateInside(item.getCoordinate()));
+            .filter(item -> extent.isPointInside(item.getCoordinate()));
 
         var childItems = this.childNodes.stream()
-            .filter(childNode -> childNode.getExtent().isIntersecting(extent))
+            .filter(childNode -> childNode.getExtent().isExtentIntersecting(extent))
             .flatMap(childNode -> childNode.findItems(extent).stream());
 
         return Stream.concat(ownItems, childItems).collect(Collectors.toList());
@@ -75,21 +78,21 @@ public class QuadTreeNode<T extends HasId> {
         var maxY = this.extent.getMaxCoordinate().getY();
         var midY = minY + (maxY - minY) / 2;
 
-        var extent1 = new QuadTreeExtent(new QuadTreeCoordinate(minX, minY), new QuadTreeCoordinate(midX, midY));
-        var extent2 = new QuadTreeExtent(new QuadTreeCoordinate(midX, minY), new QuadTreeCoordinate(maxX, midY));
-        var extent3 = new QuadTreeExtent(new QuadTreeCoordinate(minX, midY), new QuadTreeCoordinate(midX, maxY));
-        var extent4 = new QuadTreeExtent(new QuadTreeCoordinate(midX, midY), new QuadTreeCoordinate(maxX, maxY));
+        var extent1 = Extent.fromEpsg3857Points(minX, minY, midX, midY);
+        var extent2 = Extent.fromEpsg3857Points(midX, minY, maxX, midY);
+        var extent3 = Extent.fromEpsg3857Points(minX, midY, midX, maxY);
+        var extent4 = Extent.fromEpsg3857Points(midX, midY, maxX, maxY);
 
-        this.childNodes.add(new QuadTreeNode<T>(extent1, this, this.maxDepth));
-        this.childNodes.add(new QuadTreeNode<T>(extent2, this, this.maxDepth));
-        this.childNodes.add(new QuadTreeNode<T>(extent3, this, this.maxDepth));
-        this.childNodes.add(new QuadTreeNode<T>(extent4, this, this.maxDepth));
+        this.childNodes.add(new QuadTreeNode<>(extent1, this, this.maxDepth));
+        this.childNodes.add(new QuadTreeNode<>(extent2, this, this.maxDepth));
+        this.childNodes.add(new QuadTreeNode<>(extent3, this, this.maxDepth));
+        this.childNodes.add(new QuadTreeNode<>(extent4, this, this.maxDepth));
     }
 
 
-    private QuadTreeNode<T> getChildForCoordinate(QuadTreeCoordinate coordinate) {
+    private QuadTreeNode<T> getChildForCoordinate(Coordinate coordinate) {
         return this.childNodes.stream()
-            .filter(childNode -> childNode.extent.isCoordinateInside(coordinate))
+            .filter(childNode -> childNode.extent.isPointInside(coordinate))
             .findFirst()
             .orElse(null);
     }

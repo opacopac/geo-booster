@@ -1,5 +1,6 @@
 package com.tschanz.geobooster.netz_repo.service;
 
+import com.tschanz.geobooster.geofeature.model.Epsg3857Coordinate;
 import com.tschanz.geobooster.geofeature.model.Extent;
 import com.tschanz.geobooster.netz.model.Haltestelle;
 import com.tschanz.geobooster.netz.model.HaltestelleVersion;
@@ -9,7 +10,7 @@ import java.util.List;
 
 
 public interface HaltestelleRepo extends VersionedObjectRepo<Haltestelle, HaltestelleVersion> {
-    List<HaltestelleVersion> searchByExtent(Extent extent);
+    List<HaltestelleVersion> searchByExtent(Extent<Epsg3857Coordinate> extent);
 
     Haltestelle getByUic(int uicCode);
 }

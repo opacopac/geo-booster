@@ -1,5 +1,6 @@
 package com.tschanz.geobooster.tarif_repo.service;
 
+import com.tschanz.geobooster.geofeature.model.Epsg3857Coordinate;
 import com.tschanz.geobooster.geofeature.model.Extent;
 import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
 import com.tschanz.geobooster.netz.model.TarifkanteVersion;
@@ -83,7 +84,7 @@ public class AwbRepoImpl implements AwbRepo {
 
 
     @Override
-    public Collection<TarifkanteVersion> getRgaTarifkanten(AwbVersion awbVersion, LocalDate date, Extent bbox) {
+    public Collection<TarifkanteVersion> getRgaTarifkanten(AwbVersion awbVersion, LocalDate date, Extent<Epsg3857Coordinate> bbox) {
         var rgaIds = awbVersion.getIncludeRgaIds();
         Collection<Long> tkIds = rgaIds == null ? Collections.emptyList() : rgaIds.stream()
             .map(rgaId -> this.rgAuspraegungRepo.getElementVersionAtDate(rgaId, date))
@@ -96,7 +97,7 @@ public class AwbRepoImpl implements AwbRepo {
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
 
-        var bboxLonLat = new Extent(
+        var bboxLonLat = new Extent<>(
             CoordinateConverter.convertToEpsg4326(bbox.getMinCoordinate()),
             CoordinateConverter.convertToEpsg4326(bbox.getMaxCoordinate())
         );
@@ -104,7 +105,7 @@ public class AwbRepoImpl implements AwbRepo {
         var filteredRgaTkVs = tkVs.stream()
             .filter(tkV -> {
                 // filter by bbox
-                var tkExtent = Extent.fromAny2Coords(
+                var tkExtent = Extent.fromCoords(
                     this.tkRepo.getStartCoordinate(tkV),
                     this.tkRepo.getEndCoordinate(tkV)
                 );
@@ -118,7 +119,7 @@ public class AwbRepoImpl implements AwbRepo {
 
 
     @Override
-    public Collection<VerkehrskanteVersion> getZpVerkehrskanten(AwbVersion awbVersion, LocalDate date, Extent bbox) {
+    public Collection<VerkehrskanteVersion> getZpVerkehrskanten(AwbVersion awbVersion, LocalDate date, Extent<Epsg3857Coordinate> bbox) {
         var zpIds = awbVersion.getIncludeZonenplanIds();
         Collection<Long> vkIds = zpIds == null ? Collections.emptyList() : zpIds.stream()
             .map(zpId -> this.zonenplanRepo.getElementVersionAtDate(zpId, date))
@@ -131,7 +132,7 @@ public class AwbRepoImpl implements AwbRepo {
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
 
-        var bboxLonLat = new Extent(
+        var bboxLonLat = new Extent<>(
             CoordinateConverter.convertToEpsg4326(bbox.getMinCoordinate()),
             CoordinateConverter.convertToEpsg4326(bbox.getMaxCoordinate())
         );
@@ -139,7 +140,7 @@ public class AwbRepoImpl implements AwbRepo {
         var filteredZpVkVs = vkVs.stream()
             .filter(vkV -> {
                 // filter by bbox
-                var vkExtent = Extent.fromAny2Coords(
+                var vkExtent = Extent.fromCoords(
                     this.vkRepo.getStartCoordinate(vkV),
                     this.vkRepo.getEndCoordinate(vkV)
                 );

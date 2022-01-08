@@ -1,5 +1,6 @@
 package com.tschanz.geobooster.map_layer.model;
 
+import com.tschanz.geobooster.geofeature.model.Epsg3857Coordinate;
 import com.tschanz.geobooster.geofeature.model.Extent;
 import com.tschanz.geobooster.netz.model.VerkehrsmittelTyp;
 
@@ -11,7 +12,7 @@ public interface MapLayerRequest extends HaltestelleLayerRequest, VerkehrskanteL
     UnmappedTarifkanteLayerRequest, HaltestelleWegangabeLayerRequest, AwbVkLayerRequest, AwbTkLayerRequest
 {
     LocalDate getDate();
-    Extent getBbox();
+    Extent<Epsg3857Coordinate> getBbox();
     long getAwbVersionId();
     Collection<VerkehrsmittelTyp> getVmTypes();
     Collection<Long> getVerwaltungVersionIds();

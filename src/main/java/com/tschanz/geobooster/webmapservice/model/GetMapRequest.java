@@ -1,5 +1,6 @@
 package com.tschanz.geobooster.webmapservice.model;
 
+import com.tschanz.geobooster.geofeature.model.Epsg3857Coordinate;
 import com.tschanz.geobooster.geofeature.model.Extent;
 import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
 import com.tschanz.geobooster.map_layer.model.MapLayerType;
@@ -37,10 +38,10 @@ public class GetMapRequest {
     private final int width;
     private final int height;
     private final String srs;
-    private final Extent bbox;
+    private final Extent<Epsg3857Coordinate> bbox;
 
 
-    public static GetMapRequest fromParams(Map<String,String> params) {
+    public static GetMapRequest fromParams(Map<String, String> params) {
         return new GetMapRequest(
             params.get(PARAM_VERSION),
             GetMapRequestLayers.parse(params.get(PARAM_LAYERS)),

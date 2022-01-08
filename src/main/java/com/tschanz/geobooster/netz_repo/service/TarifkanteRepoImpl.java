@@ -2,6 +2,7 @@ package com.tschanz.geobooster.netz_repo.service;
 
 
 import com.tschanz.geobooster.geofeature.model.Coordinate;
+import com.tschanz.geobooster.geofeature.model.Epsg3857Coordinate;
 import com.tschanz.geobooster.geofeature.model.Epsg4326Coordinate;
 import com.tschanz.geobooster.geofeature.model.Extent;
 import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
@@ -99,7 +100,7 @@ public class TarifkanteRepoImpl implements TarifkanteRepo {
 
 
     @Override
-    public List<TarifkanteVersion> searchByExtent(Extent extent) {
+    public List<TarifkanteVersion> searchByExtent(Extent<Epsg3857Coordinate> extent) {
         if (this.connectionState.isTrackChanges()) {
             this.updateWhenChanged();
         }

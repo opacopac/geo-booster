@@ -69,7 +69,7 @@ public class TarifkanteLayerServiceImpl implements TarifkanteLayerService {
             if (tkVerwaltungen.contains(verwaltungId)) {
                 return true;
             }
-        };
+        }
 
         return false;
     }

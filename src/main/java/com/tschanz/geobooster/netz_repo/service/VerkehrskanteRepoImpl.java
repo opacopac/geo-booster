@@ -2,6 +2,7 @@ package com.tschanz.geobooster.netz_repo.service;
 
 
 import com.tschanz.geobooster.geofeature.model.Coordinate;
+import com.tschanz.geobooster.geofeature.model.Epsg3857Coordinate;
 import com.tschanz.geobooster.geofeature.model.Epsg4326Coordinate;
 import com.tschanz.geobooster.geofeature.model.Extent;
 import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
@@ -36,7 +37,6 @@ public class VerkehrskanteRepoImpl implements VerkehrskanteRepo {
 
     private final VerkehrskantePersistence vkPersistenceRepo;
     private final HaltestelleRepo hstRepo;
-    private final VerwaltungRepo verwaltungRepo;
     private final ProgressState progressState;
     private final VerkehrskanteRepoState verkehrskanteRepoState;
 
@@ -110,7 +110,7 @@ public class VerkehrskanteRepoImpl implements VerkehrskanteRepo {
 
 
     @Override
-    public List<VerkehrskanteVersion> searchByExtent(Extent extent) {
+    public List<VerkehrskanteVersion> searchByExtent(Extent<Epsg3857Coordinate> extent) {
         return this.versionQuadTree
             .findItems(this.getQuadTreeExtent(extent.getMinCoordinate(), extent.getMaxCoordinate()))
             .stream()
