@@ -53,6 +53,7 @@ public class SqlZonenplanVersionConverter implements SqlResultsetConverter<Zonen
             .filter(Objects::nonNull)
             .flatMap(Collection::stream)
             .filter(vkId -> !excludeVkMap.containsKey(vkId))
+            .distinct()
             .collect(Collectors.toList());
 
         return new ZonenplanVersion(

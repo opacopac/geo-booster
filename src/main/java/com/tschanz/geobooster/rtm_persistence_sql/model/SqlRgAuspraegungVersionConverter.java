@@ -53,6 +53,7 @@ public class SqlRgAuspraegungVersionConverter implements SqlResultsetConverter<R
             .map(korrV -> this.rgKorrTkIds.get(korrV.getId()))
             .filter(Objects::nonNull)
             .flatMap(Collection::stream)
+            .distinct()
             .collect(Collectors.toList());
 
         return new RgAuspraegungVersion(
