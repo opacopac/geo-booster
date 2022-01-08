@@ -1,6 +1,5 @@
 package com.tschanz.geobooster.utfgrid_composer.service;
 
-import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
 import com.tschanz.geobooster.map_layer.model.MapLayerType;
 import com.tschanz.geobooster.map_layer.service.MapLayerService;
 import com.tschanz.geobooster.utfgrid.model.UtfGrid;
@@ -43,8 +42,8 @@ public class UtfGridComposer {
         var utfGrid = new UtfGrid(
             request.getWidth(),
             request.getHeight(),
-            CoordinateConverter.convertToEpsg3857(request.getBbox().getMinCoordinate()),
-            CoordinateConverter.convertToEpsg3857(request.getBbox().getMaxCoordinate()),
+            request.getBbox().getMinCoordinate(),
+            request.getBbox().getMaxCoordinate(),
             pointItems,
             lineItems
         );

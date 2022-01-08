@@ -1,11 +1,8 @@
 package com.tschanz.geobooster.netz_repo.service;
 
 
-import com.tschanz.geobooster.geofeature.model.Coordinate;
 import com.tschanz.geobooster.geofeature.model.Epsg3857Coordinate;
-import com.tschanz.geobooster.geofeature.model.Epsg4326Coordinate;
 import com.tschanz.geobooster.geofeature.model.Extent;
-import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
 import com.tschanz.geobooster.netz.model.Haltestelle;
 import com.tschanz.geobooster.netz.model.HaltestelleVersion;
 import com.tschanz.geobooster.netz.model.Verkehrskante;
@@ -152,7 +149,7 @@ public class VerkehrskanteRepoImpl implements VerkehrskanteRepo {
 
 
     @Override
-    public Epsg4326Coordinate getStartCoordinate(VerkehrskanteVersion vkVersion) {
+    public Epsg3857Coordinate getStartCoordinate(VerkehrskanteVersion vkVersion) {
         var hst1V = this.getStartHaltestelleVersion(vkVersion);
 
         return hst1V.getCoordinate();
@@ -160,23 +157,21 @@ public class VerkehrskanteRepoImpl implements VerkehrskanteRepo {
 
 
     @Override
-    public Epsg4326Coordinate getEndCoordinate(VerkehrskanteVersion vkVersion) {
+    public Epsg3857Coordinate getEndCoordinate(VerkehrskanteVersion vkVersion) {
         var hst2V = this.getEndHaltestelleVersion(vkVersion);
 
         return hst2V.getCoordinate();
     }
 
 
-    private QuadTreeExtent getQuadTreeExtent(Coordinate startCoordinate, Coordinate endCoordinate) {
-        var startCoord = CoordinateConverter.convertToEpsg3857(startCoordinate);
-        var endCoord = CoordinateConverter.convertToEpsg3857(endCoordinate);
+    private QuadTreeExtent getQuadTreeExtent(Epsg3857Coordinate startCoordinate, Epsg3857Coordinate endCoordinate) {
         var minCoord = new QuadTreeCoordinate(
-            Math.min(startCoord.getE(), endCoord.getE()),
-            Math.min(startCoord.getN(), endCoord.getN())
+            Math.min(startCoordinate.getE(), endCoordinate.getE()),
+            Math.min(startCoordinate.getN(), endCoordinate.getN())
         );
         var maxCoord = new QuadTreeCoordinate(
-            Math.max(startCoord.getE(), endCoord.getE()),
-            Math.max(startCoord.getN(), endCoord.getN())
+            Math.max(startCoordinate.getE(), endCoordinate.getE()),
+            Math.max(startCoordinate.getN(), endCoordinate.getN())
         );
 
         return new QuadTreeExtent(minCoord, maxCoord);

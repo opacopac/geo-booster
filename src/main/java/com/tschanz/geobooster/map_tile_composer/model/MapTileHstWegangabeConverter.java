@@ -1,6 +1,5 @@
 package com.tschanz.geobooster.map_tile_composer.model;
 
-import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
 import com.tschanz.geobooster.map_style.model.MapStyle;
 import com.tschanz.geobooster.map_style.service.StyleHelper;
 import com.tschanz.geobooster.map_tile.model.MapTilePoint;
@@ -22,7 +21,7 @@ public class MapTileHstWegangabeConverter {
         var hstV = this.hstWegangabeRepo.getHaltestelleVersion(hstWaV);
 
         return new MapTilePoint(
-            CoordinateConverter.convertToEpsg3857(hstV.getCoordinate()),
+            hstV.getCoordinate(),
             StyleHelper.getPointStyle(mapStyles, zoomLevel)
         );
     }

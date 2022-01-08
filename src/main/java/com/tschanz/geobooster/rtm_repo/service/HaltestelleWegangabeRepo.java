@@ -1,7 +1,6 @@
 package com.tschanz.geobooster.rtm_repo.service;
 
 import com.tschanz.geobooster.geofeature.model.Epsg3857Coordinate;
-import com.tschanz.geobooster.geofeature.model.Epsg4326Coordinate;
 import com.tschanz.geobooster.geofeature.model.Extent;
 import com.tschanz.geobooster.netz.model.HaltestelleVersion;
 import com.tschanz.geobooster.rtm.model.HaltestelleWegangabe;
@@ -16,5 +15,5 @@ public interface HaltestelleWegangabeRepo extends VersionedObjectRepo<Haltestell
 
     HaltestelleVersion getHaltestelleVersion(HaltestelleWegangabeVersion hstWegangabeVersion);
 
-    Epsg4326Coordinate getHaltestelleCoordinate(HaltestelleWegangabeVersion hstWegangabeVersion);
+    Epsg3857Coordinate getHaltestelleCoordinate(HaltestelleWegangabeVersion hstWegangabeVersion);
 }

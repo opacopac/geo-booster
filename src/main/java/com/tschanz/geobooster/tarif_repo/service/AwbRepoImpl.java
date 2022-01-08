@@ -2,7 +2,6 @@ package com.tschanz.geobooster.tarif_repo.service;
 
 import com.tschanz.geobooster.geofeature.model.Epsg3857Coordinate;
 import com.tschanz.geobooster.geofeature.model.Extent;
-import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
 import com.tschanz.geobooster.netz.model.TarifkanteVersion;
 import com.tschanz.geobooster.netz.model.VerkehrskanteVersion;
 import com.tschanz.geobooster.netz_repo.model.ProgressState;
@@ -97,11 +96,6 @@ public class AwbRepoImpl implements AwbRepo {
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
 
-        var bboxLonLat = new Extent<>(
-            CoordinateConverter.convertToEpsg4326(bbox.getMinCoordinate()),
-            CoordinateConverter.convertToEpsg4326(bbox.getMaxCoordinate())
-        );
-
         var filteredRgaTkVs = tkVs.stream()
             .filter(tkV -> {
                 // filter by bbox
@@ -110,7 +104,7 @@ public class AwbRepoImpl implements AwbRepo {
                     this.tkRepo.getEndCoordinate(tkV)
                 );
 
-                return tkExtent.isExtentIntersecting(bboxLonLat);
+                return tkExtent.isExtentIntersecting(bbox);
             })
             .collect(Collectors.toList());
 
@@ -132,11 +126,6 @@ public class AwbRepoImpl implements AwbRepo {
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
 
-        var bboxLonLat = new Extent<>(
-            CoordinateConverter.convertToEpsg4326(bbox.getMinCoordinate()),
-            CoordinateConverter.convertToEpsg4326(bbox.getMaxCoordinate())
-        );
-
         var filteredZpVkVs = vkVs.stream()
             .filter(vkV -> {
                 // filter by bbox
@@ -145,7 +134,7 @@ public class AwbRepoImpl implements AwbRepo {
                     this.vkRepo.getEndCoordinate(vkV)
                 );
 
-                return vkExtent.isExtentIntersecting(bboxLonLat);
+                return vkExtent.isExtentIntersecting(bbox);
             })
             .collect(Collectors.toList());
 

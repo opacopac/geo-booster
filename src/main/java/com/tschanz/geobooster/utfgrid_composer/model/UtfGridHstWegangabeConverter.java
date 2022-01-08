@@ -25,17 +25,18 @@ public class UtfGridHstWegangabeConverter {
     public UtfGridPointItem toUtfGrid(HaltestelleWegangabeVersion hstWegangabeVersion, float zoomLevel, Collection<MapStyle> mapStyles) {
         var hstVersion = this.hstWaRepo.getHaltestelleVersion(hstWegangabeVersion);
         var hstElement = this.hstRepo.getElement(hstVersion.getElementId());
+        var latLon = CoordinateConverter.convertToEpsg4326(hstVersion.getCoordinate());
 
         return new UtfGridPointItem(
-            CoordinateConverter.convertToEpsg3857(hstVersion.getCoordinate()),
+            hstVersion.getCoordinate(),
             HaltestelleStyle.WIDTH.getWidth(zoomLevel),
             Arrays.asList(
                 new KeyValue<>("id", "WHALTESTELLEN." + hstVersion.getId()),
                 new KeyValue<>("ID", hstVersion.getId()),
                 new KeyValue<>("UIC_CODE", hstElement.getUicCode()),
                 new KeyValue<>("NAME", hstVersion.getName()),
-                new KeyValue<>("LAT", hstVersion.getCoordinate().getLatitude()),
-                new KeyValue<>("LNG", hstVersion.getCoordinate().getLongitude())
+                new KeyValue<>("LAT", latLon.getLatitude()),
+                new KeyValue<>("LNG", latLon.getLongitude())
             )
         );
     }

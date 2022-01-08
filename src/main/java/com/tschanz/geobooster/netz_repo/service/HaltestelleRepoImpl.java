@@ -3,7 +3,6 @@ package com.tschanz.geobooster.netz_repo.service;
 
 import com.tschanz.geobooster.geofeature.model.Epsg3857Coordinate;
 import com.tschanz.geobooster.geofeature.model.Extent;
-import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
 import com.tschanz.geobooster.netz.model.Haltestelle;
 import com.tschanz.geobooster.netz.model.HaltestelleVersion;
 import com.tschanz.geobooster.netz_persistence.service.HaltestellenPersistence;
@@ -52,7 +51,7 @@ public class HaltestelleRepoImpl implements HaltestelleRepo {
         this.versionedObjectMap = new VersionedObjectMap<>(elements, versions);
 
         this.versionQuadTree = new QuadTree<>(QuadTreeConfig.MAX_TREE_DEPTH);
-        this.versionQuadTree.build(versions, k -> CoordinateConverter.convertToEpsg3857(k.getCoordinate())); // TODO
+        this.versionQuadTree.build(versions, HaltestelleVersion::getCoordinate);
 
         this.uicLookupMap = ArrayHelper.create1to1LookupMap(elements, Haltestelle::getUicCode, k -> k);
 

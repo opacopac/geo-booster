@@ -12,12 +12,12 @@ public class GetMapRequestExtentConverter {
 
         switch (projection) {
             case Epsg3857Coordinate.PROJECTION:
-                return new Extent<>(
+                return Extent.fromCoords(
                     new Epsg3857Coordinate(Double.parseDouble(coords[0]), Double.parseDouble(coords[1])),
                     new Epsg3857Coordinate(Double.parseDouble(coords[2]), Double.parseDouble(coords[3]))
                 );
             case Epsg4326Coordinate.PROJECTION:
-                return new Extent<>(
+                return Extent.fromCoords(
                     CoordinateConverter.convertToEpsg3857(
                         new Epsg4326Coordinate(Double.parseDouble(coords[0]), Double.parseDouble(coords[1]))
                     ),

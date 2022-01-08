@@ -1,7 +1,6 @@
 package com.tschanz.geobooster.netz_repo.service;
 
 import com.tschanz.geobooster.geofeature.model.Epsg3857Coordinate;
-import com.tschanz.geobooster.geofeature.model.Epsg4326Coordinate;
 import com.tschanz.geobooster.geofeature.model.Extent;
 import com.tschanz.geobooster.netz.model.Haltestelle;
 import com.tschanz.geobooster.netz.model.HaltestelleVersion;
@@ -23,7 +22,7 @@ public interface TarifkanteRepo extends VersionedObjectRepo<Tarifkante, Tarifkan
 
     HaltestelleVersion getEndHaltestelleVersion(TarifkanteVersion tkVersion);
 
-    Epsg4326Coordinate getStartCoordinate(TarifkanteVersion tkVersion);
+    Epsg3857Coordinate getStartCoordinate(TarifkanteVersion tkVersion);
 
-    Epsg4326Coordinate getEndCoordinate(TarifkanteVersion tkVersion);
+    Epsg3857Coordinate getEndCoordinate(TarifkanteVersion tkVersion);
 }

@@ -1,6 +1,7 @@
 package com.tschanz.geobooster.netz_persistence_sql.model;
 
 import com.tschanz.geobooster.geofeature.model.Epsg4326Coordinate;
+import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
 import com.tschanz.geobooster.netz.model.HaltestelleVersion;
 import com.tschanz.geobooster.persistence_sql.model.SqlResultsetConverter;
 import com.tschanz.geobooster.util.service.ArrayHelper;
@@ -36,9 +37,8 @@ public class SqlHaltestelleVersionConverter implements SqlResultsetConverter<Hal
             SqlVersionConverter.getGueltigVon(row),
             SqlVersionConverter.getGueltigBis(row),
             row.getString(COL_NAME),
-            new Epsg4326Coordinate(
-                row.getFloat(COL_LNG),
-                row.getFloat(COL_LAT)
+            CoordinateConverter.convertToEpsg3857(
+                new Epsg4326Coordinate(row.getFloat(COL_LNG), row.getFloat(COL_LAT))
             )
         );
     }

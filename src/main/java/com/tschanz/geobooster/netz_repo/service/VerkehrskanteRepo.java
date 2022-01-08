@@ -1,7 +1,6 @@
 package com.tschanz.geobooster.netz_repo.service;
 
 import com.tschanz.geobooster.geofeature.model.Epsg3857Coordinate;
-import com.tschanz.geobooster.geofeature.model.Epsg4326Coordinate;
 import com.tschanz.geobooster.geofeature.model.Extent;
 import com.tschanz.geobooster.netz.model.Haltestelle;
 import com.tschanz.geobooster.netz.model.HaltestelleVersion;
@@ -23,7 +22,7 @@ public interface VerkehrskanteRepo extends VersionedObjectRepo<Verkehrskante, Ve
 
     HaltestelleVersion getEndHaltestelleVersion(VerkehrskanteVersion vkVersion);
 
-    Epsg4326Coordinate getStartCoordinate(VerkehrskanteVersion vkVersion);
+    Epsg3857Coordinate getStartCoordinate(VerkehrskanteVersion vkVersion);
 
-    Epsg4326Coordinate getEndCoordinate(VerkehrskanteVersion vkVersion);
+    Epsg3857Coordinate getEndCoordinate(VerkehrskanteVersion vkVersion);
 }

@@ -1,6 +1,5 @@
 package com.tschanz.geobooster.map_tile_composer.service;
 
-import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
 import com.tschanz.geobooster.map_layer.service.MapLayerService;
 import com.tschanz.geobooster.map_tile.model.MapTile;
 import com.tschanz.geobooster.map_tile.service.MapTileRenderer;
@@ -49,8 +48,8 @@ public class MapTileComposer {
             request.getWidth(),
             request.getHeight(),
             request.isBgTransparent(),
-            CoordinateConverter.convertToEpsg3857(request.getBbox().getMinCoordinate()),
-            CoordinateConverter.convertToEpsg3857(request.getBbox().getMaxCoordinate()),
+            request.getBbox().getMinCoordinate(),
+            request.getBbox().getMaxCoordinate(),
             mapTilePoints,
             mapTileLines
         );

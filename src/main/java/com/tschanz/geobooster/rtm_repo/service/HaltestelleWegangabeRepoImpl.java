@@ -1,9 +1,7 @@
 package com.tschanz.geobooster.rtm_repo.service;
 
 import com.tschanz.geobooster.geofeature.model.Epsg3857Coordinate;
-import com.tschanz.geobooster.geofeature.model.Epsg4326Coordinate;
 import com.tschanz.geobooster.geofeature.model.Extent;
-import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
 import com.tschanz.geobooster.netz.model.HaltestelleVersion;
 import com.tschanz.geobooster.netz_repo.model.ProgressState;
 import com.tschanz.geobooster.netz_repo.model.QuadTreeConfig;
@@ -52,10 +50,7 @@ public class HaltestelleWegangabeRepoImpl implements HaltestelleWegangabeRepo {
         this.versionedObjectMap = new VersionedObjectMap<>(elements, versions);
 
         this.versionQuadTree = new QuadTree<>(QuadTreeConfig.MAX_TREE_DEPTH);
-        this.versionQuadTree.build(versions, k -> {
-            var coord = this.getHaltestelleCoordinate(k);
-            return coord != null ? CoordinateConverter.convertToEpsg3857(coord) : null;
-        }); // TODO
+        this.versionQuadTree.build(versions, this::getHaltestelleCoordinate);
 
         this.progressState.updateProgressText("loading haltestelle wegangaben done");
         this.hstWegangabeRepoState.updateIsLoading(false);
@@ -81,7 +76,7 @@ public class HaltestelleWegangabeRepoImpl implements HaltestelleWegangabeRepo {
 
 
     @Override
-    public Epsg4326Coordinate getHaltestelleCoordinate(HaltestelleWegangabeVersion hstWegangabeVersion) {
+    public Epsg3857Coordinate getHaltestelleCoordinate(HaltestelleWegangabeVersion hstWegangabeVersion) {
         var hstV = this.getHaltestelleVersion(hstWegangabeVersion);
 
         return hstV != null

@@ -22,17 +22,18 @@ public class UtfGridHaltestelleConverter {
 
     public UtfGridPointItem toUtfGrid(HaltestelleVersion hstVersion, float zoomLevel, Collection<MapStyle> mapStyles) {
         var hstE = this.hstRepo.getElement(hstVersion.getElementId());
+        var latLon = CoordinateConverter.convertToEpsg4326(hstVersion.getCoordinate());
 
         return new UtfGridPointItem(
-            CoordinateConverter.convertToEpsg3857(hstVersion.getCoordinate()),
+            hstVersion.getCoordinate(),
             HaltestelleStyle.WIDTH.getWidth(zoomLevel),
             Arrays.asList(
                 new KeyValue<>("id", "HALTESTELLEN." + hstVersion.getId()),
                 new KeyValue<>("ID", hstVersion.getId()),
                 new KeyValue<>("UIC_CODE", hstE.getUicCode()),
                 new KeyValue<>("NAME", hstVersion.getName()),
-                new KeyValue<>("LAT", hstVersion.getCoordinate().getLatitude()),
-                new KeyValue<>("LNG", hstVersion.getCoordinate().getLongitude())
+                new KeyValue<>("LAT", latLon.getLatitude()),
+                new KeyValue<>("LNG", latLon.getLongitude())
             )
         );
     }

@@ -1,6 +1,5 @@
 package com.tschanz.geobooster.map_tile_composer.model;
 
-import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
 import com.tschanz.geobooster.map_style.model.MapStyle;
 import com.tschanz.geobooster.map_style.service.StyleHelper;
 import com.tschanz.geobooster.map_tile.model.MapTileLine;
@@ -20,8 +19,8 @@ public class MapTileTarifkanteConverter {
 
     public MapTileLine toMapTile(TarifkanteVersion tkV, float zoomLevel, Collection<MapStyle> mapStyles) {
         return new MapTileLine(
-            CoordinateConverter.convertToEpsg3857(this.tarifkanteRepo.getStartCoordinate(tkV)),
-            CoordinateConverter.convertToEpsg3857(this.tarifkanteRepo.getEndCoordinate(tkV)),
+            this.tarifkanteRepo.getStartCoordinate(tkV),
+            this.tarifkanteRepo.getEndCoordinate(tkV),
             StyleHelper.getLineStyle(mapStyles, zoomLevel)
         );
     }

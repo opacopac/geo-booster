@@ -1,5 +1,6 @@
 package com.tschanz.geobooster.utfgrid_composer.model;
 
+import com.tschanz.geobooster.geofeature.model.Epsg3857Coordinate;
 import com.tschanz.geobooster.geofeature.model.Extent;
 import com.tschanz.geobooster.map_layer.model.MapLayerRequest;
 import com.tschanz.geobooster.map_layer.model.MapLayerType;
@@ -16,7 +17,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class UtfGridRequest implements MapLayerRequest {
     private final LocalDate date;
-    private final Extent bbox;
+    private final Extent<Epsg3857Coordinate> bbox;
     private final int width;
     private final int height;
     private final float zoomLevel;

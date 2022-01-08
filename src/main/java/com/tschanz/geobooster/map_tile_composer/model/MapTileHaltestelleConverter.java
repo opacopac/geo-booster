@@ -1,6 +1,5 @@
 package com.tschanz.geobooster.map_tile_composer.model;
 
-import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
 import com.tschanz.geobooster.map_style.model.MapStyle;
 import com.tschanz.geobooster.map_style.service.StyleHelper;
 import com.tschanz.geobooster.map_tile.model.MapTilePoint;
@@ -16,7 +15,7 @@ import java.util.Collection;
 public class MapTileHaltestelleConverter {
     public MapTilePoint toMapTile(HaltestelleVersion hstV, float zoomLevel, Collection<MapStyle> mapStyles) {
         return new MapTilePoint(
-            CoordinateConverter.convertToEpsg3857(hstV.getCoordinate()),
+            hstV.getCoordinate(),
             StyleHelper.getPointStyle(mapStyles, zoomLevel)
         );
     }
