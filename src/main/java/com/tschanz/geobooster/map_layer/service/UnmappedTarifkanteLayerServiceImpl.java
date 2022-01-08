@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -20,6 +21,9 @@ public class UnmappedTarifkanteLayerServiceImpl implements UnmappedTarifkanteLay
     public Collection<TarifkanteVersion> searchObjects(UnmappedTarifkanteLayerRequest request) {
         var tkVersions = this.tarifkanteRepo.searchByExtent(request.getBbox());
 
-        return VersioningHelper.filterVersions(tkVersions, request.getDate());
+        return tkVersions.stream()
+            .filter(unmTkV -> unmTkV.getVerkehrskanteIds().size() == 0)
+            .filter(unmTkV -> VersioningHelper.isVersionInTimespan(unmTkV, request.getDate()))
+            .collect(Collectors.toList());
     }
 }
