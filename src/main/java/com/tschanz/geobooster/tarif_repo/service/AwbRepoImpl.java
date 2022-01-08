@@ -1,5 +1,7 @@
 package com.tschanz.geobooster.tarif_repo.service;
 
+import com.tschanz.geobooster.geofeature.model.Extent;
+import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
 import com.tschanz.geobooster.netz.model.TarifkanteVersion;
 import com.tschanz.geobooster.netz_repo.model.ProgressState;
 import com.tschanz.geobooster.netz_repo.service.TarifkanteRepo;
@@ -76,7 +78,7 @@ public class AwbRepoImpl implements AwbRepo {
 
 
     @Override
-    public Collection<TarifkanteVersion> getRgaTarifkanten(AwbVersion awbVersion, LocalDate date) {
+    public Collection<TarifkanteVersion> getRgaTarifkanten(AwbVersion awbVersion, LocalDate date, Extent bbox) {
         var rgas = awbVersion.getIncludeRgaIds();
         Collection<Long> tkIds = rgas == null ? Collections.emptyList() : rgas.stream()
             .map(rgaId -> this.rgAuspraegungRepo.getElementVersionAtDate(rgaId, date))
@@ -84,9 +86,28 @@ public class AwbRepoImpl implements AwbRepo {
             .flatMap(rgaV -> rgaV.getTarifkantenIds().stream())
             .collect(Collectors.toList());
 
-        return tkIds.stream()
+        var tkVs = tkIds.stream()
             .map(tkId -> this.tkRepo.getElementVersionAtDate(tkId, date))
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
+
+        var bboxLonLat = new Extent(
+            CoordinateConverter.convertToEpsg4326(bbox.getMinCoordinate()),
+            CoordinateConverter.convertToEpsg4326(bbox.getMaxCoordinate())
+        );
+
+        var filteredRgaTkVs = tkVs.stream()
+            .filter(tkV -> {
+                // filter by bbox
+                var tkExtent = Extent.fromAny2Coords(
+                    this.tkRepo.getStartCoordinate(tkV),
+                    this.tkRepo.getEndCoordinate(tkV)
+                );
+
+                return tkExtent.isExtentIntersecting(bboxLonLat);
+            })
+            .collect(Collectors.toList());
+
+        return filteredRgaTkVs;
     }
 }
