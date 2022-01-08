@@ -5,6 +5,7 @@ import com.tschanz.geobooster.presentation.model.GbState;
 import com.tschanz.geobooster.rtm_repo.service.HaltestelleWegangabeRepo;
 import com.tschanz.geobooster.rtm_repo.service.RgAuspraegungRepo;
 import com.tschanz.geobooster.tarif_repo.service.AwbRepo;
+import com.tschanz.geobooster.zone_repo.service.ZonenplanRepo;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,8 +23,9 @@ public class ConnectionActions {
     private final VerkehrskanteRepo verkehrskanteRepo;
     private final TarifkanteRepo tarifkanteRepo;
     private final HaltestelleWegangabeRepo hstWegangabeRepo;
-    private final AwbRepo awbRepo;
     private final RgAuspraegungRepo rgAuspraegungRepo;
+    private final ZonenplanRepo zonenplanRepo;
+    private final AwbRepo awbRepo;
     private final GbState gbState;
 
 
@@ -47,8 +49,9 @@ public class ConnectionActions {
                 this.verkehrskanteRepo.loadAll();
                 this.tarifkanteRepo.loadAll();
                 this.hstWegangabeRepo.loadAll();
-                this.awbRepo.loadAll();
                 this.rgAuspraegungRepo.loadAll();
+                this.zonenplanRepo.loadAll();
+                this.awbRepo.loadAll();
                 this.gbState.getProgressState().updateProgressText("loading dr done");
                 this.gbState.getProgressState().updateIsInProgress(false);
             } catch (Exception e) {

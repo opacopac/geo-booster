@@ -6,6 +6,7 @@ import com.tschanz.geobooster.persistence_sql.model.ConnectionState;
 import com.tschanz.geobooster.rtm_repo.model.RtmRepoState;
 import com.tschanz.geobooster.tarif_repo.model.TarifRepoState;
 import com.tschanz.geobooster.webmapservice.model.WmsState;
+import com.tschanz.geobooster.zone_repo.model.ZonenRepoState;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,7 @@ public class GbState {
     private final ConnectionState connectionState;
     private final NetzRepoState netzRepoState;
     private final RtmRepoState rtmRepoState;
+    private final ZonenRepoState zonenRepoState;
     private final TarifRepoState tarifRepoState;
     private final WmsState wmsState;
 }

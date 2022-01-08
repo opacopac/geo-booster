@@ -4,6 +4,7 @@ import com.tschanz.geobooster.netz_repo.model.NetzRepoState;
 import com.tschanz.geobooster.presentation.presenter.CachingStatsViewPresenter;
 import com.tschanz.geobooster.rtm_repo.model.RtmRepoState;
 import com.tschanz.geobooster.tarif_repo.model.TarifRepoState;
+import com.tschanz.geobooster.zone_repo.model.ZonenRepoState;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -17,28 +18,31 @@ public class JfxCachingStatsViewController implements CachingStatsViewPresenter 
     @FXML private Label vkCountLabel;
     @FXML private Label tkCountLabel;
     @FXML private Label hstWaCountLabel;
-    @FXML private Label awbCountLabel;
     @FXML private Label rgaCountLabel;
+    @FXML private Label zpCountLabel;
+    @FXML private Label awbCountLabel;
     @FXML private Label betrVersionCountLabel;
     @FXML private Label verwVersionCountLabel;
     @FXML private Label hstVersionCountLabel;
     @FXML private Label vkVersionCountLabel;
     @FXML private Label tkVersionCountLabel;
     @FXML private Label hstWaVersionCountLabel;
-    @FXML private Label awbVersionCountLabel;
     @FXML private Label rgaVersionCountLabel;
+    @FXML private Label zpVersionCountLabel;
+    @FXML private Label awbVersionCountLabel;
     @FXML private ProgressIndicator betrProgressIndicator;
     @FXML private ProgressIndicator verwProgressIndicator;
     @FXML private ProgressIndicator hstProgressIndicator;
     @FXML private ProgressIndicator vkProgressIndicator;
     @FXML private ProgressIndicator tkProgressIndicator;
     @FXML private ProgressIndicator hstWaProgressIndicator;
-    @FXML private ProgressIndicator awbProgressIndicator;
     @FXML private ProgressIndicator rgaProgressIndicator;
+    @FXML private ProgressIndicator zpProgressIndicator;
+    @FXML private ProgressIndicator awbProgressIndicator;
 
 
     @Override
-    public void bindState(NetzRepoState netzRepoState, RtmRepoState rtmRepoState, TarifRepoState tarifRepoState) {
+    public void bindState(NetzRepoState netzRepoState, RtmRepoState rtmRepoState, ZonenRepoState zonenRepoState, TarifRepoState tarifRepoState) {
         // betreiber
         netzRepoState.getBetreiberRepoState().getLoadedElementCount$().subscribe(elementCount -> {
             Platform.runLater(() -> betrCountLabel.setText(elementCount.toString()));
@@ -105,17 +109,6 @@ public class JfxCachingStatsViewController implements CachingStatsViewPresenter 
             Platform.runLater(() -> hstWaProgressIndicator.setVisible(isLoading));
         });
 
-        // awb
-        tarifRepoState.getAwbRepoState().getLoadedElementCount$().subscribe(elementCount -> {
-            Platform.runLater(() -> awbCountLabel.setText(elementCount.toString()));
-        });
-        tarifRepoState.getAwbRepoState().getLoadedVersionCount$().subscribe(versionCount -> {
-            Platform.runLater(() -> awbVersionCountLabel.setText(versionCount.toString()));
-        });
-        tarifRepoState.getAwbRepoState().getIsLoading$().subscribe(isLoading -> {
-            Platform.runLater(() -> awbProgressIndicator.setVisible(isLoading));
-        });
-
         // rga
         rtmRepoState.getRgAuspraegungRepoState().getLoadedElementCount$().subscribe(elementCount -> {
             Platform.runLater(() -> rgaCountLabel.setText(elementCount.toString()));
@@ -125,6 +118,28 @@ public class JfxCachingStatsViewController implements CachingStatsViewPresenter 
         });
         rtmRepoState.getRgAuspraegungRepoState().getIsLoading$().subscribe(isLoading -> {
             Platform.runLater(() -> rgaProgressIndicator.setVisible(isLoading));
+        });
+
+        // zp
+        zonenRepoState.getZonenplanRepoState().getLoadedElementCount$().subscribe(elementCount -> {
+            Platform.runLater(() -> zpCountLabel.setText(elementCount.toString()));
+        });
+        zonenRepoState.getZonenplanRepoState().getLoadedVersionCount$().subscribe(versionCount -> {
+            Platform.runLater(() -> zpVersionCountLabel.setText(versionCount.toString()));
+        });
+        zonenRepoState.getZonenplanRepoState().getIsLoading$().subscribe(isLoading -> {
+            Platform.runLater(() -> zpProgressIndicator.setVisible(isLoading));
+        });
+
+        // awb
+        tarifRepoState.getAwbRepoState().getLoadedElementCount$().subscribe(elementCount -> {
+            Platform.runLater(() -> awbCountLabel.setText(elementCount.toString()));
+        });
+        tarifRepoState.getAwbRepoState().getLoadedVersionCount$().subscribe(versionCount -> {
+            Platform.runLater(() -> awbVersionCountLabel.setText(versionCount.toString()));
+        });
+        tarifRepoState.getAwbRepoState().getIsLoading$().subscribe(isLoading -> {
+            Platform.runLater(() -> awbProgressIndicator.setVisible(isLoading));
         });
     }
 }

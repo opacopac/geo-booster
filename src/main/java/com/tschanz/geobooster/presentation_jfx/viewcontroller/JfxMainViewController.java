@@ -45,6 +45,7 @@ public class JfxMainViewController implements MainViewController, MainViewPresen
         this.cachingStatsViewController.bindState(
             gbState.getNetzRepoState(),
             gbState.getRtmRepoState(),
+            gbState.getZonenRepoState(),
             gbState.getTarifRepoState()
         );
         this.servingStatsViewController.bindState(gbState.getWmsState());
