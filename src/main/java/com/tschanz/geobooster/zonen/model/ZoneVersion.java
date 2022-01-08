@@ -14,4 +14,5 @@ public class ZoneVersion implements Version {
     private final long elementId;
     private final LocalDate gueltigVon;
     private final LocalDate gueltigBis;
+    private final long ursprungsZoneId;
 }

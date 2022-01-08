@@ -16,6 +16,8 @@ import lombok.SneakyThrows;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 
 
 @Repository
@@ -54,7 +56,10 @@ public class ZonenplanSqlPersistence implements ZonenplanPersistence {
         var zoneVkIds = this.zonePersistence.readAllVkIds();
         var zoneVkIdsMap = ArrayHelper.create1toNLookupMap(zoneVkIds, KeyValue::getKey, KeyValue::getValue);
 
-        var converter = new SqlZonenplanVersionConverter(zpEMap, zoneEByZpMap, zoneByEVMap, zoneVkIdsMap);
+        // TODO
+        Map<Long, Long> excludeVks = Collections.emptyMap();
+
+        var converter = new SqlZonenplanVersionConverter(zpEMap, zoneEByZpMap, zoneByEVMap, zoneVkIdsMap, excludeVks);
 
         return this.sqlReader.read(converter);
     }
