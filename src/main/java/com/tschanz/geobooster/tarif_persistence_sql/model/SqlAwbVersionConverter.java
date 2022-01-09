@@ -9,6 +9,7 @@ import lombok.SneakyThrows;
 
 import java.sql.ResultSet;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 
@@ -42,13 +43,13 @@ public class SqlAwbVersionConverter implements SqlResultsetConverter<AwbVersion>
             SqlVersionConverter.getElementId(row),
             SqlVersionConverter.getGueltigVon(row),
             SqlVersionConverter.getGueltigBis(row),
-            this.includeVkMap.get(id),
-            this.excludeVkMap.get(id),
-            this.includeTkMap.get(id),
-            this.excludeTkMap.get(id),
-            this.includeVerwMap.get(id),
-            this.includeZpMap.get(id),
-            this.includeRgaMap.get(id)
+            this.includeVkMap.getOrDefault(id, Collections.emptyList()),
+            this.excludeVkMap.getOrDefault(id, Collections.emptyList()),
+            this.includeTkMap.getOrDefault(id, Collections.emptyList()),
+            this.excludeTkMap.getOrDefault(id, Collections.emptyList()),
+            this.includeVerwMap.getOrDefault(id, Collections.emptyList()),
+            this.includeZpMap.getOrDefault(id, Collections.emptyList()),
+            this.includeRgaMap.getOrDefault(id, Collections.emptyList())
         );
     }
 }

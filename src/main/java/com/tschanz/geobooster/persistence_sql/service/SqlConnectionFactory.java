@@ -15,7 +15,7 @@ import java.sql.DriverManager;
 @Service
 @RequiredArgsConstructor
 public class SqlConnectionFactory {
-    private final static int FETCH_SIZE = 10000;
+    private final static int FETCH_SIZE = 1000;
     private final static int CONNECTION_REUSE_TIMEOUT_SEC = 5;
 
     private final ConnectionState connectionState;
