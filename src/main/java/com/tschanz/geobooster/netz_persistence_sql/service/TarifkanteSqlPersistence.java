@@ -53,11 +53,14 @@ public class TarifkanteSqlPersistence implements TarifkantePersistence {
         var converter = new SqlTarifkanteVersionConverter(filter, this.connectionFactory.getSqlDialect());
         var tkVs = this.sqlReader.read(converter);
 
-        // add linked vks
-        List<Long> onlyTkVIds = null;
-        if (filter != null && tkVs.size() > 0) {
-            onlyTkVIds = tkVs.stream().map(TarifkanteVersion::getId).collect(Collectors.toList());
+        if (tkVs.isEmpty()) {
+            return tkVs; // no need to load tkvks
         }
+
+        // add linked vks
+        List<Long> onlyTkVIds = filter != null
+            ? tkVs.stream().map(TarifkanteVersion::getId).collect(Collectors.toList())
+            : null;
         var tkVkMap = this.readTkVkMap(onlyTkVIds);
         tkVs.forEach(tkV -> {
             var vkIds = tkVkMap.get(tkV.getId());
