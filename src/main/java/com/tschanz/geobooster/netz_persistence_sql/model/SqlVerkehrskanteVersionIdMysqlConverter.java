@@ -7,7 +7,7 @@ import lombok.SneakyThrows;
 import java.sql.ResultSet;
 
 
-public class SqlVerkehrskanteVersionIdConverter implements SqlResultsetConverter<Long> {
+public class SqlVerkehrskanteVersionIdMysqlConverter implements SqlResultsetConverter<Long> {
     @Override
     public String getSelectQuery() {
         return String.format(

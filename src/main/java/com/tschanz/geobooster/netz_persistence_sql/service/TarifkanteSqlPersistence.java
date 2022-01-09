@@ -83,7 +83,13 @@ public class TarifkanteSqlPersistence implements TarifkantePersistence {
     @Override
     @SneakyThrows
     public Collection<Long> readAllVersionIds() {
-        return this.sqlReader.read(new SqlVerkehrskanteVersionIdConverter());
+        switch (this.connectionFactory.getSqlDialect()) {
+            case ORACLE:
+                return this.sqlReader.read(new SqlVerkehrskanteVersionIdOracleConverter()).get(0);
+            case MYSQL:
+            default:
+                return this.sqlReader.read(new SqlVerkehrskanteVersionIdMysqlConverter());
+        }
     }
 
 
