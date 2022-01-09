@@ -26,17 +26,17 @@ public class AwbVkLayerServiceImpl implements AwbVkLayerService {
 
     @Override
     public Collection<VerkehrskanteVersion> searchObjects(AwbVkLayerRequest request) {
-        List<VerkehrskanteVersion> vkVersions = new ArrayList<VerkehrskanteVersion>();
+        List<VerkehrskanteVersion> vkVersions = new ArrayList<>();
         var awbVersion = this.awbRepo.getVersion(request.getAwbVersionId());
 
         // add zonenplan kanten
-        if (awbVersion.getIncludeZonenplanIds().size() > 0) {
+        if (!awbVersion.getIncludeZonenplanIds().isEmpty()) {
             var vksByZp = this.awbRepo.getZpVerkehrskanten(awbVersion, request.getDate(), request.getBbox());
             vkVersions.addAll(vksByZp);
         }
 
         // add verwaltung kanten
-        if (awbVersion.getIncludeVerwaltungIds().size() > 0) {
+        if (!awbVersion.getIncludeVerwaltungIds().isEmpty()) {
             Map<Long, Long> awbVerwaltungIdMap = new HashMap<>();
             awbVersion.getIncludeVerwaltungIds().forEach(verwEid -> awbVerwaltungIdMap.put(verwEid, verwEid));
             var vksByExtent = this.verkehrskanteRepo.searchByExtent(request.getBbox());
@@ -47,7 +47,7 @@ public class AwbVkLayerServiceImpl implements AwbVkLayerService {
         // TODO: minus exclude vka
 
         // linien filter
-        Collection<VerkehrskanteVersion> vksByLinie = request.getLinieVarianteIds().size() > 0
+        Collection<VerkehrskanteVersion> vksByLinie = !request.getLinieVarianteIds().isEmpty()
             ? this.linieVarianteRepo.searchVerkehrskanteVersions(request.getLinieVarianteIds(), request.getDate())
             : Collections.emptyList();
         var vkByLinieMap = ArrayHelper.create1to1LookupMap(vksByLinie, VerkehrskanteVersion::getId, k -> k);
