@@ -36,7 +36,7 @@ public class AwbVkLayerServiceImpl implements AwbVkLayerService {
         }
 
         // add verwaltung kanten
-        if (request.getVerwaltungVersionIds().size() > 0) {
+        if (awbVersion.getIncludeVerwaltungIds().size() > 0) {
             Map<Long, Long> awbVerwaltungIdMap = new HashMap<>();
             awbVersion.getIncludeVerwaltungIds().forEach(verwEid -> awbVerwaltungIdMap.put(verwEid, verwEid));
             var vksByExtent = this.verkehrskanteRepo.searchByExtent(request.getBbox());
