@@ -1,6 +1,7 @@
 package com.tschanz.geobooster.versioning_persistence_sql.model;
 
 import com.google.gson.stream.JsonReader;
+import com.tschanz.geobooster.persistence_sql.service.SqlHelper;
 import com.tschanz.geobooster.versioning_persistence.service.FlyWeightDateFactory;
 import lombok.SneakyThrows;
 
@@ -41,12 +42,12 @@ public class SqlVersionConverter {
 
     @SneakyThrows
     public static LocalDate getGueltigVonFromJsonAgg(JsonReader reader) {
-        return LocalDate.parse(reader.nextString());
+        return SqlHelper.parseLocalDatefromJsonAgg(reader.nextString());
     }
 
 
     @SneakyThrows
     public static LocalDate getGueltigBisFromJsonAgg(JsonReader reader) {
-        return LocalDate.parse(reader.nextString());
+        return SqlHelper.parseLocalDatefromJsonAgg(reader.nextString());
     }
 }

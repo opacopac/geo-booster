@@ -10,6 +10,7 @@ import java.time.format.DateTimeFormatter;
 public class SqlHelper {
     private static final DateTimeFormatter ISO_LOCAL_DATE_TIME_WITHOUT_NANO = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
+
     public static String getToDate(SqlDialect sqlDialect, LocalDate date) {
         switch (sqlDialect) {
             case MYSQL:
@@ -31,5 +32,10 @@ public class SqlHelper {
             default:
                 throw new IllegalArgumentException("Unknown SQL dialect " + sqlDialect.name());
         }
+    }
+
+
+    public static LocalDate parseLocalDatefromJsonAgg(String jsonAggDate) {
+        return LocalDate.parse(jsonAggDate, ISO_LOCAL_DATE_TIME_WITHOUT_NANO);
     }
 }
