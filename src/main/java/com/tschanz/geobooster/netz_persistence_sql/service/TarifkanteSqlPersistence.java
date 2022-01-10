@@ -5,7 +5,8 @@ import com.tschanz.geobooster.netz.model.TarifkanteVersion;
 import com.tschanz.geobooster.netz_persistence.model.ReadFilter;
 import com.tschanz.geobooster.netz_persistence.service.TarifkantePersistence;
 import com.tschanz.geobooster.netz_persistence_sql.model.*;
-import com.tschanz.geobooster.persistence_sql.service.SqlConnectionFactory;
+import com.tschanz.geobooster.persistence_sql.model.ConnectionState;
+import com.tschanz.geobooster.persistence_sql.model.SqlDialect;
 import com.tschanz.geobooster.persistence_sql.service.SqlReader;
 import com.tschanz.geobooster.util.model.KeyValue;
 import com.tschanz.geobooster.util.service.ArrayHelper;
@@ -22,7 +23,7 @@ import java.util.stream.Collectors;
 @Repository
 @RequiredArgsConstructor
 public class TarifkanteSqlPersistence implements TarifkantePersistence {
-    private final SqlConnectionFactory connectionFactory;
+    private final ConnectionState connectionState;
     private final SqlReader sqlReader;
 
 
@@ -35,7 +36,7 @@ public class TarifkanteSqlPersistence implements TarifkantePersistence {
     @Override
     @SneakyThrows
     public Collection<Tarifkante> readElements(ReadFilter filter) {
-        var converter = new SqlTarifkanteElementConverter(filter, this.connectionFactory.getSqlDialect());
+        var converter = new SqlTarifkanteElementConverter(filter, this.connectionState.getSqlDialect());
 
         return this.sqlReader.read(converter);
     }
@@ -50,7 +51,7 @@ public class TarifkanteSqlPersistence implements TarifkantePersistence {
     @Override
     @SneakyThrows
     public Collection<TarifkanteVersion> readVersions(ReadFilter filter) {
-        var converter = new SqlTarifkanteVersionConverter(filter, this.connectionFactory.getSqlDialect());
+        var converter = new SqlTarifkanteVersionConverter(filter, this.connectionState.getSqlDialect());
         var tkVs = this.sqlReader.read(converter);
 
         if (tkVs.isEmpty()) {
@@ -83,12 +84,10 @@ public class TarifkanteSqlPersistence implements TarifkantePersistence {
     @Override
     @SneakyThrows
     public Collection<Long> readAllVersionIds() {
-        switch (this.connectionFactory.getSqlDialect()) {
-            case ORACLE:
-                return this.sqlReader.read(new SqlVerkehrskanteVersionIdOracleConverter()).get(0);
-            case MYSQL:
-            default:
-                return this.sqlReader.read(new SqlVerkehrskanteVersionIdMysqlConverter());
+        if (this.connectionState.isUseJsonAgg() && this.connectionState.getSqlDialect() == SqlDialect.ORACLE) {
+            return this.sqlReader.read(new SqlVerkehrskanteVersionIdOracleConverter()).get(0);
+        } else {
+            return this.sqlReader.read(new SqlVerkehrskanteVersionIdMysqlConverter());
         }
     }
 

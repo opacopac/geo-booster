@@ -13,5 +13,7 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource("file:./geo-booster.properties")
 @ConfigurationProperties(prefix = "datasource")
 public class DataSourceProperties {
+    private int fetchSize;
+    private boolean useJsonAgg;
     private SqlConnectionProperties[] connection;
 }

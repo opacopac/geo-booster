@@ -3,7 +3,7 @@ package com.tschanz.geobooster.netz_persistence_sql.service;
 import com.tschanz.geobooster.netz_persistence.service.LinieVariantePersistence;
 import com.tschanz.geobooster.netz_persistence_sql.model.SqlLinVarTkConverter;
 import com.tschanz.geobooster.netz_persistence_sql.model.SqlLinVarVkConverter;
-import com.tschanz.geobooster.persistence_sql.service.SqlConnectionFactory;
+import com.tschanz.geobooster.persistence_sql.model.ConnectionState;
 import com.tschanz.geobooster.persistence_sql.service.SqlReader;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -16,7 +16,7 @@ import java.util.Collection;
 @Repository
 @RequiredArgsConstructor
 public class LinieVarianteSqlPersistence implements LinieVariantePersistence {
-    private final SqlConnectionFactory connectionFactory;
+    private final ConnectionState connectionState;
     private final SqlReader sqlReader;
 
 
@@ -34,7 +34,7 @@ public class LinieVarianteSqlPersistence implements LinieVariantePersistence {
         var converter = new SqlLinVarTkConverter(
             linieVarianteIds,
             date,
-            this.connectionFactory.getSqlDialect()
+            this.connectionState.getSqlDialect()
         );
 
         return this.sqlReader.read(converter);

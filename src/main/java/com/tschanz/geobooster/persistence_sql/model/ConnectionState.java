@@ -33,7 +33,26 @@ public class ConnectionState {
     }
 
 
-    public SqlConnectionProperties getConnectionProperties() {
+    public SqlConnectionProperties getSelectedConnectionProperties() {
+        if (this.selectedConnectionProperties == null) {
+            throw new IllegalArgumentException("no connection selected");
+        }
+
         return this.selectedConnectionProperties;
+    }
+
+
+    public SqlDialect getSqlDialect() {
+        return this.getSelectedConnectionProperties().getSqldialect();
+    }
+
+
+    public int getFetchSize() {
+        return this.dataSourceProperties.getFetchSize();
+    }
+
+
+    public boolean isUseJsonAgg() {
+        return this.dataSourceProperties.isUseJsonAgg();
     }
 }
