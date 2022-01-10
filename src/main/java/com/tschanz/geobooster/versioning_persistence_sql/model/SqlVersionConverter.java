@@ -1,5 +1,6 @@
 package com.tschanz.geobooster.versioning_persistence_sql.model;
 
+import com.google.gson.stream.JsonReader;
 import com.tschanz.geobooster.versioning_persistence.service.FlyWeightDateFactory;
 import lombok.SneakyThrows;
 
@@ -29,5 +30,23 @@ public class SqlVersionConverter {
     @SneakyThrows
     public static LocalDate getGueltigBis(ResultSet row) {
         return FlyWeightDateFactory.get(row.getDate(COL_GUELTIGBIS).toLocalDate());
+    }
+
+
+    @SneakyThrows
+    public static long getElementIdFromJsonAgg(JsonReader reader) {
+        return reader.nextLong();
+    }
+
+
+    @SneakyThrows
+    public static LocalDate getGueltigVonFromJsonAgg(JsonReader reader) {
+        return LocalDate.parse(reader.nextString());
+    }
+
+
+    @SneakyThrows
+    public static LocalDate getGueltigBisFromJsonAgg(JsonReader reader) {
+        return LocalDate.parse(reader.nextString());
     }
 }

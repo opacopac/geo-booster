@@ -6,7 +6,6 @@ import com.tschanz.geobooster.netz_persistence.model.ReadFilter;
 import com.tschanz.geobooster.netz_persistence.service.TarifkantePersistence;
 import com.tschanz.geobooster.netz_persistence_sql.model.*;
 import com.tschanz.geobooster.persistence_sql.model.ConnectionState;
-import com.tschanz.geobooster.persistence_sql.model.SqlDialect;
 import com.tschanz.geobooster.persistence_sql.service.SqlReader;
 import com.tschanz.geobooster.util.model.KeyValue;
 import com.tschanz.geobooster.util.service.ArrayHelper;
@@ -84,7 +83,7 @@ public class TarifkanteSqlPersistence implements TarifkantePersistence {
     @Override
     @SneakyThrows
     public Collection<Long> readAllVersionIds() {
-        if (this.connectionState.isUseJsonAgg() && this.connectionState.getSqlDialect() == SqlDialect.ORACLE) {
+        if (this.connectionState.isUseJsonAgg()) {
             return this.sqlReader.read(new SqlVerkehrskanteVersionIdJsonAggConverter()).get(0);
         } else {
             return this.sqlReader.read(new SqlVerkehrskanteVersionIdConverter());

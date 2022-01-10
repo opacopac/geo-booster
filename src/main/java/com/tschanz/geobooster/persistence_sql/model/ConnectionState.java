@@ -53,6 +53,6 @@ public class ConnectionState {
 
 
     public boolean isUseJsonAgg() {
-        return this.dataSourceProperties.isUseJsonAgg();
+        return this.dataSourceProperties.isUseJsonAgg()  && this.getSqlDialect() == SqlDialect.ORACLE;
     }
 }
