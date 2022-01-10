@@ -54,8 +54,8 @@ public class SqlJsonAggReader {
         return String.format(
             "SELECT JSON_ARRAYAGG(JSON_ARRAY(%s) RETURNING CLOB) AS %s FROM %s",
             String.join(",", fields),
-            table,
-            COL_CLOB
+            COL_CLOB,
+            table
         );
     }
 }
