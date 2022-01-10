@@ -5,6 +5,7 @@ import com.tschanz.geobooster.presentation.model.GbState;
 import com.tschanz.geobooster.rtm_repo.service.HaltestelleWegangabeRepo;
 import com.tschanz.geobooster.rtm_repo.service.RgAuspraegungRepo;
 import com.tschanz.geobooster.tarif_repo.service.AwbRepo;
+import com.tschanz.geobooster.util.service.ExceptionHelper;
 import com.tschanz.geobooster.zone_repo.service.ZonenplanRepo;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -56,9 +57,13 @@ public class ConnectionActions {
                 this.gbState.getProgressState().updateIsInProgress(false);
             } catch (Exception e) {
                 logger.error(e);
-                this.gbState.getProgressState().updateProgressText(String.format("ERROR loading dr: %s", e.getMessage()));
+                this.gbState.getProgressState().updateProgressText(
+                    String.format("ERROR loading dr: %s", ExceptionHelper.getErrorText(e, "\n")),
+                    true
+                );
                 this.gbState.getProgressState().updateIsInProgress(false);
             }
         }).start();
     }
+
 }

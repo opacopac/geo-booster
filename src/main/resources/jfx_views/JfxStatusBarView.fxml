@@ -11,7 +11,6 @@
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
         </padding>
         <ProgressBar fx:id="progressBar" prefWidth="100.0" visible="false"/>
-        <Label fx:id="infoLabel" />
-        <Label fx:id="errorLabel" textFill="RED"/>
+        <Label fx:id="progressText" />
     </HBox>
 </AnchorPane>

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 public class ProgressState {
     private final BehaviorSubject<Boolean> isInProgress$ = BehaviorSubject.createDefault(false);
     private final BehaviorSubject<String> progressText$ = BehaviorSubject.createDefault("");
+    private final BehaviorSubject<Boolean> isTextError$ = BehaviorSubject.createDefault(false);
 
 
     public Observable<Boolean> getIsInProgress$() {
@@ -26,7 +27,18 @@ public class ProgressState {
     }
 
 
+    public Observable<Boolean> isTextError$() {
+        return this.isTextError$;
+    }
+
+
     public void updateProgressText(String progressText) {
+        this.updateProgressText(progressText, false);
+    }
+
+
+    public void updateProgressText(String progressText, boolean isError) {
         this.progressText$.onNext(progressText);
+        this.isTextError$.onNext(isError);
     }
 }

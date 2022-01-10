@@ -6,11 +6,12 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.Tooltip;
+import javafx.scene.paint.Color;
 
 
 public class JfxStatusBarViewController implements StatusBarViewPresenter {
-    @FXML private Label infoLabel;
-    @FXML private Label errorLabel;
+    @FXML private Label progressText;
     @FXML private ProgressBar progressBar;
 
 
@@ -19,13 +20,31 @@ public class JfxStatusBarViewController implements StatusBarViewPresenter {
         progressState.getIsInProgress$().subscribe(isInProgress -> {
             Platform.runLater(() -> {
                 this.progressBar.setVisible(isInProgress);
+                this.progressBar.setManaged(isInProgress);
             });
         });
 
         progressState.getProgressText$().subscribe(progressText -> {
             Platform.runLater(() -> {
-                this.infoLabel.setText(progressText);
+                this.progressText.setText(progressText);
+                var tooltip = this.createTooltip(progressText);
+                this.progressText.setTooltip(tooltip);
             });
         });
+
+        progressState.isTextError$().subscribe(isError -> {
+            Platform.runLater(() -> {
+                var color = isError ? Color.RED : Color.BLACK;
+                this.progressText.setTextFill(color);
+            });
+        });
+    }
+
+
+    private Tooltip createTooltip(String text) {
+        var tip = new Tooltip();
+        tip.setText(text);
+
+        return tip;
     }
 }
