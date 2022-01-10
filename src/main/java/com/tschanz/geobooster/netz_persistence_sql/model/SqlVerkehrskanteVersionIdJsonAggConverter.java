@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 
-public class SqlVerkehrskanteVersionIdOracleConverter implements SqlResultsetConverter<List<Long>> {
+public class SqlVerkehrskanteVersionIdJsonAggConverter implements SqlResultsetConverter<List<Long>> {
     static private final String COL_TKV_IDS = "TKV_IDS";
 
     @Override

@@ -85,9 +85,9 @@ public class TarifkanteSqlPersistence implements TarifkantePersistence {
     @SneakyThrows
     public Collection<Long> readAllVersionIds() {
         if (this.connectionState.isUseJsonAgg() && this.connectionState.getSqlDialect() == SqlDialect.ORACLE) {
-            return this.sqlReader.read(new SqlVerkehrskanteVersionIdOracleConverter()).get(0);
+            return this.sqlReader.read(new SqlVerkehrskanteVersionIdJsonAggConverter()).get(0);
         } else {
-            return this.sqlReader.read(new SqlVerkehrskanteVersionIdMysqlConverter());
+            return this.sqlReader.read(new SqlVerkehrskanteVersionIdConverter());
         }
     }
 
