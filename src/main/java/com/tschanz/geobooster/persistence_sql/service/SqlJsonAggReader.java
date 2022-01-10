@@ -36,8 +36,10 @@ public class SqlJsonAggReader {
             JsonReader reader = new JsonReader(jsonStream);
             reader.beginArray();
             while (reader.hasNext()) {
+                reader.beginArray();
                 var entry = jsonAggConverter.fromJsonAgg(reader);
                 entries.add(entry);
+                reader.endArray();
             }
             reader.endArray();
             reader.close();
