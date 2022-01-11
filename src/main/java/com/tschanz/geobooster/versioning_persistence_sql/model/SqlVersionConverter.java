@@ -2,6 +2,7 @@ package com.tschanz.geobooster.versioning_persistence_sql.model;
 
 import com.google.gson.stream.JsonReader;
 import com.tschanz.geobooster.persistence_sql.service.SqlHelper;
+import com.tschanz.geobooster.util.service.ArrayHelper;
 import com.tschanz.geobooster.versioning_persistence.service.FlyWeightDateFactory;
 import lombok.SneakyThrows;
 
@@ -13,7 +14,9 @@ public class SqlVersionConverter {
     public final static String COL_IDELEMENT = "ID_ELEMENT";
     public final static String COL_GUELTIGVON = "GUELTIG_VON";
     public final static String COL_GUELTIGBIS = "GUELTIG_BIS";
+    public final static String COL_TERMINIERT_PER = "TERMINIERT_PER";
     public final static String[] SELECT_COLS = {SqlHasIdConverter.COL_ID, COL_IDELEMENT, COL_GUELTIGVON, COL_GUELTIGBIS};
+    public final static String[] SELECT_COLS_W_TERM_PER = ArrayHelper.appendTo(SELECT_COLS, COL_TERMINIERT_PER);
 
 
     @SneakyThrows
@@ -35,6 +38,17 @@ public class SqlVersionConverter {
 
 
     @SneakyThrows
+    public static LocalDate getTerminiertPer(ResultSet row) {
+        var terminiertPer = row.getDate(COL_TERMINIERT_PER);
+        if (terminiertPer != null) {
+            return FlyWeightDateFactory.get(terminiertPer.toLocalDate());
+        } else {
+            return null;
+        }
+    }
+
+
+    @SneakyThrows
     public static long getElementIdFromJsonAgg(JsonReader reader) {
         return reader.nextLong();
     }
@@ -42,12 +56,12 @@ public class SqlVersionConverter {
 
     @SneakyThrows
     public static LocalDate getGueltigVonFromJsonAgg(JsonReader reader) {
-        return SqlHelper.parseLocalDatefromJsonAgg(reader.nextString());
+        return SqlHelper.parseLocalDatefromJsonAgg(reader);
     }
 
 
     @SneakyThrows
     public static LocalDate getGueltigBisFromJsonAgg(JsonReader reader) {
-        return SqlHelper.parseLocalDatefromJsonAgg(reader.nextString());
+        return SqlHelper.parseLocalDatefromJsonAgg(reader);
     }
 }

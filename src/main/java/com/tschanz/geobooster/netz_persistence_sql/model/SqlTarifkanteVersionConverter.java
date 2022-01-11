@@ -1,19 +1,18 @@
 package com.tschanz.geobooster.netz_persistence_sql.model;
 
+import com.google.gson.stream.JsonReader;
 import com.tschanz.geobooster.netz.model.TarifkanteVersion;
 import com.tschanz.geobooster.netz_persistence.model.ReadFilter;
 import com.tschanz.geobooster.persistence_sql.model.SqlDialect;
+import com.tschanz.geobooster.persistence_sql.model.SqlJsonAggConverter;
 import com.tschanz.geobooster.persistence_sql.model.SqlResultsetConverter;
 import com.tschanz.geobooster.persistence_sql.service.SqlHelper;
-import com.tschanz.geobooster.util.service.ArrayHelper;
-import com.tschanz.geobooster.versioning_persistence.service.FlyWeightDateFactory;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlHasIdConverter;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlVersionConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.sql.ResultSet;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -21,21 +20,32 @@ import java.util.stream.Collectors;
 
 
 @RequiredArgsConstructor
-public class SqlTarifkanteVersionConverter implements SqlResultsetConverter<TarifkanteVersion> {
-    private final static String COL_TERMINIERT_PER = "TERMINIERT_PER";
+public class SqlTarifkanteVersionConverter implements SqlResultsetConverter<TarifkanteVersion>, SqlJsonAggConverter<TarifkanteVersion> {
     private final static String COL_CREATED_AT = "CREATED_AT";
     private final static String COL_MODIFIED_AT = "MODIFIED_AT";
-    private final static String[] SELECT_COLS = ArrayHelper.appendTo(SqlVersionConverter.SELECT_COLS, COL_TERMINIERT_PER);
 
     private final ReadFilter readFilter;
     private final SqlDialect sqlDialect;
 
 
     @Override
+    public String getTable() {
+        return "N_TARIFKANTE_V";
+    }
+
+
+    @Override
+    public String[] getFields() {
+        return SqlVersionConverter.SELECT_COLS_W_TERM_PER;
+    }
+
+
+    @Override
     public String getSelectQuery() {
         return String.format(
-            "SELECT %s FROM N_TARIFKANTE_V %s",
-            String.join(",", SqlTarifkanteVersionConverter.SELECT_COLS),
+            "SELECT %s FROM %s %s",
+            String.join(",", this.getFields()),
+            this.getTable(),
             this.readFilter != null ? this.getWhereClauseForFilter(readFilter) : ""
         );
     }
@@ -48,20 +58,23 @@ public class SqlTarifkanteVersionConverter implements SqlResultsetConverter<Tari
             SqlVersionConverter.getElementId(row),
             SqlVersionConverter.getGueltigVon(row),
             SqlVersionConverter.getGueltigBis(row),
-            this.getTerminiertPer(row),
+            SqlVersionConverter.getTerminiertPer(row),
             Collections.emptyList()
         );
     }
 
 
-    @SneakyThrows
-    private LocalDate getTerminiertPer(ResultSet row) {
-        var terminiertPer = row.getDate(COL_TERMINIERT_PER);
-        if (terminiertPer != null) {
-            return FlyWeightDateFactory.get(terminiertPer.toLocalDate());
-        } else {
-            return null;
-        }
+
+    @Override
+    public TarifkanteVersion fromJsonAgg(JsonReader reader) {
+        return new TarifkanteVersion(
+            SqlHasIdConverter.getIdFromJsonAgg(reader),
+            SqlVersionConverter.getElementIdFromJsonAgg(reader),
+            SqlVersionConverter.getGueltigVonFromJsonAgg(reader),
+            SqlVersionConverter.getGueltigBisFromJsonAgg(reader),
+            SqlHelper.parseLocalDatefromJsonAgg(reader),
+            Collections.emptyList()
+        );
     }
 
 

@@ -8,6 +8,8 @@ import com.tschanz.geobooster.netz_persistence.service.VerkehrskanteAuspraegungP
 import com.tschanz.geobooster.netz_persistence.service.VerkehrskantePersistence;
 import com.tschanz.geobooster.netz_persistence_sql.model.SqlVerkehrskanteElementConverter;
 import com.tschanz.geobooster.netz_persistence_sql.model.SqlVerkehrskanteVersionConverter;
+import com.tschanz.geobooster.persistence_sql.model.ConnectionState;
+import com.tschanz.geobooster.persistence_sql.service.SqlJsonAggReader;
 import com.tschanz.geobooster.persistence_sql.service.SqlReader;
 import com.tschanz.geobooster.versioning.service.VersioningHelper;
 import lombok.RequiredArgsConstructor;
@@ -23,14 +25,22 @@ import java.util.Map;
 @Repository
 @RequiredArgsConstructor
 public class VerkehrskanteSqlPersistence implements VerkehrskantePersistence {
-    private final SqlReader sqlReader;
     private final VerkehrskanteAuspraegungPersistence vkaPersistenceRepo;
+    private final ConnectionState connectionState;
+    private final SqlJsonAggReader jsonAggReader;
+    private final SqlReader sqlReader;
 
 
     @Override
     @SneakyThrows
     public Collection<Verkehrskante> readAllElements() {
-        return this.sqlReader.read(new SqlVerkehrskanteElementConverter());
+        var converter = new SqlVerkehrskanteElementConverter();
+
+        if (this.connectionState.isUseJsonAgg()) {
+            return this.jsonAggReader.read(converter);
+        } else {
+            return this.sqlReader.read(converter);
+        }
     }
 
 
@@ -41,7 +51,11 @@ public class VerkehrskanteSqlPersistence implements VerkehrskantePersistence {
         var vkaVersionMap = this.readVkaVersionMap();
         var converter = new SqlVerkehrskanteVersionConverter(vkVkaMap, vkaVersionMap);
 
-        return this.sqlReader.read(converter);
+        if (this.connectionState.isUseJsonAgg()) {
+            return this.jsonAggReader.read(converter);
+        } else {
+            return this.sqlReader.read(converter);
+        }
     }
 
 

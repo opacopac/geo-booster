@@ -38,15 +38,22 @@ public class SqlHelper {
     }
 
 
-    public static LocalDate parseLocalDatefromJsonAgg(String jsonAggDate) {
-        return LocalDate.parse(jsonAggDate, ISO_LOCAL_DATE_TIME_WITHOUT_NANO);
+    @SneakyThrows
+    public static LocalDate parseLocalDatefromJsonAgg(JsonReader reader) {
+        var nextToken = reader.peek();
+        if (JsonToken.NULL.equals(nextToken)) {
+            reader.nextNull();
+            return null;
+        } else {
+            return LocalDate.parse(reader.nextString(), ISO_LOCAL_DATE_TIME_WITHOUT_NANO);
+        }
     }
 
 
     @SneakyThrows
     public static long parseLongOrDefaultFromJsonAgg(JsonReader reader, long defaultValue) {
-        var peek = reader.peek();
-        if (JsonToken.NULL.equals(peek)) {
+        var nextToken = reader.peek();
+        if (JsonToken.NULL.equals(nextToken)) {
             reader.nextNull();
             return defaultValue;
         } else {
