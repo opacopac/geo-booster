@@ -1,6 +1,9 @@
 package com.tschanz.geobooster.persistence_sql.service;
 
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
 import com.tschanz.geobooster.persistence_sql.model.SqlDialect;
+import lombok.SneakyThrows;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -37,5 +40,17 @@ public class SqlHelper {
 
     public static LocalDate parseLocalDatefromJsonAgg(String jsonAggDate) {
         return LocalDate.parse(jsonAggDate, ISO_LOCAL_DATE_TIME_WITHOUT_NANO);
+    }
+
+
+    @SneakyThrows
+    public static long parseLongOr0FromJsonAgg(JsonReader reader) {
+        var peek = reader.peek();
+        if (JsonToken.NULL.equals(peek)) {
+            reader.nextNull();
+            return 0;
+        } else {
+            return reader.nextLong();
+        }
     }
 }

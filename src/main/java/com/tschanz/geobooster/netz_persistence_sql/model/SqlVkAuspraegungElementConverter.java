@@ -5,8 +5,7 @@ import com.tschanz.geobooster.netz.model.VerkehrskanteAuspraegung;
 import com.tschanz.geobooster.netz.model.VerkehrsmittelTyp;
 import com.tschanz.geobooster.persistence_sql.model.SqlJsonAggConverter;
 import com.tschanz.geobooster.persistence_sql.model.SqlResultsetConverter;
-import com.tschanz.geobooster.util.service.ArrayHelper;
-import com.tschanz.geobooster.versioning_persistence_sql.model.SqlElementConverter;
+import com.tschanz.geobooster.persistence_sql.service.SqlHelper;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlHasIdConverter;
 import lombok.SneakyThrows;
 
@@ -14,9 +13,9 @@ import java.sql.ResultSet;
 
 
 public class SqlVkAuspraegungElementConverter implements SqlResultsetConverter<VerkehrskanteAuspraegung>, SqlJsonAggConverter<VerkehrskanteAuspraegung> {
-    private final static String COL_AUSPTYP = "KANTE_AUSPRAEGUNG_TYP";
     private final static String COL_VK_E_ID = "ID_VERKEHRSKANTE_E";
     private final static String COL_VERW_E_ID = "ID_VERWALTUNG_E";
+    private final static String COL_AUSPTYP = "KANTE_AUSPRAEGUNG_TYP";
 
 
     @Override
@@ -27,7 +26,12 @@ public class SqlVkAuspraegungElementConverter implements SqlResultsetConverter<V
 
     @Override
     public String[] getFields() {
-        return ArrayHelper.appendTo(SqlElementConverter.SELECT_COLS, COL_AUSPTYP, COL_VK_E_ID, COL_VERW_E_ID);
+        return new String[] {
+            SqlHasIdConverter.COL_ID,
+            COL_VK_E_ID,
+            COL_VERW_E_ID,
+            COL_AUSPTYP
+        };
     }
 
 
@@ -60,7 +64,7 @@ public class SqlVkAuspraegungElementConverter implements SqlResultsetConverter<V
         return new VerkehrskanteAuspraegung(
             SqlHasIdConverter.getIdFromJsonAgg(reader),
             reader.nextLong(),
-            reader.nextLong(),
+            SqlHelper.parseLongOr0FromJsonAgg(reader),
             VerkehrsmittelTyp.valueOf(reader.nextString())
         );
     }

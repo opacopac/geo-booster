@@ -54,7 +54,7 @@ public class SqlJsonAggReader {
 
     private String createQuery(String table, String[] fields) {
         return String.format(
-            "SELECT JSON_ARRAYAGG(JSON_ARRAY(%s) RETURNING CLOB) AS %s FROM %s",
+            "SELECT JSON_ARRAYAGG(JSON_ARRAY(%s NULL ON NULL) RETURNING CLOB) AS %s FROM %s",
             String.join(",", fields),
             COL_CLOB,
             table
