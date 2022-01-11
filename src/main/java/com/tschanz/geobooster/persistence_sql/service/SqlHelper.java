@@ -44,11 +44,11 @@ public class SqlHelper {
 
 
     @SneakyThrows
-    public static long parseLongOr0FromJsonAgg(JsonReader reader) {
+    public static long parseLongOrDefaultFromJsonAgg(JsonReader reader, long defaultValue) {
         var peek = reader.peek();
         if (JsonToken.NULL.equals(peek)) {
             reader.nextNull();
-            return 0;
+            return defaultValue;
         } else {
             return reader.nextLong();
         }

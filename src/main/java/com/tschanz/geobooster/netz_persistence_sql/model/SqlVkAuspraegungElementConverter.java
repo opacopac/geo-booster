@@ -64,7 +64,7 @@ public class SqlVkAuspraegungElementConverter implements SqlResultsetConverter<V
         return new VerkehrskanteAuspraegung(
             SqlHasIdConverter.getIdFromJsonAgg(reader),
             reader.nextLong(),
-            SqlHelper.parseLongOr0FromJsonAgg(reader),
+            SqlHelper.parseLongOrDefaultFromJsonAgg(reader, 0),
             VerkehrsmittelTyp.valueOf(reader.nextString())
         );
     }
