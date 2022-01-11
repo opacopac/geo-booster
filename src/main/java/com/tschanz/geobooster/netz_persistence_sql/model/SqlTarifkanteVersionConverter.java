@@ -72,7 +72,7 @@ public class SqlTarifkanteVersionConverter implements SqlResultsetConverter<Tari
             SqlVersionConverter.getElementIdFromJsonAgg(reader),
             SqlVersionConverter.getGueltigVonFromJsonAgg(reader),
             SqlVersionConverter.getGueltigBisFromJsonAgg(reader),
-            SqlHelper.parseLocalDatefromJsonAgg(reader),
+            SqlHelper.parseLocalDateOrNullfromJsonAgg(reader),
             Collections.emptyList()
         );
     }

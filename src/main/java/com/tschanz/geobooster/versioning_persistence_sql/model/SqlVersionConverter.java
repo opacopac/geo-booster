@@ -56,12 +56,12 @@ public class SqlVersionConverter {
 
     @SneakyThrows
     public static LocalDate getGueltigVonFromJsonAgg(JsonReader reader) {
-        return SqlHelper.parseLocalDatefromJsonAgg(reader);
+        return SqlHelper.parseLocalDateOrNullfromJsonAgg(reader);
     }
 
 
     @SneakyThrows
     public static LocalDate getGueltigBisFromJsonAgg(JsonReader reader) {
-        return SqlHelper.parseLocalDatefromJsonAgg(reader);
+        return SqlHelper.parseLocalDateOrNullfromJsonAgg(reader);
     }
 }

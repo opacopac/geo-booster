@@ -81,7 +81,7 @@ public class SqlVerkehrskanteVersionConverter implements SqlResultsetConverter<V
             elementId,
             gueltigVon,
             gueltigBis,
-            SqlHelper.parseLocalDatefromJsonAgg(reader),
+            SqlHelper.parseLocalDateOrNullfromJsonAgg(reader),
             this.getVerwaltungIds(elementId, gueltigBis),
             this.getVmBitmask(elementId, gueltigBis)
         );

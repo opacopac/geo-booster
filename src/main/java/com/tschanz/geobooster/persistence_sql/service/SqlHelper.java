@@ -39,7 +39,19 @@ public class SqlHelper {
 
 
     @SneakyThrows
-    public static LocalDate parseLocalDatefromJsonAgg(JsonReader reader) {
+    public static String parseStringOrNullfromJsonAgg(JsonReader reader) {
+        var nextToken = reader.peek();
+        if (JsonToken.NULL.equals(nextToken)) {
+            reader.nextNull();
+            return null;
+        } else {
+            return reader.nextString();
+        }
+    }
+
+
+    @SneakyThrows
+    public static LocalDate parseLocalDateOrNullfromJsonAgg(JsonReader reader) {
         var nextToken = reader.peek();
         if (JsonToken.NULL.equals(nextToken)) {
             reader.nextNull();
