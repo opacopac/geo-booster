@@ -89,6 +89,7 @@ public class AwbRepoImpl implements AwbRepo {
             .map(rgaId -> this.rgAuspraegungRepo.getElementVersionAtDate(rgaId, date))
             .filter(Objects::nonNull)
             .flatMap(rgaV -> rgaV.getTarifkantenIds().stream())
+            .distinct()
             .collect(Collectors.toList());
 
         var tkVs = tkIds.stream()
@@ -119,6 +120,7 @@ public class AwbRepoImpl implements AwbRepo {
             .map(zpId -> this.zonenplanRepo.getElementVersionAtDate(zpId, date))
             .filter(Objects::nonNull)
             .flatMap(zpV -> zpV.getVerkehrskantenIds().stream())
+            .distinct()
             .collect(Collectors.toList());
 
         var vkVs = vkIds.stream()
