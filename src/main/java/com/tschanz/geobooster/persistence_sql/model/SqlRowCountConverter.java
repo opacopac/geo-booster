@@ -1,20 +1,24 @@
-package com.tschanz.geobooster.netz_persistence_sql.model;
+package com.tschanz.geobooster.persistence_sql.model;
 
-import com.tschanz.geobooster.persistence_sql.model.SqlResultsetConverter;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.sql.ResultSet;
 
 
-public class SqlVerkehrskanteCountConverter implements SqlResultsetConverter<Long> {
+@RequiredArgsConstructor
+public class SqlRowCountConverter implements SqlResultsetConverter<Long> {
     private final static String COL_COUNT = "TKV_COUNT";
+
+    private final String table;
 
 
     @Override
     public String getSelectQuery() {
         return String.format(
-            "SELECT COUNT(*) AS %s FROM N_TARIFKANTE_V",
-            COL_COUNT
+            "SELECT COUNT(*) AS %s FROM %s",
+            COL_COUNT,
+            this.table
         );
     }
 

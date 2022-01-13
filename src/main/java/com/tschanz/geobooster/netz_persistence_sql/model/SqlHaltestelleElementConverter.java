@@ -21,7 +21,7 @@ public class SqlHaltestelleElementConverter implements SqlResultsetConverter<Hal
 
 
     @Override
-    public String[] getFields() {
+    public String[] getSelectFields() {
         return new String[] {
             SqlHasIdConverter.COL_ID,
             COL_UIC
@@ -33,7 +33,7 @@ public class SqlHaltestelleElementConverter implements SqlResultsetConverter<Hal
     public String getSelectQuery() {
         return String.format(
             "SELECT %s FROM %s",
-            String.join(",", this.getFields()),
+            String.join(",", this.getSelectFields()),
             this.getTable()
         );
     }

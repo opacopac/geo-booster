@@ -2,19 +2,24 @@ package com.tschanz.geobooster.netz_persistence_sql.service;
 
 import com.tschanz.geobooster.netz.model.Tarifkante;
 import com.tschanz.geobooster.netz.model.TarifkanteVersion;
-import com.tschanz.geobooster.netz_persistence.model.ReadFilter;
 import com.tschanz.geobooster.netz_persistence.service.TarifkantePersistence;
-import com.tschanz.geobooster.netz_persistence_sql.model.*;
+import com.tschanz.geobooster.netz_persistence_sql.model.SqlTarifkanteElementConverter;
+import com.tschanz.geobooster.netz_persistence_sql.model.SqlTarifkanteVersionConverter;
+import com.tschanz.geobooster.netz_persistence_sql.model.SqlTkVkConverter;
 import com.tschanz.geobooster.persistence_sql.model.ConnectionState;
 import com.tschanz.geobooster.persistence_sql.service.SqlJsonAggReader;
 import com.tschanz.geobooster.persistence_sql.service.SqlReader;
 import com.tschanz.geobooster.util.model.KeyValue;
 import com.tschanz.geobooster.util.service.ArrayHelper;
+import com.tschanz.geobooster.versioning_persistence.model.ElementVersionChanges;
+import com.tschanz.geobooster.versioning_persistence_sql.service.SqlChangeDetector;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -26,19 +31,42 @@ public class TarifkanteSqlPersistence implements TarifkantePersistence {
     private final ConnectionState connectionState;
     private final SqlJsonAggReader jsonAggReader;
     private final SqlReader sqlReader;
+    private final SqlChangeDetector changeDetector;
 
 
     @Override
     public Collection<Tarifkante> readAllElements() {
-        return this.readElements(null);
+        return this.readElements(Collections.emptyList());
     }
 
 
     @Override
+    public Collection<TarifkanteVersion> readAllVersions() {
+        return this.readVersions(Collections.emptyList());
+    }
+
+
+    @Override
+    public ElementVersionChanges<Tarifkante, TarifkanteVersion> findChanges(LocalDateTime changedSince, Collection<Long> currentVersionIds) {
+        var modifiedDeletedTkVIds = this.changeDetector.findModifiedDeletedIds(SqlTarifkanteVersionConverter.TABLE_NAME, changedSince, currentVersionIds);
+        var modifiedTkVIds = modifiedDeletedTkVIds.getList1();
+        Collection<TarifkanteVersion> modifiedTkVs = !modifiedTkVIds.isEmpty() ? this.readVersions(modifiedTkVIds) : Collections.emptyList();
+        var modifiedTkEIds = modifiedTkVs.stream().map(TarifkanteVersion::getElementId).distinct().collect(Collectors.toList());
+        Collection<Tarifkante> modifiedTkEs = !modifiedTkEIds.isEmpty() ? this.readElements(modifiedTkEIds) : Collections.emptyList();
+
+        return new ElementVersionChanges<>(
+            modifiedTkEs,
+            modifiedTkVs,
+            Collections.emptyList(), // ignoring deleted elements
+            modifiedDeletedTkVIds.getList2()
+        );
+    }
+
+
     @SneakyThrows
-    public Collection<Tarifkante> readElements(ReadFilter filter) {
-        var converter = new SqlTarifkanteElementConverter(filter, this.connectionState.getSqlDialect());
-        if (this.connectionState.isUseJsonAgg() && filter == null) {
+    private Collection<Tarifkante> readElements(Collection<Long> elementIds) {
+        var converter = new SqlTarifkanteElementConverter(elementIds);
+        if (this.connectionState.isUseJsonAgg() && elementIds.isEmpty()) {
             return this.jsonAggReader.read(converter);
         } else {
             return this.sqlReader.read(converter);
@@ -46,18 +74,11 @@ public class TarifkanteSqlPersistence implements TarifkantePersistence {
     }
 
 
-    @Override
-    public Collection<TarifkanteVersion> readAllVersions() {
-        return this.readVersions(null);
-    }
-
-
-    @Override
     @SneakyThrows
-    public Collection<TarifkanteVersion> readVersions(ReadFilter filter) {
+    private Collection<TarifkanteVersion> readVersions(Collection<Long> versionIds) {
         List<TarifkanteVersion> tkVs;
-        var converter = new SqlTarifkanteVersionConverter(filter, this.connectionState.getSqlDialect());
-        if (this.connectionState.isUseJsonAgg() && filter == null) {
+        var converter = new SqlTarifkanteVersionConverter(versionIds);
+        if (this.connectionState.isUseJsonAgg() && versionIds.isEmpty()) {
             tkVs = this.jsonAggReader.read(converter);
         } else {
             tkVs = this.sqlReader.read(converter);
@@ -68,10 +89,10 @@ public class TarifkanteSqlPersistence implements TarifkantePersistence {
         }
 
         // add linked vks
-        List<Long> onlyTkVIds = filter != null
+        List<Long> filterTkVIds = !versionIds.isEmpty()
             ? tkVs.stream().map(TarifkanteVersion::getId).collect(Collectors.toList())
-            : null;
-        var tkVkMap = this.readTkVkMap(onlyTkVIds);
+            : Collections.emptyList();
+        var tkVkMap = this.readTkVkMap(filterTkVIds);
         tkVs.forEach(tkV -> {
             var vkIds = tkVkMap.get(tkV.getId());
             if (vkIds != null) {
@@ -80,24 +101,6 @@ public class TarifkanteSqlPersistence implements TarifkantePersistence {
         });
 
         return tkVs;
-    }
-
-
-    @Override
-    @SneakyThrows
-    public long readVersionCount() {
-        return this.sqlReader.read(new SqlVerkehrskanteCountConverter()).get(0);
-    }
-
-
-    @Override
-    @SneakyThrows
-    public Collection<Long> readAllVersionIds() {
-        if (this.connectionState.isUseJsonAgg()) {
-            return this.sqlReader.read(new SqlVerkehrskanteVersionIdJsonAggConverter()).get(0);
-        } else {
-            return this.sqlReader.read(new SqlVerkehrskanteVersionIdConverter());
-        }
     }
 
 

@@ -2,8 +2,6 @@ package com.tschanz.geobooster.netz_persistence_sql.model;
 
 import com.google.gson.stream.JsonReader;
 import com.tschanz.geobooster.netz.model.TarifkanteVersion;
-import com.tschanz.geobooster.netz_persistence.model.ReadFilter;
-import com.tschanz.geobooster.persistence_sql.model.SqlDialect;
 import com.tschanz.geobooster.persistence_sql.model.SqlJsonAggConverter;
 import com.tschanz.geobooster.persistence_sql.model.SqlResultsetConverter;
 import com.tschanz.geobooster.persistence_sql.service.SqlHelper;
@@ -13,29 +11,26 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.sql.ResultSet;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.stream.Collectors;
 
 
 @RequiredArgsConstructor
 public class SqlTarifkanteVersionConverter implements SqlResultsetConverter<TarifkanteVersion>, SqlJsonAggConverter<TarifkanteVersion> {
-    private final static String COL_CREATED_AT = "CREATED_AT";
-    private final static String COL_MODIFIED_AT = "MODIFIED_AT";
+    public final static String TABLE_NAME = "N_TARIFKANTE_V";
 
-    private final ReadFilter readFilter;
-    private final SqlDialect sqlDialect;
+    private final Collection<Long> versionIds;
 
 
     @Override
     public String getTable() {
-        return "N_TARIFKANTE_V";
+        return TABLE_NAME;
     }
 
 
     @Override
-    public String[] getFields() {
+    public String[] getSelectFields() {
         return SqlVersionConverter.SELECT_COLS_W_TERM_PER;
     }
 
@@ -44,9 +39,9 @@ public class SqlTarifkanteVersionConverter implements SqlResultsetConverter<Tari
     public String getSelectQuery() {
         return String.format(
             "SELECT %s FROM %s %s",
-            String.join(",", this.getFields()),
+            String.join(",", this.getSelectFields()),
             this.getTable(),
-            this.readFilter != null ? this.getWhereClauseForFilter(readFilter) : ""
+            !this.versionIds.isEmpty() ? this.getWhereClause(versionIds) : ""
         );
     }
 
@@ -78,31 +73,12 @@ public class SqlTarifkanteVersionConverter implements SqlResultsetConverter<Tari
     }
 
 
-    private String getWhereClauseForFilter(ReadFilter filter) {
-        List<String> conditions = new ArrayList<>();
-
-        if (filter.getIdList() != null) {
-            var idStrings = filter.getIdList().stream().map(Object::toString).collect(Collectors.toList());
-            conditions.add(String.format("(%s IN (%s))",
-                SqlHasIdConverter.COL_ID,
-                String.join(",", idStrings)
-            ));
-        }
-
-        if (filter.getChangedSince() != null) {
-            var dateString = SqlHelper.getToDate(this.sqlDialect, filter.getChangedSince());
-            conditions.add(String.format("(%s >= %s OR %s >= %s)",
-                COL_CREATED_AT,
-                dateString,
-                COL_MODIFIED_AT,
-                dateString
-            ));
-        }
-
-        if (conditions.size() > 0) {
-            return " WHERE " + String.join(" AND ", conditions);
-        } else {
-            return "";
-        }
+    private String getWhereClause(Collection<Long> versionIds) {
+        var idStrings = versionIds.stream().map(Object::toString).collect(Collectors.toList());
+        return String.format(
+            " WHERE(%s IN (%s)",
+            SqlHasIdConverter.COL_ID,
+            String.join(",", idStrings)
+        );
     }
 }

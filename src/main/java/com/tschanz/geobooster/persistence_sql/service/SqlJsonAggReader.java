@@ -23,7 +23,7 @@ public class SqlJsonAggReader {
 
     @SneakyThrows
     public <T> List<T> read(SqlJsonAggConverter<T> jsonAggConverter) {
-        var query = this.createQuery(jsonAggConverter.getTable(), jsonAggConverter.getFields());
+        var query = this.createQuery(jsonAggConverter.getTable(), jsonAggConverter.getSelectFields());
         logger.info(String.format("executing query '%s'", query));
 
         var entries = new ArrayList<T>();

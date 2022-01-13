@@ -19,7 +19,7 @@ public class SqlVkAuspraegungVersionConverter implements SqlResultsetConverter<V
 
 
     @Override
-    public String[] getFields() {
+    public String[] getSelectFields() {
         return SqlVersionConverter.SELECT_COLS;
     }
 
@@ -28,7 +28,7 @@ public class SqlVkAuspraegungVersionConverter implements SqlResultsetConverter<V
     public String getSelectQuery() {
         return String.format(
             "SELECT %s FROM %s",
-            String.join(",", this.getFields()),
+            String.join(",", this.getSelectFields()),
             this.getTable()
         );
     }

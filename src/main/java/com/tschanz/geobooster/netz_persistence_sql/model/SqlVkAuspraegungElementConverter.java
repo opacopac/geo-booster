@@ -25,7 +25,7 @@ public class SqlVkAuspraegungElementConverter implements SqlResultsetConverter<V
 
 
     @Override
-    public String[] getFields() {
+    public String[] getSelectFields() {
         return new String[] {
             SqlHasIdConverter.COL_ID,
             COL_VK_E_ID,
@@ -39,7 +39,7 @@ public class SqlVkAuspraegungElementConverter implements SqlResultsetConverter<V
     public String getSelectQuery() {
         return String.format(
             "SELECT %s FROM %s",
-            String.join(",", this.getFields()),
+            String.join(",", this.getSelectFields()),
             this.getTable()
         );
     }

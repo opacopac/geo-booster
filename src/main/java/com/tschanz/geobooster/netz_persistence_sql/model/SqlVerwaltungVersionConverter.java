@@ -19,7 +19,7 @@ public class SqlVerwaltungVersionConverter implements SqlResultsetConverter<Verw
 
 
     @Override
-    public String[] getFields() {
+    public String[] getSelectFields() {
         return SqlVersionConverter.SELECT_COLS;
     }
 
@@ -29,7 +29,7 @@ public class SqlVerwaltungVersionConverter implements SqlResultsetConverter<Verw
     public String getSelectQuery() {
         return String.format(
             "SELECT %s FROM %s",
-            String.join(",", this.getFields()),
+            String.join(",", this.getSelectFields()),
             this.getTable()
         );
     }

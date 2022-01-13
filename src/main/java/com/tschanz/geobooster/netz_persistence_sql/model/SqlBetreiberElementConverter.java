@@ -22,7 +22,7 @@ public class SqlBetreiberElementConverter implements SqlResultsetConverter<Betre
 
 
     @Override
-    public String[] getFields() {
+    public String[] getSelectFields() {
         return new String[] {
             SqlHasIdConverter.COL_ID,
             COL_NAME,
@@ -35,7 +35,7 @@ public class SqlBetreiberElementConverter implements SqlResultsetConverter<Betre
     public String getSelectQuery() {
         return String.format(
             "SELECT %s FROM %s",
-            String.join(",", this.getFields()),
+            String.join(",", this.getSelectFields()),
             this.getTable()
         );
     }

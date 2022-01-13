@@ -6,7 +6,7 @@ import com.google.gson.stream.JsonReader;
 public interface SqlJsonAggConverter<T> {
     String getTable();
 
-    String[] getFields();
+    String[] getSelectFields();
 
     T fromJsonAgg(JsonReader reader);
 }

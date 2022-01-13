@@ -7,7 +7,6 @@ import com.tschanz.geobooster.netz.model.Haltestelle;
 import com.tschanz.geobooster.netz.model.HaltestelleVersion;
 import com.tschanz.geobooster.netz.model.Tarifkante;
 import com.tschanz.geobooster.netz.model.TarifkanteVersion;
-import com.tschanz.geobooster.netz_persistence.model.ReadFilter;
 import com.tschanz.geobooster.netz_persistence.service.TarifkantePersistence;
 import com.tschanz.geobooster.netz_repo.model.ProgressState;
 import com.tschanz.geobooster.netz_repo.model.QuadTreeConfig;
@@ -28,7 +27,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -215,47 +213,30 @@ public class TarifkanteRepoImpl implements TarifkanteRepo {
         }
 
         logger.info("checking for changes in tks...");
-        // check for modified & added version
-        var changedVersions = this.tkPersistenceRepo.readVersions(new ReadFilter(null, this.lastChangeCheck));
+        var tkChanges = this.tkPersistenceRepo.findChanges(
+            this.lastChangeCheck,
+            this.versionedObjectMap.getAllVersionKeys()
+        );
 
-        // check for deleted versions
-        var versionCount = this.tkPersistenceRepo.readVersionCount();
-        if (this.versionedObjectMap.getAllVersions().size() + changedVersions.size() > versionCount) {
-            var allPreviousVersionIds = this.versionedObjectMap.getAllVersionKeys();
-            var allNewVersionIds = this.tkPersistenceRepo.readAllVersionIds();
-            var allNewVersionIdsMap = new HashMap<Long, Integer>();
-            allNewVersionIds.forEach(id -> allNewVersionIdsMap.put(id, 0));
-            var removedVersionIds = allPreviousVersionIds.stream()
-                .filter(vid -> !allNewVersionIdsMap.containsKey(vid))
-                .collect(Collectors.toList());
+        if (!tkChanges.getModifiedVersions().isEmpty()) {
+            logger.info(String.format("new/changed tk versions found: %s", tkChanges.getModifiedVersions()));
 
-            if (removedVersionIds.size() > 0) {
-                logger.info(String.format("removed tk versions found: %s", removedVersionIds));
-
-                removedVersionIds.forEach(vId -> {
-                    this.versionedObjectMap.deleteVersion(vId);
-                    this.versionQuadTree.removeItem(vId);
-                });
-            }
-        }
-
-        if (changedVersions.size() > 0) {
-            logger.info(String.format("new/changed tk versions found: %s", changedVersions.stream().map(TarifkanteVersion::getId).collect(Collectors.toList())));
-            // TODO: read all versions of same element?
-            var elementIds = changedVersions.stream().map(TarifkanteVersion::getElementId).distinct().collect(Collectors.toList());
-            var elements = this.tkPersistenceRepo.readElements(new ReadFilter(elementIds, null));
-
-            // update versioned object map
-            elements.forEach(e -> this.versionedObjectMap.putElement(e));
-            changedVersions.forEach(v -> this.versionedObjectMap.putVersion(v));
-
-            // update quad tree
-            changedVersions.forEach(tkV -> {
+            tkChanges.getModifiedElements().forEach(tkE -> this.versionedObjectMap.putElement(tkE));
+            tkChanges.getModifiedVersions().forEach(tkV -> {
+                this.versionedObjectMap.putVersion(tkV);
                 this.versionQuadTree.removeItem(tkV.getId());
                 var item = this.createQuadTreeItem(tkV);
                 if (item != null) {
                     this.versionQuadTree.addItem(item);
                 }
+            });
+        }
+
+        if (!tkChanges.getDeletedVersionIds().isEmpty()) {
+            logger.info(String.format("removed tk versions found: %s", tkChanges.getDeletedVersionIds()));
+            tkChanges.getDeletedVersionIds().forEach(vId -> {
+                this.versionedObjectMap.deleteVersion(vId);
+                this.versionQuadTree.removeItem(vId);
             });
         }
 

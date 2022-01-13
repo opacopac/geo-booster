@@ -24,7 +24,7 @@ public class SqlTkVkConverter implements SqlResultsetConverter<KeyValue<Long, Lo
         return String.format(
             "SELECT %s FROM N_TARIFKANTE_X_N_VERK_KANTE_E %s",
             String.join(",", SELECT_COLS),
-            this.filterTkVIds != null ? String.format(
+            !this.filterTkVIds.isEmpty() ? String.format(
                 " WHERE ID_TARIFKANTE_V IN (%s)",
                 filterTkVIds.stream().map(Object::toString).collect(Collectors.joining(","))
             ) : ""

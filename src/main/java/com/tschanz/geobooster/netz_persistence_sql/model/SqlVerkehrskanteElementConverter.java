@@ -22,7 +22,7 @@ public class SqlVerkehrskanteElementConverter implements SqlResultsetConverter<V
 
 
     @Override
-    public String[] getFields() {
+    public String[] getSelectFields() {
         return new String[] {
             SqlHasIdConverter.COL_ID,
             COL_HST1,
@@ -36,7 +36,7 @@ public class SqlVerkehrskanteElementConverter implements SqlResultsetConverter<V
     public String getSelectQuery() {
         return String.format(
             "SELECT %s FROM %s",
-            String.join(",", this.getFields()),
+            String.join(",", this.getSelectFields()),
             this.getTable()
         );
     }

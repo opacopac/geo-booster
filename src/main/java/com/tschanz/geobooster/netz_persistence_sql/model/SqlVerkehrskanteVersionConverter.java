@@ -34,7 +34,7 @@ public class SqlVerkehrskanteVersionConverter implements SqlResultsetConverter<V
 
 
     @Override
-    public String[] getFields() {
+    public String[] getSelectFields() {
         return SqlVersionConverter.SELECT_COLS_W_TERM_PER;
     }
 
@@ -43,7 +43,7 @@ public class SqlVerkehrskanteVersionConverter implements SqlResultsetConverter<V
     public String getSelectQuery() {
         return String.format(
             "SELECT %s FROM %s",
-            String.join(",", this.getFields()),
+            String.join(",", this.getSelectFields()),
             this.getTable()
         );
     }

@@ -27,7 +27,7 @@ public class SqlHaltestelleVersionConverter implements SqlResultsetConverter<Hal
 
 
     @Override
-    public String[] getFields() {
+    public String[] getSelectFields() {
         return ArrayHelper.appendTo(SqlVersionConverter.SELECT_COLS, COL_NAME, COL_LNG, COL_LAT);
     }
 
@@ -36,7 +36,7 @@ public class SqlHaltestelleVersionConverter implements SqlResultsetConverter<Hal
     public String getSelectQuery() {
         return String.format(
             "SELECT %s FROM %s",
-            String.join(",", this.getFields()),
+            String.join(",", this.getSelectFields()),
             this.getTable()
         );
     }
