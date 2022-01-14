@@ -1,28 +1,38 @@
 package com.tschanz.geobooster.rtm_persistence_sql.model;
 
-import com.tschanz.geobooster.persistence_sql.model.SqlResultsetConverter;
+import com.google.gson.stream.JsonReader;
+import com.tschanz.geobooster.persistence_sql.model.SqlLongFilter;
+import com.tschanz.geobooster.persistence_sql.model.SqlStandardConverter;
 import com.tschanz.geobooster.rtm.model.RgAuspraegung;
-import com.tschanz.geobooster.util.service.ArrayHelper;
-import com.tschanz.geobooster.versioning_persistence_sql.model.SqlElementConverter;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlHasIdConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.sql.ResultSet;
+import java.util.Collection;
+import java.util.Collections;
 
 
 @RequiredArgsConstructor
-public class SqlRgAuspraegungElementConverter implements SqlResultsetConverter<RgAuspraegung> {
+public class SqlRgAuspraegungElementConverter implements SqlStandardConverter<RgAuspraegung, SqlLongFilter, Long> {
     private final static String COL_ID_RELATIONSGEBIET_E = "ID_RELATIONSGEBIET_E";
-    private final static String[] SELECT_COLS = ArrayHelper.appendTo(SqlElementConverter.SELECT_COLS, COL_ID_RELATIONSGEBIET_E);
 
 
     @Override
-    public String getSelectQuery() {
-        return String.format(
-            "SELECT %s FROM R_RG_AUSPRAEGUNG_E",
-            String.join(",", SELECT_COLS)
-        );
+    public String getTable() {
+        return "R_RG_AUSPRAEGUNG_E";
+    }
+
+
+    @Override
+    public String[] getSelectFields() {
+        return new String[] { SqlHasIdConverter.COL_ID, COL_ID_RELATIONSGEBIET_E };
+    }
+
+
+    @Override
+    public Collection<SqlLongFilter> getFilters() {
+        return Collections.emptyList();
     }
 
 
@@ -32,6 +42,16 @@ public class SqlRgAuspraegungElementConverter implements SqlResultsetConverter<R
         return new RgAuspraegung(
             SqlHasIdConverter.getId(row),
             row.getLong(COL_ID_RELATIONSGEBIET_E)
+        );
+    }
+
+
+    @Override
+    @SneakyThrows
+    public RgAuspraegung fromJsonAgg(JsonReader reader) {
+        return new RgAuspraegung(
+            SqlHasIdConverter.getIdFromJsonAgg(reader),
+            reader.nextLong()
         );
     }
 }

@@ -2,16 +2,18 @@ package com.tschanz.geobooster.netz_persistence_sql.model;
 
 import com.google.gson.stream.JsonReader;
 import com.tschanz.geobooster.netz.model.VerwaltungVersion;
-import com.tschanz.geobooster.persistence_sql.model.SqlJsonAggConverter;
-import com.tschanz.geobooster.persistence_sql.model.SqlResultsetConverter;
+import com.tschanz.geobooster.persistence_sql.model.SqlLongFilter;
+import com.tschanz.geobooster.persistence_sql.model.SqlStandardConverter;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlHasIdConverter;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlVersionConverter;
 import lombok.SneakyThrows;
 
 import java.sql.ResultSet;
+import java.util.Collection;
+import java.util.Collections;
 
 
-public class SqlVerwaltungVersionConverter implements SqlResultsetConverter<VerwaltungVersion>, SqlJsonAggConverter<VerwaltungVersion> {
+public class SqlVerwaltungVersionConverter implements SqlStandardConverter<VerwaltungVersion, SqlLongFilter, Long> {
     @Override
     public String getTable() {
         return "N_VERWALTUNG_V";
@@ -24,14 +26,9 @@ public class SqlVerwaltungVersionConverter implements SqlResultsetConverter<Verw
     }
 
 
-
     @Override
-    public String getSelectQuery() {
-        return String.format(
-            "SELECT %s FROM %s",
-            String.join(",", this.getSelectFields()),
-            this.getTable()
-        );
+    public Collection<SqlLongFilter> getFilters() {
+        return Collections.emptyList();
     }
 
 

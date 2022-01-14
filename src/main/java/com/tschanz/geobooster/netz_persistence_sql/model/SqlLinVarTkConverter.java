@@ -1,7 +1,7 @@
 package com.tschanz.geobooster.netz_persistence_sql.model;
 
 import com.tschanz.geobooster.persistence_sql.model.SqlDialect;
-import com.tschanz.geobooster.persistence_sql.model.SqlResultsetConverter;
+import com.tschanz.geobooster.persistence_sql.model.SqlGenericResultsetConverter;
 import com.tschanz.geobooster.persistence_sql.service.SqlHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 
 @RequiredArgsConstructor
-public class SqlLinVarTkConverter implements SqlResultsetConverter<Long> {
+public class SqlLinVarTkConverter implements SqlGenericResultsetConverter<Long> {
     private final String COL_ID = "TK_ID";
     private final Collection<Long> linieVarianteIds;
     private final LocalDate date;

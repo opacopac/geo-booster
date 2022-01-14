@@ -2,16 +2,18 @@ package com.tschanz.geobooster.netz_persistence_sql.model;
 
 import com.google.gson.stream.JsonReader;
 import com.tschanz.geobooster.netz.model.Verwaltung;
-import com.tschanz.geobooster.persistence_sql.model.SqlJsonAggConverter;
-import com.tschanz.geobooster.persistence_sql.model.SqlResultsetConverter;
+import com.tschanz.geobooster.persistence_sql.model.SqlLongFilter;
+import com.tschanz.geobooster.persistence_sql.model.SqlStandardConverter;
 import com.tschanz.geobooster.persistence_sql.service.SqlHelper;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlHasIdConverter;
 import lombok.SneakyThrows;
 
 import java.sql.ResultSet;
+import java.util.Collection;
+import java.util.Collections;
 
 
-public class SqlVerwaltungElementConverter implements SqlResultsetConverter<Verwaltung>, SqlJsonAggConverter<Verwaltung> {
+public class SqlVerwaltungElementConverter implements SqlStandardConverter<Verwaltung, SqlLongFilter, Long> {
     private final static String COL_CODE = "CODE";
     private final static String COL_IDBETREIBER = "ID_BETREIBER";
     private final static String COL_INFOPLUSTC = "INFO_PLUS_TC";
@@ -35,12 +37,8 @@ public class SqlVerwaltungElementConverter implements SqlResultsetConverter<Verw
 
 
     @Override
-    public String getSelectQuery() {
-        return String.format(
-            "SELECT %s FROM %s",
-            String.join(",", this.getSelectFields()),
-            this.getTable()
-        );
+    public Collection<SqlLongFilter> getFilters() {
+        return Collections.emptyList();
     }
 
 

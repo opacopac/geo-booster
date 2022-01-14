@@ -1,6 +1,6 @@
 package com.tschanz.geobooster.persistence_sql.service;
 
-import com.tschanz.geobooster.persistence_sql.model.SqlResultsetConverter;
+import com.tschanz.geobooster.persistence_sql.model.SqlGenericResultsetConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.logging.log4j.LogManager;
@@ -13,14 +13,14 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class SqlReader {
-    private static final Logger logger = LogManager.getLogger(SqlReader.class);
+public class SqlGenericResultsetReader {
+    private static final Logger logger = LogManager.getLogger(SqlGenericResultsetReader.class);
 
     private final SqlConnectionFactory connectionFactory;
 
 
     @SneakyThrows
-    public <T> List<T> read(SqlResultsetConverter<T> resultsetConverter) {
+    public <T> List<T> read(SqlGenericResultsetConverter<T> resultsetConverter) {
         var query = resultsetConverter.getSelectQuery();
         logger.info(String.format("executing query '%s'", query));
 

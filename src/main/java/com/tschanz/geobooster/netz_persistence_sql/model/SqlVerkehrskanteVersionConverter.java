@@ -5,8 +5,8 @@ import com.tschanz.geobooster.netz.model.VerkehrskanteAuspraegung;
 import com.tschanz.geobooster.netz.model.VerkehrskanteAuspraegungVersion;
 import com.tschanz.geobooster.netz.model.VerkehrskanteVersion;
 import com.tschanz.geobooster.netz.model.VerkehrsmittelTyp;
-import com.tschanz.geobooster.persistence_sql.model.SqlJsonAggConverter;
-import com.tschanz.geobooster.persistence_sql.model.SqlResultsetConverter;
+import com.tschanz.geobooster.persistence_sql.model.SqlLongFilter;
+import com.tschanz.geobooster.persistence_sql.model.SqlStandardConverter;
 import com.tschanz.geobooster.persistence_sql.service.SqlHelper;
 import com.tschanz.geobooster.versioning.service.VersioningHelper;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlHasIdConverter;
@@ -17,12 +17,13 @@ import lombok.SneakyThrows;
 import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 
 @RequiredArgsConstructor
-public class SqlVerkehrskanteVersionConverter implements SqlResultsetConverter<VerkehrskanteVersion>, SqlJsonAggConverter<VerkehrskanteVersion> {
+public class SqlVerkehrskanteVersionConverter implements SqlStandardConverter<VerkehrskanteVersion, SqlLongFilter, Long> {
     public final Map<Long, Collection<VerkehrskanteAuspraegung>> vkVkasMap;
     public final Map<Long, Collection<VerkehrskanteAuspraegungVersion>> vkaVersionMap;
 
@@ -40,12 +41,8 @@ public class SqlVerkehrskanteVersionConverter implements SqlResultsetConverter<V
 
 
     @Override
-    public String getSelectQuery() {
-        return String.format(
-            "SELECT %s FROM %s",
-            String.join(",", this.getSelectFields()),
-            this.getTable()
-        );
+    public Collection<SqlLongFilter> getFilters() {
+        return Collections.emptyList();
     }
 
 

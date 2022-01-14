@@ -1,26 +1,39 @@
 package com.tschanz.geobooster.tarif_persistence_sql.model;
 
-import com.tschanz.geobooster.persistence_sql.model.SqlResultsetConverter;
+import com.google.gson.stream.JsonReader;
+import com.tschanz.geobooster.persistence_sql.model.SqlLongFilter;
+import com.tschanz.geobooster.persistence_sql.model.SqlStandardConverter;
 import com.tschanz.geobooster.util.model.KeyValue;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.sql.ResultSet;
+import java.util.Collection;
 
 
 @RequiredArgsConstructor
-public class SqlAwbIncRgaConverter implements SqlResultsetConverter<KeyValue<Long, Long>> {
+public class SqlAwbIncRgaConverter implements SqlStandardConverter<KeyValue<Long, Long>, SqlLongFilter, Long> {
     private final static String COL_ID_ANWBER_V = "ID_ANWBER_V";
     private final static String COL_ID_RG_AUSPRAEGUNG_E = "ID_RG_AUSPRAEGUNG_E";
-    private final static String[] SELECT_COLS = {COL_ID_ANWBER_V, COL_ID_RG_AUSPRAEGUNG_E};
+
+    private final Collection<Long> awbVersionIds;
 
 
     @Override
-    public String getSelectQuery() {
-        return String.format(
-            "SELECT %s FROM T_ANWBER_X_RG_AUSPRAEGUNG",
-            String.join(",", SELECT_COLS)
-        );
+    public String getTable() {
+        return "T_ANWBER_X_RG_AUSPRAEGUNG";
+    }
+
+
+    @Override
+    public String[] getSelectFields() {
+        return new String[] { COL_ID_ANWBER_V, COL_ID_RG_AUSPRAEGUNG_E };
+    }
+
+
+    @Override
+    public Collection<SqlLongFilter> getFilters() {
+        return SqlLongFilter.createSingleton(COL_ID_ANWBER_V, this.awbVersionIds);
     }
 
 
@@ -31,5 +44,11 @@ public class SqlAwbIncRgaConverter implements SqlResultsetConverter<KeyValue<Lon
             row.getLong(COL_ID_ANWBER_V),
             row.getLong(COL_ID_RG_AUSPRAEGUNG_E)
         );
+    }
+
+
+    @Override
+    public KeyValue<Long, Long> fromJsonAgg(JsonReader reader) {
+        return null;
     }
 }

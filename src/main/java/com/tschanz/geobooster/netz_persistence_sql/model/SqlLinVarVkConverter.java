@@ -1,6 +1,6 @@
 package com.tschanz.geobooster.netz_persistence_sql.model;
 
-import com.tschanz.geobooster.persistence_sql.model.SqlResultsetConverter;
+import com.tschanz.geobooster.persistence_sql.model.SqlGenericResultsetConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 
 @RequiredArgsConstructor
-public class SqlLinVarVkConverter implements SqlResultsetConverter<Long> {
+public class SqlLinVarVkConverter implements SqlGenericResultsetConverter<Long> {
     private final String COL_ID = "VK_ID";
     private final Collection<Long> linieVarianteIds;
 

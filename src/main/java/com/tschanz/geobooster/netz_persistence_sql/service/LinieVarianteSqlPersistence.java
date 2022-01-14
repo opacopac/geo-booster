@@ -4,7 +4,7 @@ import com.tschanz.geobooster.netz_persistence.service.LinieVariantePersistence;
 import com.tschanz.geobooster.netz_persistence_sql.model.SqlLinVarTkConverter;
 import com.tschanz.geobooster.netz_persistence_sql.model.SqlLinVarVkConverter;
 import com.tschanz.geobooster.persistence_sql.model.ConnectionState;
-import com.tschanz.geobooster.persistence_sql.service.SqlReader;
+import com.tschanz.geobooster.persistence_sql.service.SqlGenericResultsetReader;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Repository;
@@ -17,7 +17,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class LinieVarianteSqlPersistence implements LinieVariantePersistence {
     private final ConnectionState connectionState;
-    private final SqlReader sqlReader;
+    private final SqlGenericResultsetReader sqlReader;
 
 
     @Override

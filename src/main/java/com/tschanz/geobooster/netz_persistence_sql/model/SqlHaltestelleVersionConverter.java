@@ -4,17 +4,19 @@ import com.google.gson.stream.JsonReader;
 import com.tschanz.geobooster.geofeature.model.Epsg4326Coordinate;
 import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
 import com.tschanz.geobooster.netz.model.HaltestelleVersion;
-import com.tschanz.geobooster.persistence_sql.model.SqlJsonAggConverter;
-import com.tschanz.geobooster.persistence_sql.model.SqlResultsetConverter;
+import com.tschanz.geobooster.persistence_sql.model.SqlLongFilter;
+import com.tschanz.geobooster.persistence_sql.model.SqlStandardConverter;
 import com.tschanz.geobooster.util.service.ArrayHelper;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlHasIdConverter;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlVersionConverter;
 import lombok.SneakyThrows;
 
 import java.sql.ResultSet;
+import java.util.Collection;
+import java.util.Collections;
 
 
-public class SqlHaltestelleVersionConverter implements SqlResultsetConverter<HaltestelleVersion>, SqlJsonAggConverter<HaltestelleVersion> {
+public class SqlHaltestelleVersionConverter implements SqlStandardConverter<HaltestelleVersion, SqlLongFilter, Long> {
     private final static String COL_NAME = "NAME";
     private final static String COL_LNG = "LNG";
     private final static String COL_LAT = "LAT";
@@ -33,12 +35,8 @@ public class SqlHaltestelleVersionConverter implements SqlResultsetConverter<Hal
 
 
     @Override
-    public String getSelectQuery() {
-        return String.format(
-            "SELECT %s FROM %s",
-            String.join(",", this.getSelectFields()),
-            this.getTable()
-        );
+    public Collection<SqlLongFilter> getFilters() {
+        return Collections.emptyList();
     }
 
 

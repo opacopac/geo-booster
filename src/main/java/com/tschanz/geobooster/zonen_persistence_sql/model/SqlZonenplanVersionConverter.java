@@ -1,6 +1,8 @@
 package com.tschanz.geobooster.zonen_persistence_sql.model;
 
-import com.tschanz.geobooster.persistence_sql.model.SqlResultsetConverter;
+import com.google.gson.stream.JsonReader;
+import com.tschanz.geobooster.persistence_sql.model.SqlLongFilter;
+import com.tschanz.geobooster.persistence_sql.model.SqlStandardConverter;
 import com.tschanz.geobooster.versioning.service.VersioningHelper;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlHasIdConverter;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlVersionConverter;
@@ -21,7 +23,7 @@ import java.util.stream.Collectors;
 
 
 @RequiredArgsConstructor
-public class SqlZonenplanVersionConverter implements SqlResultsetConverter<ZonenplanVersion> {
+public class SqlZonenplanVersionConverter implements SqlStandardConverter<ZonenplanVersion, SqlLongFilter, Long> {
     private final Map<Long, Zonenplan> zonenplanMap;
     private final Map<Long, Collection<Zone>> zoneByZonenplanMap;
     private final Map<Long, Collection<ZoneVersion>> zoneVersionMap;
@@ -30,20 +32,51 @@ public class SqlZonenplanVersionConverter implements SqlResultsetConverter<Zonen
 
 
     @Override
-    public String getSelectQuery() {
-        return String.format(
-            "SELECT %s FROM Z_ZONENPLAN_V",
-            String.join(",", SqlVersionConverter.SELECT_COLS)
-        );
+    public String getTable() {
+        return "Z_ZONENPLAN_V";
+    }
+
+    @Override
+    public String[] getSelectFields() {
+        return SqlVersionConverter.SELECT_COLS;
+    }
+
+    @Override
+    public Collection<SqlLongFilter> getFilters() {
+        return Collections.emptyList();
     }
 
 
     @SneakyThrows
     @Override
     public ZonenplanVersion fromResultSet(ResultSet row) {
-        var gueltigBis = SqlVersionConverter.getGueltigBis(row);
-        var zpEId = SqlVersionConverter.getElementId(row);
-        var zpE = this.zonenplanMap.get(zpEId);
+        return this.createZpVersion(
+            SqlHasIdConverter.getId(row),
+            SqlVersionConverter.getElementId(row),
+            SqlVersionConverter.getGueltigVon(row),
+            SqlVersionConverter.getGueltigBis(row)
+        );
+    }
+
+
+    @Override
+    public ZonenplanVersion fromJsonAgg(JsonReader reader) {
+        return this.createZpVersion(
+            SqlHasIdConverter.getIdFromJsonAgg(reader),
+            SqlVersionConverter.getElementIdFromJsonAgg(reader),
+            SqlVersionConverter.getGueltigVonFromJsonAgg(reader),
+            SqlVersionConverter.getGueltigBisFromJsonAgg(reader)
+        );
+    }
+
+
+    private ZonenplanVersion createZpVersion(
+        long id,
+        long elementId,
+        LocalDate gueltigVon,
+        LocalDate gueltigBis
+    ) {
+        var zpE = this.zonenplanMap.get(elementId);
         var zoneEs = this.zoneByZonenplanMap.get(zpE.getId());
 
         Collection<Long> vkIds = zoneEs == null ? Collections.emptyList() : zoneEs.stream()
@@ -57,9 +90,9 @@ public class SqlZonenplanVersionConverter implements SqlResultsetConverter<Zonen
             .collect(Collectors.toList());
 
         return new ZonenplanVersion(
-            SqlHasIdConverter.getId(row),
-            zpEId,
-            SqlVersionConverter.getGueltigVon(row),
+            id,
+            elementId,
+            gueltigVon,
             gueltigBis,
             vkIds
         );

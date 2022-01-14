@@ -1,26 +1,39 @@
 package com.tschanz.geobooster.tarif_persistence_sql.model;
 
-import com.tschanz.geobooster.persistence_sql.model.SqlResultsetConverter;
+import com.google.gson.stream.JsonReader;
+import com.tschanz.geobooster.persistence_sql.model.SqlLongFilter;
+import com.tschanz.geobooster.persistence_sql.model.SqlStandardConverter;
 import com.tschanz.geobooster.util.model.KeyValue;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.sql.ResultSet;
+import java.util.Collection;
 
 
 @RequiredArgsConstructor
-public class SqlAwbIncVerwConverter implements SqlResultsetConverter<KeyValue<Long, Long>> {
+public class SqlAwbIncVerwConverter implements SqlStandardConverter<KeyValue<Long, Long>, SqlLongFilter, Long> {
     private final static String COL_ID_ANWBER_V = "ID_ANWBER_V";
     private final static String COL_ID_VERWALTUNG_E = "ID_VERWALTUNG_E";
-    private final static String[] SELECT_COLS = {COL_ID_ANWBER_V, COL_ID_VERWALTUNG_E};
+
+    private final Collection<Long> awbVersionIds;
 
 
     @Override
-    public String getSelectQuery() {
-        return String.format(
-            "SELECT %s FROM T_ANWBER_X_INCLUDE_VERWALTUNG",
-            String.join(",", SELECT_COLS)
-        );
+    public String getTable() {
+        return "T_ANWBER_X_INCLUDE_VERWALTUNG";
+    }
+
+
+    @Override
+    public String[] getSelectFields() {
+        return new String[] { COL_ID_ANWBER_V, COL_ID_VERWALTUNG_E };
+    }
+
+
+    @Override
+    public Collection<SqlLongFilter> getFilters() {
+        return SqlLongFilter.createSingleton(COL_ID_ANWBER_V, this.awbVersionIds);
     }
 
 
@@ -30,6 +43,16 @@ public class SqlAwbIncVerwConverter implements SqlResultsetConverter<KeyValue<Lo
         return new KeyValue<>(
             row.getLong(COL_ID_ANWBER_V),
             row.getLong(COL_ID_VERWALTUNG_E)
+        );
+    }
+
+
+    @Override
+    @SneakyThrows
+    public KeyValue<Long, Long> fromJsonAgg(JsonReader reader) {
+        return new KeyValue<>(
+            reader.nextLong(),
+            reader.nextLong()
         );
     }
 }

@@ -1,6 +1,8 @@
 package com.tschanz.geobooster.rtm_persistence_sql.model;
 
-import com.tschanz.geobooster.persistence_sql.model.SqlResultsetConverter;
+import com.google.gson.stream.JsonReader;
+import com.tschanz.geobooster.persistence_sql.model.SqlLongFilter;
+import com.tschanz.geobooster.persistence_sql.model.SqlStandardConverter;
 import com.tschanz.geobooster.rtm.model.RgAuspraegung;
 import com.tschanz.geobooster.rtm.model.RgAuspraegungVersion;
 import com.tschanz.geobooster.rtm.model.RgKorridor;
@@ -12,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.sql.ResultSet;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -20,7 +23,7 @@ import java.util.stream.Collectors;
 
 
 @RequiredArgsConstructor
-public class SqlRgAuspraegungVersionConverter implements SqlResultsetConverter<RgAuspraegungVersion> {
+public class SqlRgAuspraegungVersionConverter implements SqlStandardConverter<RgAuspraegungVersion, SqlLongFilter, Long> {
     private final Map<Long, RgAuspraegung> rgAuspraegungMap;
     private final Map<Long, Collection<RgKorridor>> rgKorridorByRgMap;
     private final Map<Long, Collection<RgKorridorVersion>> rgKorridorVersionMap;
@@ -28,20 +31,53 @@ public class SqlRgAuspraegungVersionConverter implements SqlResultsetConverter<R
 
 
     @Override
-    public String getSelectQuery() {
-        return String.format(
-            "SELECT %s FROM R_RG_AUSPRAEGUNG_V",
-            String.join(",", SqlVersionConverter.SELECT_COLS)
-        );
+    public String getTable() {
+        return "R_RG_AUSPRAEGUNG_V";
+    }
+
+
+    @Override
+    public String[] getSelectFields() {
+        return SqlVersionConverter.SELECT_COLS;
+    }
+
+
+    @Override
+    public Collection<SqlLongFilter> getFilters() {
+        return Collections.emptyList();
     }
 
 
     @SneakyThrows
     @Override
     public RgAuspraegungVersion fromResultSet(ResultSet row) {
-        var gueltigBis = SqlVersionConverter.getGueltigBis(row);
-        var rgaEId = SqlVersionConverter.getElementId(row);
-        var rga = this.rgAuspraegungMap.get(rgaEId);
+        return this.createRga(
+            SqlHasIdConverter.getId(row),
+            SqlVersionConverter.getElementId(row),
+            SqlVersionConverter.getGueltigVon(row),
+            SqlVersionConverter.getGueltigBis(row)
+        );
+    }
+
+
+    @Override
+    public RgAuspraegungVersion fromJsonAgg(JsonReader reader) {
+        return this.createRga(
+            SqlHasIdConverter.getIdFromJsonAgg(reader),
+            SqlVersionConverter.getElementIdFromJsonAgg(reader),
+            SqlVersionConverter.getGueltigVonFromJsonAgg(reader),
+            SqlVersionConverter.getGueltigBisFromJsonAgg(reader)
+        );
+    }
+
+
+    private RgAuspraegungVersion createRga(
+        long id,
+        long elementId,
+        LocalDate gueltigVon,
+        LocalDate gueltigBis
+    ) {
+        var rga = this.rgAuspraegungMap.get(elementId);
         var korrEs = this.rgKorridorByRgMap.get(rga.getRelationsgebietId());
 
         Collection<Long> tkIds = korrEs == null ? Collections.emptyList() : korrEs.stream()
@@ -57,9 +93,9 @@ public class SqlRgAuspraegungVersionConverter implements SqlResultsetConverter<R
             .collect(Collectors.toList());
 
         return new RgAuspraegungVersion(
-            SqlHasIdConverter.getId(row),
-            rgaEId,
-            SqlVersionConverter.getGueltigVon(row),
+            id,
+            elementId,
+            gueltigVon,
             gueltigBis,
             tkIds
         );

@@ -2,8 +2,8 @@ package com.tschanz.geobooster.versioning_persistence_sql.service;
 
 import com.tschanz.geobooster.persistence_sql.model.ConnectionState;
 import com.tschanz.geobooster.persistence_sql.model.SqlRowCountConverter;
-import com.tschanz.geobooster.persistence_sql.service.SqlJsonAggReader;
-import com.tschanz.geobooster.persistence_sql.service.SqlReader;
+import com.tschanz.geobooster.persistence_sql.service.SqlGenericResultsetReader;
+import com.tschanz.geobooster.persistence_sql.service.SqlStandardReader;
 import com.tschanz.geobooster.util.model.DoubleList;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlAllIdsConverter;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlModifiedIdsConverter;
@@ -22,8 +22,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SqlChangeDetector {
     private final ConnectionState connectionState;
-    private final SqlJsonAggReader jsonAggReader;
-    private final SqlReader sqlReader;
+    private final SqlStandardReader standardReader;
+    private final SqlGenericResultsetReader genericReader;
 
 
     public DoubleList<Long> findModifiedDeletedIds(String table, LocalDateTime changedSince, Collection<Long> currentIds) {
@@ -49,27 +49,20 @@ public class SqlChangeDetector {
             changedSince
         );
 
-        return this.sqlReader.read(converter);
+        return this.genericReader.read(converter);
     }
 
 
     private Long readRowCount(String table) {
         var converter = new SqlRowCountConverter(table);
 
-        return this.sqlReader.read(converter).get(0);
+        return this.genericReader.read(converter).get(0);
     }
 
 
     private List<Long> findRemovedIds(String table, Collection<Long> currentIds) {
         var converter = new SqlAllIdsConverter(table);
-
-        List<Long> allIds;
-        if (this.connectionState.isUseJsonAgg()) {
-            allIds = this.jsonAggReader.read(converter);
-        } else {
-            allIds = this.sqlReader.read(converter);
-        }
-
+        var allIds = this.standardReader.read(converter);
         var allIdsMap = new HashMap<Long, Integer>();
         allIds.forEach(id -> allIdsMap.put(id, 0));
 

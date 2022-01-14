@@ -2,15 +2,17 @@ package com.tschanz.geobooster.netz_persistence_sql.model;
 
 import com.google.gson.stream.JsonReader;
 import com.tschanz.geobooster.netz.model.Verkehrskante;
-import com.tschanz.geobooster.persistence_sql.model.SqlJsonAggConverter;
-import com.tschanz.geobooster.persistence_sql.model.SqlResultsetConverter;
+import com.tschanz.geobooster.persistence_sql.model.SqlLongFilter;
+import com.tschanz.geobooster.persistence_sql.model.SqlStandardConverter;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlHasIdConverter;
 import lombok.SneakyThrows;
 
 import java.sql.ResultSet;
+import java.util.Collection;
+import java.util.Collections;
 
 
-public class SqlVerkehrskanteElementConverter implements SqlResultsetConverter<Verkehrskante>, SqlJsonAggConverter<Verkehrskante> {
+public class SqlVerkehrskanteElementConverter implements SqlStandardConverter<Verkehrskante, SqlLongFilter, Long> {
     private final static String COL_HST1 = "ID_HS_ELEMENT_1";
     private final static String COL_HST2 = "ID_HS_ELEMENT_2";
 
@@ -31,14 +33,9 @@ public class SqlVerkehrskanteElementConverter implements SqlResultsetConverter<V
     }
 
 
-
     @Override
-    public String getSelectQuery() {
-        return String.format(
-            "SELECT %s FROM %s",
-            String.join(",", this.getSelectFields()),
-            this.getTable()
-        );
+    public Collection<SqlLongFilter> getFilters() {
+        return Collections.emptyList();
     }
 
 

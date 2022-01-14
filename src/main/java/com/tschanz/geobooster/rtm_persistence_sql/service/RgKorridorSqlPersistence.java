@@ -1,6 +1,6 @@
 package com.tschanz.geobooster.rtm_persistence_sql.service;
 
-import com.tschanz.geobooster.persistence_sql.service.SqlReader;
+import com.tschanz.geobooster.persistence_sql.service.SqlStandardReader;
 import com.tschanz.geobooster.rtm.model.RgKorridor;
 import com.tschanz.geobooster.rtm.model.RgKorridorVersion;
 import com.tschanz.geobooster.rtm_persistence.service.RgKorridorPersistence;
@@ -18,25 +18,31 @@ import java.util.Collection;
 @Repository
 @RequiredArgsConstructor
 public class RgKorridorSqlPersistence implements RgKorridorPersistence {
-    private final SqlReader sqlReader;
+    private final SqlStandardReader sqlReader;
 
 
     @Override
     @SneakyThrows
     public Collection<RgKorridor> readAllElements() {
-        return this.sqlReader.read(new SqlRgKorridorElementConverter());
+        var converter = new SqlRgKorridorElementConverter();
+
+        return this.sqlReader.read(converter);
     }
 
 
     @Override
     @SneakyThrows
     public Collection<RgKorridorVersion> readAllVersions() {
-        return this.sqlReader.read(new SqlRgKorridorVersionConverter());
+        var converter = new SqlRgKorridorVersionConverter();
+
+        return this.sqlReader.read(converter);
     }
 
 
     @Override
     public Collection<KeyValue<Long, Long>> readAllKorridorTkIds() {
-        return this.sqlReader.read(new SqlRgKorridorTkIdsConverter());
+        var converter = new SqlRgKorridorTkIdsConverter();
+
+        return this.sqlReader.read(converter);
     }
 }

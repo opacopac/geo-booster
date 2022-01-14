@@ -6,9 +6,7 @@ import com.tschanz.geobooster.netz_persistence.service.TarifkantePersistence;
 import com.tschanz.geobooster.netz_persistence_sql.model.SqlTarifkanteElementConverter;
 import com.tschanz.geobooster.netz_persistence_sql.model.SqlTarifkanteVersionConverter;
 import com.tschanz.geobooster.netz_persistence_sql.model.SqlTkVkConverter;
-import com.tschanz.geobooster.persistence_sql.model.ConnectionState;
-import com.tschanz.geobooster.persistence_sql.service.SqlJsonAggReader;
-import com.tschanz.geobooster.persistence_sql.service.SqlReader;
+import com.tschanz.geobooster.persistence_sql.service.SqlStandardReader;
 import com.tschanz.geobooster.util.model.KeyValue;
 import com.tschanz.geobooster.util.service.ArrayHelper;
 import com.tschanz.geobooster.versioning_persistence.model.ElementVersionChanges;
@@ -28,9 +26,7 @@ import java.util.stream.Collectors;
 @Repository
 @RequiredArgsConstructor
 public class TarifkanteSqlPersistence implements TarifkantePersistence {
-    private final ConnectionState connectionState;
-    private final SqlJsonAggReader jsonAggReader;
-    private final SqlReader sqlReader;
+    private final SqlStandardReader sqlStandardReader;
     private final SqlChangeDetector changeDetector;
 
 
@@ -48,17 +44,17 @@ public class TarifkanteSqlPersistence implements TarifkantePersistence {
 
     @Override
     public ElementVersionChanges<Tarifkante, TarifkanteVersion> findChanges(LocalDateTime changedSince, Collection<Long> currentVersionIds) {
-        var modifiedDeletedTkVIds = this.changeDetector.findModifiedDeletedIds(SqlTarifkanteVersionConverter.TABLE_NAME, changedSince, currentVersionIds);
-        var modifiedTkVIds = modifiedDeletedTkVIds.getList1();
-        Collection<TarifkanteVersion> modifiedTkVs = !modifiedTkVIds.isEmpty() ? this.readVersions(modifiedTkVIds) : Collections.emptyList();
-        var modifiedTkEIds = modifiedTkVs.stream().map(TarifkanteVersion::getElementId).distinct().collect(Collectors.toList());
-        Collection<Tarifkante> modifiedTkEs = !modifiedTkEIds.isEmpty() ? this.readElements(modifiedTkEIds) : Collections.emptyList();
+        var modifiedDeletedVersionIds = this.changeDetector.findModifiedDeletedIds(SqlTarifkanteVersionConverter.TABLE_NAME, changedSince, currentVersionIds);
+        var modifiedVersionIds = modifiedDeletedVersionIds.getList1();
+        Collection<TarifkanteVersion> modifiedVersions = !modifiedVersionIds.isEmpty() ? this.readVersions(modifiedVersionIds) : Collections.emptyList();
+        var modifiedElementIds = modifiedVersions.stream().map(TarifkanteVersion::getElementId).distinct().collect(Collectors.toList());
+        Collection<Tarifkante> modifiedElements = !modifiedElementIds.isEmpty() ? this.readElements(modifiedElementIds) : Collections.emptyList();
 
         return new ElementVersionChanges<>(
-            modifiedTkEs,
-            modifiedTkVs,
+            modifiedElements,
+            modifiedVersions,
             Collections.emptyList(), // ignoring deleted elements
-            modifiedDeletedTkVIds.getList2()
+            modifiedDeletedVersionIds.getList2()
         );
     }
 
@@ -66,23 +62,15 @@ public class TarifkanteSqlPersistence implements TarifkantePersistence {
     @SneakyThrows
     private Collection<Tarifkante> readElements(Collection<Long> elementIds) {
         var converter = new SqlTarifkanteElementConverter(elementIds);
-        if (this.connectionState.isUseJsonAgg() && elementIds.isEmpty()) {
-            return this.jsonAggReader.read(converter);
-        } else {
-            return this.sqlReader.read(converter);
-        }
+
+        return this.sqlStandardReader.read(converter);
     }
 
 
     @SneakyThrows
     private Collection<TarifkanteVersion> readVersions(Collection<Long> versionIds) {
-        List<TarifkanteVersion> tkVs;
         var converter = new SqlTarifkanteVersionConverter(versionIds);
-        if (this.connectionState.isUseJsonAgg() && versionIds.isEmpty()) {
-            tkVs = this.jsonAggReader.read(converter);
-        } else {
-            tkVs = this.sqlReader.read(converter);
-        }
+        var tkVs = this.sqlStandardReader.read(converter);
 
         if (tkVs.isEmpty()) {
             return tkVs; // no need to load tkvks
@@ -107,7 +95,7 @@ public class TarifkanteSqlPersistence implements TarifkantePersistence {
     @SneakyThrows
     private Map<Long, Collection<Long>> readTkVkMap(List<Long> filterTkVIds) {
         var converter = new SqlTkVkConverter(filterTkVIds);
-        var tkVkList = this.sqlReader.read(converter);
+        var tkVkList = this.sqlStandardReader.read(converter);
 
         return ArrayHelper.create1toNLookupMap(tkVkList, KeyValue::getKey, KeyValue::getValue);
     }

@@ -1,44 +1,80 @@
 package com.tschanz.geobooster.tarif_persistence_sql.service;
 
-import com.tschanz.geobooster.persistence_sql.service.SqlReader;
+import com.tschanz.geobooster.persistence_sql.service.SqlStandardReader;
 import com.tschanz.geobooster.tarif.model.Awb;
 import com.tschanz.geobooster.tarif.model.AwbVersion;
 import com.tschanz.geobooster.tarif_persistence.service.AwbPersistence;
 import com.tschanz.geobooster.tarif_persistence_sql.model.*;
 import com.tschanz.geobooster.util.model.KeyValue;
 import com.tschanz.geobooster.util.service.ArrayHelper;
+import com.tschanz.geobooster.versioning_persistence.model.ElementVersionChanges;
+import com.tschanz.geobooster.versioning_persistence_sql.service.SqlChangeDetector;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @Service
 @RequiredArgsConstructor
 public class AwbSqlPersistence implements AwbPersistence {
-    private final SqlReader sqlReader;
+    private final SqlStandardReader sqlStandardReader;
+    private final SqlChangeDetector changeDetector;
+
+
+    @Override
+    public ElementVersionChanges<Awb, AwbVersion> findChanges(LocalDateTime changedSince, Collection<Long> currentVersionIds) {
+        var modifiedDeletedVersionIds = this.changeDetector.findModifiedDeletedIds(SqlAwbVersionConverter.TABLE_NAME, changedSince, currentVersionIds);
+        var modifiedVersionIds = modifiedDeletedVersionIds.getList1();
+        Collection<AwbVersion> modifiedVersions = !modifiedVersionIds.isEmpty() ? this.readVersions(modifiedVersionIds) : Collections.emptyList();
+        var modifiedElementIds = modifiedVersions.stream().map(AwbVersion::getElementId).distinct().collect(Collectors.toList());
+        Collection<Awb> modifiedElements = !modifiedElementIds.isEmpty() ? this.readElements(modifiedElementIds) : Collections.emptyList();
+
+        return new ElementVersionChanges<>(
+            modifiedElements,
+            modifiedVersions,
+            Collections.emptyList(), // ignoring deleted elements
+            modifiedDeletedVersionIds.getList2()
+        );
+    }
 
 
     @Override
     @SneakyThrows
     public Collection<Awb> readAllElements() {
-        return this.sqlReader.read(new SqlAwbElementConverter());
+        return this.readElements(Collections.emptyList());
     }
 
 
     @Override
     @SneakyThrows
     public Collection<AwbVersion> readAllVersions() {
-        var includeVkMap = this.readIncludeVkMap();
-        var excludeVkMap = this.readExcludeVkMap();
-        var includeTkMap = this.readIncludeTkMap();
-        var excludeTkMap = this.readExcludeTkMap();
-        var includeVerwMap = this.readIncludeVerwMap();
-        var includeZpMap = this.readIncludeZpMap();
-        var includeRgaMap = this.readIncludeRgaMap();
+        return this.readVersions(Collections.emptyList());
+    }
+
+
+    private Collection<Awb> readElements(Collection<Long> elementIds) {
+        var converter = new SqlAwbElementConverter(elementIds);
+
+        return this.sqlStandardReader.read(converter);
+    }
+
+
+    private Collection<AwbVersion> readVersions(Collection<Long> versionIds) {
+        var includeVkMap = this.readIncludeVkMap(versionIds);
+        var excludeVkMap = this.readExcludeVkMap(versionIds);
+        var includeTkMap = this.readIncludeTkMap(versionIds);
+        var excludeTkMap = this.readExcludeTkMap(versionIds);
+        var includeVerwMap = this.readIncludeVerwMap(versionIds);
+        var includeZpMap = this.readIncludeZpMap(versionIds);
+        var includeRgaMap = this.readIncludeRgaMap(versionIds);
         var converter = new SqlAwbVersionConverter(
+            versionIds,
             includeVkMap,
             excludeVkMap,
             includeTkMap,
@@ -48,54 +84,61 @@ public class AwbSqlPersistence implements AwbPersistence {
             includeRgaMap
         );
 
-        return this.sqlReader.read(converter);
+        return this.sqlStandardReader.read(converter);
     }
 
 
-    private Map<Long, Collection<Long>> readIncludeVkMap() {
-        var excludeVks = this.sqlReader.read(new SqlAwbIncVkConverter());
+    private Map<Long, Collection<Long>> readIncludeVkMap(Collection<Long> awbVersionIds) {
+        var converter = new SqlAwbIncVkConverter(awbVersionIds);
+        var excludeVks = this.sqlStandardReader.read(converter);
 
         return ArrayHelper.create1toNLookupMap(excludeVks, KeyValue::getKey, KeyValue::getValue);
     }
 
 
-    private Map<Long, Collection<Long>> readExcludeVkMap() {
-        var excludeVks = this.sqlReader.read(new SqlAwbExcVkConverter());
+    private Map<Long, Collection<Long>> readExcludeVkMap(Collection<Long> awbVersionIds) {
+        var converter = new SqlAwbExcVkConverter(awbVersionIds);
+        var excludeVks = this.sqlStandardReader.read(converter);
 
         return ArrayHelper.create1toNLookupMap(excludeVks, KeyValue::getKey, KeyValue::getValue);
     }
 
 
-    private Map<Long, Collection<Long>> readIncludeTkMap() {
-        var excludeTks = this.sqlReader.read(new SqlAwbIncTkConverter());
+    private Map<Long, Collection<Long>> readIncludeTkMap(Collection<Long> awbVersionIds) {
+        var converter = new SqlAwbIncTkConverter(awbVersionIds);
+        var excludeTks = this.sqlStandardReader.read(converter);
 
         return ArrayHelper.create1toNLookupMap(excludeTks, KeyValue::getKey, KeyValue::getValue);
     }
 
 
-    private Map<Long, Collection<Long>> readExcludeTkMap() {
-        var excludeTks = this.sqlReader.read(new SqlAwbExcTkConverter());
+    private Map<Long, Collection<Long>> readExcludeTkMap(Collection<Long> awbVersionIds) {
+        var converter = new SqlAwbExcTkConverter(awbVersionIds);
+        var excludeTks = this.sqlStandardReader.read(converter);
 
         return ArrayHelper.create1toNLookupMap(excludeTks, KeyValue::getKey, KeyValue::getValue);
     }
 
 
-    private Map<Long, Collection<Long>> readIncludeVerwMap() {
-        var excludeVks = this.sqlReader.read(new SqlAwbIncVerwConverter());
+    private Map<Long, Collection<Long>> readIncludeVerwMap(Collection<Long> awbVersionIds) {
+        var converter = new SqlAwbIncVerwConverter(awbVersionIds);
+        var excludeVks = this.sqlStandardReader.read(converter);
 
         return ArrayHelper.create1toNLookupMap(excludeVks, KeyValue::getKey, KeyValue::getValue);
     }
 
 
-    private Map<Long, Collection<Long>> readIncludeZpMap() {
-        var excludeVks = this.sqlReader.read(new SqlAwbIncZpConverter());
+    private Map<Long, Collection<Long>> readIncludeZpMap(Collection<Long> awbVersionIds) {
+        var converter = new SqlAwbIncZpConverter(awbVersionIds);
+        var excludeVks = this.sqlStandardReader.read(converter);
 
         return ArrayHelper.create1toNLookupMap(excludeVks, KeyValue::getKey, KeyValue::getValue);
     }
 
 
-    private Map<Long, Collection<Long>> readIncludeRgaMap() {
-        var excludeVks = sqlReader.read(new SqlAwbIncRgaConverter());
+    private Map<Long, Collection<Long>> readIncludeRgaMap(Collection<Long> awbVersionIds) {
+        var converter = new SqlAwbIncRgaConverter(awbVersionIds);
+        var excludeVks = sqlStandardReader.read(converter);
 
         return ArrayHelper.create1toNLookupMap(excludeVks, KeyValue::getKey, KeyValue::getValue);
     }

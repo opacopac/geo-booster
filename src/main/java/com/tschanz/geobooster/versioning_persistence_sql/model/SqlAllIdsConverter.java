@@ -1,16 +1,18 @@
 package com.tschanz.geobooster.versioning_persistence_sql.model;
 
 import com.google.gson.stream.JsonReader;
-import com.tschanz.geobooster.persistence_sql.model.SqlJsonAggConverter;
-import com.tschanz.geobooster.persistence_sql.model.SqlResultsetConverter;
+import com.tschanz.geobooster.persistence_sql.model.SqlLongFilter;
+import com.tschanz.geobooster.persistence_sql.model.SqlStandardConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.sql.ResultSet;
+import java.util.Collection;
+import java.util.Collections;
 
 
 @RequiredArgsConstructor
-public class SqlAllIdsConverter implements SqlResultsetConverter<Long>, SqlJsonAggConverter<Long> {
+public class SqlAllIdsConverter implements SqlStandardConverter<Long, SqlLongFilter, Long> {
     private final String table;
 
 
@@ -27,12 +29,8 @@ public class SqlAllIdsConverter implements SqlResultsetConverter<Long>, SqlJsonA
 
 
     @Override
-    public String getSelectQuery() {
-        return String.format(
-            "SELECT %s FROM %s",
-            String.join(",", this.getSelectFields()),
-            this.getTable()
-        );
+    public Collection<SqlLongFilter> getFilters() {
+        return Collections.emptyList();
     }
 
 

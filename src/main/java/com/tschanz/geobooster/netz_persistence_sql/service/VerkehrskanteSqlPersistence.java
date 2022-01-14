@@ -8,9 +8,7 @@ import com.tschanz.geobooster.netz_persistence.service.VerkehrskanteAuspraegungP
 import com.tschanz.geobooster.netz_persistence.service.VerkehrskantePersistence;
 import com.tschanz.geobooster.netz_persistence_sql.model.SqlVerkehrskanteElementConverter;
 import com.tschanz.geobooster.netz_persistence_sql.model.SqlVerkehrskanteVersionConverter;
-import com.tschanz.geobooster.persistence_sql.model.ConnectionState;
-import com.tschanz.geobooster.persistence_sql.service.SqlJsonAggReader;
-import com.tschanz.geobooster.persistence_sql.service.SqlReader;
+import com.tschanz.geobooster.persistence_sql.service.SqlStandardReader;
 import com.tschanz.geobooster.versioning.service.VersioningHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -26,9 +24,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class VerkehrskanteSqlPersistence implements VerkehrskantePersistence {
     private final VerkehrskanteAuspraegungPersistence vkaPersistenceRepo;
-    private final ConnectionState connectionState;
-    private final SqlJsonAggReader jsonAggReader;
-    private final SqlReader sqlReader;
+    private final SqlStandardReader sqlReader;
 
 
     @Override
@@ -36,11 +32,7 @@ public class VerkehrskanteSqlPersistence implements VerkehrskantePersistence {
     public Collection<Verkehrskante> readAllElements() {
         var converter = new SqlVerkehrskanteElementConverter();
 
-        if (this.connectionState.isUseJsonAgg()) {
-            return this.jsonAggReader.read(converter);
-        } else {
-            return this.sqlReader.read(converter);
-        }
+        return this.sqlReader.read(converter);
     }
 
 
@@ -51,11 +43,7 @@ public class VerkehrskanteSqlPersistence implements VerkehrskantePersistence {
         var vkaVersionMap = this.readVkaVersionMap();
         var converter = new SqlVerkehrskanteVersionConverter(vkVkaMap, vkaVersionMap);
 
-        if (this.connectionState.isUseJsonAgg()) {
-            return this.jsonAggReader.read(converter);
-        } else {
-            return this.sqlReader.read(converter);
-        }
+        return this.sqlReader.read(converter);
     }
 
 

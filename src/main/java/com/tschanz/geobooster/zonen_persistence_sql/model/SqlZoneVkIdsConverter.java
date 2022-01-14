@@ -1,26 +1,38 @@
 package com.tschanz.geobooster.zonen_persistence_sql.model;
 
-import com.tschanz.geobooster.persistence_sql.model.SqlResultsetConverter;
+import com.google.gson.stream.JsonReader;
+import com.tschanz.geobooster.persistence_sql.model.SqlLongFilter;
+import com.tschanz.geobooster.persistence_sql.model.SqlStandardConverter;
 import com.tschanz.geobooster.util.model.KeyValue;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.sql.ResultSet;
+import java.util.Collection;
+import java.util.Collections;
 
 
 @RequiredArgsConstructor
-public class SqlZoneVkIdsConverter implements SqlResultsetConverter<KeyValue<Long, Long>> {
+public class SqlZoneVkIdsConverter implements SqlStandardConverter<KeyValue<Long, Long>, SqlLongFilter, Long> {
     private final static String COL_ID_ZONE_VERSION = "ID_ZONE_VERSION";
     private final static String COL_ID_KANTE_ELEMENT = "ID_KANTE_ELEMENT";
-    private final static String[] SELECT_COLS = {COL_ID_ZONE_VERSION, COL_ID_KANTE_ELEMENT};
 
 
     @Override
-    public String getSelectQuery() {
-        return String.format(
-            "SELECT %s FROM Z_ZONE_KANTE_ZUORDNUNG",
-            String.join(",", SELECT_COLS)
-        );
+    public String getTable() {
+        return "Z_ZONE_KANTE_ZUORDNUNG";
+    }
+
+
+    @Override
+    public String[] getSelectFields() {
+        return new String[] { COL_ID_ZONE_VERSION, COL_ID_KANTE_ELEMENT };
+    }
+
+
+    @Override
+    public Collection<SqlLongFilter> getFilters() {
+        return Collections.emptyList();
     }
 
 
@@ -30,6 +42,16 @@ public class SqlZoneVkIdsConverter implements SqlResultsetConverter<KeyValue<Lon
         return new KeyValue<>(
             row.getLong(COL_ID_ZONE_VERSION),
             row.getLong(COL_ID_KANTE_ELEMENT)
+        );
+    }
+
+
+    @Override
+    @SneakyThrows
+    public KeyValue<Long, Long> fromJsonAgg(JsonReader reader) {
+        return new KeyValue<>(
+            reader.nextLong(),
+            reader.nextLong()
         );
     }
 }

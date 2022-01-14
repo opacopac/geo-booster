@@ -2,19 +2,18 @@ package com.tschanz.geobooster.netz_persistence_sql.model;
 
 import com.google.gson.stream.JsonReader;
 import com.tschanz.geobooster.netz.model.Tarifkante;
-import com.tschanz.geobooster.persistence_sql.model.SqlJsonAggConverter;
-import com.tschanz.geobooster.persistence_sql.model.SqlResultsetConverter;
+import com.tschanz.geobooster.persistence_sql.model.SqlLongFilter;
+import com.tschanz.geobooster.persistence_sql.model.SqlStandardConverter;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlHasIdConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.sql.ResultSet;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 
 @RequiredArgsConstructor
-public class SqlTarifkanteElementConverter implements SqlResultsetConverter<Tarifkante>, SqlJsonAggConverter<Tarifkante> {
+public class SqlTarifkanteElementConverter implements SqlStandardConverter<Tarifkante, SqlLongFilter, Long> {
     private final static String COL_HST1 = "ID_HS_ELEMENT_1";
     private final static String COL_HST2 = "ID_HS_ELEMENT_2";
 
@@ -29,22 +28,13 @@ public class SqlTarifkanteElementConverter implements SqlResultsetConverter<Tari
 
     @Override
     public String[] getSelectFields() {
-        return new String[]{
-            SqlHasIdConverter.COL_ID,
-            COL_HST1,
-            COL_HST2
-        };
+        return new String[]{ SqlHasIdConverter.COL_ID, COL_HST1, COL_HST2};
     }
 
 
     @Override
-    public String getSelectQuery() {
-        return String.format(
-            "SELECT %s FROM %s %s",
-            String.join(",", this.getSelectFields()),
-            this.getTable(),
-            !this.elementIds.isEmpty() ? this.getWhereClause(elementIds) : ""
-        );
+    public Collection<SqlLongFilter> getFilters() {
+        return SqlLongFilter.createSingleton(SqlHasIdConverter.COL_ID, this.elementIds);
     }
 
 
@@ -65,16 +55,6 @@ public class SqlTarifkanteElementConverter implements SqlResultsetConverter<Tari
             SqlHasIdConverter.getIdFromJsonAgg(reader),
             reader.nextLong(),
             reader.nextLong()
-        );
-    }
-
-
-    private String getWhereClause(Collection<Long> elementIds) {
-        var idStrings = elementIds.stream().map(Object::toString).collect(Collectors.toList());
-        return String.format(
-            " WHERE(%s IN (%s)",
-            SqlHasIdConverter.COL_ID,
-            String.join(",", idStrings)
         );
     }
 }

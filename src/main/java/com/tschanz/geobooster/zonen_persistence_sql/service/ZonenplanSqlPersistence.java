@@ -1,6 +1,6 @@
 package com.tschanz.geobooster.zonen_persistence_sql.service;
 
-import com.tschanz.geobooster.persistence_sql.service.SqlReader;
+import com.tschanz.geobooster.persistence_sql.service.SqlStandardReader;
 import com.tschanz.geobooster.util.model.KeyValue;
 import com.tschanz.geobooster.util.service.ArrayHelper;
 import com.tschanz.geobooster.versioning.service.VersioningHelper;
@@ -23,14 +23,16 @@ import java.util.Map;
 @Repository
 @RequiredArgsConstructor
 public class ZonenplanSqlPersistence implements ZonenplanPersistence {
-    private final SqlReader sqlReader;
+    private final SqlStandardReader sqlReader;
     private final ZonePersistence zonePersistence;
 
 
     @Override
     @SneakyThrows
     public Collection<Zonenplan> readAllElements() {
-        return this.sqlReader.read(new SqlZonenplanElementConverter());
+        var converter = new SqlZonenplanElementConverter();
+
+        return this.sqlReader.read(converter);
     }
 
 

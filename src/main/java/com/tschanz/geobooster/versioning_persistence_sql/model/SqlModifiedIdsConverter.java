@@ -1,7 +1,7 @@
 package com.tschanz.geobooster.versioning_persistence_sql.model;
 
 import com.tschanz.geobooster.persistence_sql.model.SqlDialect;
-import com.tschanz.geobooster.persistence_sql.model.SqlResultsetConverter;
+import com.tschanz.geobooster.persistence_sql.model.SqlGenericResultsetConverter;
 import com.tschanz.geobooster.persistence_sql.service.SqlHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 
 @RequiredArgsConstructor
-public class SqlModifiedIdsConverter implements SqlResultsetConverter<Long> {
+public class SqlModifiedIdsConverter implements SqlGenericResultsetConverter<Long> {
     public final static String COL_CREATED_AT = "CREATED_AT";
     public final static String COL_MODIFIED_AT = "MODIFIED_AT";
     public final static String[] MODIFIED_INDICATOR_COLS = new String[] { COL_CREATED_AT, COL_MODIFIED_AT };

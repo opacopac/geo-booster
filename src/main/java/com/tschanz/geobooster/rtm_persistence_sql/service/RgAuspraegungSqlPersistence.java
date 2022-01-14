@@ -1,6 +1,6 @@
 package com.tschanz.geobooster.rtm_persistence_sql.service;
 
-import com.tschanz.geobooster.persistence_sql.service.SqlReader;
+import com.tschanz.geobooster.persistence_sql.service.SqlStandardReader;
 import com.tschanz.geobooster.rtm.model.RgAuspraegung;
 import com.tschanz.geobooster.rtm.model.RgAuspraegungVersion;
 import com.tschanz.geobooster.rtm.model.RgKorridor;
@@ -21,14 +21,16 @@ import java.util.Collection;
 @Repository
 @RequiredArgsConstructor
 public class RgAuspraegungSqlPersistence implements RgAuspraegungPersistence {
-    private final SqlReader sqlReader;
+    private final SqlStandardReader sqlReader;
     private final RgKorridorPersistence rgKorridorPersistence;
 
 
     @Override
     @SneakyThrows
     public Collection<RgAuspraegung> readAllElements() {
-        return this.sqlReader.read(new SqlRgAuspraegungElementConverter());
+        var converter = new SqlRgAuspraegungElementConverter();
+
+        return this.sqlReader.read(converter);
     }
 
 
