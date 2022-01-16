@@ -1,7 +1,7 @@
 package com.tschanz.geobooster.persistence_sql.service;
 
 import com.tschanz.geobooster.persistence_sql.model.SqlFilter;
-import com.tschanz.geobooster.persistence_sql.model.SqlStandardResultsetConverter;
+import com.tschanz.geobooster.persistence_sql.model.SqlStandardResultsetMapping;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.logging.log4j.LogManager;
@@ -23,8 +23,8 @@ public class SqlStandardResultsetReader {
 
 
     @SneakyThrows
-    public <T, F extends SqlFilter<K>, K> List<T> read(SqlStandardResultsetConverter<T, F, K> converter) {
-        var query = this.createQuery(converter);
+    public <T, F extends SqlFilter<K>, K> List<T> read(SqlStandardResultsetMapping<T, F, K> mapping) {
+        var query = this.createQuery(mapping);
         logger.info(String.format("executing query '%s'", query));
 
         var entries = new ArrayList<T>();
@@ -33,7 +33,7 @@ public class SqlStandardResultsetReader {
         if (connection.getStatement().execute(query)) {
             while (connection.getStatement().getResultSet().next()) {
                 var resultSet = connection.getStatement().getResultSet();
-                var entry = converter.fromResultSet(resultSet);
+                var entry = mapping.fromResultSet(resultSet);
                 entries.add(entry);
             }
         }
@@ -45,12 +45,12 @@ public class SqlStandardResultsetReader {
     }
 
 
-    private <T, F extends SqlFilter<K>, K> String createQuery(SqlStandardResultsetConverter<T, F, K> converter) {
+    private <T, F extends SqlFilter<K>, K> String createQuery(SqlStandardResultsetMapping<T, F, K> mapping) {
         return String.format(
             "SELECT %s FROM %s %s",
-            String.join(",", converter.getSelectFields()),
-            converter.getTable(),
-            this.createWhereClause(converter.getFilters())
+            String.join(",", mapping.getSelectFields()),
+            mapping.getTable(),
+            this.createWhereClause(mapping.getFilters())
         );
     }
 

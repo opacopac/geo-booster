@@ -4,8 +4,8 @@ import com.tschanz.geobooster.persistence_sql.service.SqlStandardReader;
 import com.tschanz.geobooster.rtm.model.HaltestelleWegangabe;
 import com.tschanz.geobooster.rtm.model.HaltestelleWegangabeVersion;
 import com.tschanz.geobooster.rtm_persistence.service.HaltestelleWegangabePersistence;
-import com.tschanz.geobooster.rtm_persistence_sql.model.SqlHaltestelleWegangabeElementConverter;
-import com.tschanz.geobooster.rtm_persistence_sql.model.SqlHaltestelleWegangabeVersionConverter;
+import com.tschanz.geobooster.rtm_persistence_sql.model.SqlHaltestelleWegangabeElementMapping;
+import com.tschanz.geobooster.rtm_persistence_sql.model.SqlHaltestelleWegangabeVersionMapping;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Repository;
@@ -22,17 +22,17 @@ public class HaltestelleWegangabeSqlPersistence implements HaltestelleWegangabeP
     @Override
     @SneakyThrows
     public Collection<HaltestelleWegangabe> readAllElements() {
-        var converter = new SqlHaltestelleWegangabeElementConverter();
+        var mapping = new SqlHaltestelleWegangabeElementMapping();
 
-        return this.sqlReader.read(converter);
+        return this.sqlReader.read(mapping);
     }
 
 
     @Override
     @SneakyThrows
     public Collection<HaltestelleWegangabeVersion> readAllVersions() {
-        var converter = new SqlHaltestelleWegangabeVersionConverter();
+        var mapping = new SqlHaltestelleWegangabeVersionMapping();
 
-        return this.sqlReader.read(converter);
+        return this.sqlReader.read(mapping);
     }
 }

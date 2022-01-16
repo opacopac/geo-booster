@@ -3,8 +3,8 @@ package com.tschanz.geobooster.netz_persistence_sql.service;
 import com.tschanz.geobooster.netz.model.Betreiber;
 import com.tschanz.geobooster.netz.model.BetreiberVersion;
 import com.tschanz.geobooster.netz_persistence.service.BetreiberPersistence;
-import com.tschanz.geobooster.netz_persistence_sql.model.SqlBetreiberElementConverter;
-import com.tschanz.geobooster.netz_persistence_sql.model.SqlBetreiberVersionConverter;
+import com.tschanz.geobooster.netz_persistence_sql.model.SqlBetreiberElementMapping;
+import com.tschanz.geobooster.netz_persistence_sql.model.SqlBetreiberVersionMapping;
 import com.tschanz.geobooster.persistence_sql.service.SqlStandardReader;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -22,17 +22,17 @@ public class BetreiberSqlPersistence implements BetreiberPersistence {
     @Override
     @SneakyThrows
     public Collection<Betreiber> readAllElements() {
-        var converter = new SqlBetreiberElementConverter();
+        var mapping = new SqlBetreiberElementMapping();
 
-        return this.sqlReader.read(converter);
+        return this.sqlReader.read(mapping);
     }
 
 
     @Override
     @SneakyThrows
     public Collection<BetreiberVersion> readAllVersions() {
-        var converter = new SqlBetreiberVersionConverter();
+        var mapping = new SqlBetreiberVersionMapping();
 
-        return this.sqlReader.read(converter);
+        return this.sqlReader.read(mapping);
     }
 }

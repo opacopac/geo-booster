@@ -2,7 +2,7 @@ package com.tschanz.geobooster.persistence_sql.service;
 
 import com.google.gson.stream.JsonReader;
 import com.tschanz.geobooster.persistence_sql.model.SqlFilter;
-import com.tschanz.geobooster.persistence_sql.model.SqlStandardJsonAggConverter;
+import com.tschanz.geobooster.persistence_sql.model.SqlStandardJsonAggMapping;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.logging.log4j.LogManager;
@@ -25,8 +25,8 @@ public class SqlStandardJsonAggReader {
 
 
     @SneakyThrows
-    public <T, F extends SqlFilter<K>, K> List<T> read(SqlStandardJsonAggConverter<T, F, K> jsonAggConverter) {
-        var query = this.createQuery(jsonAggConverter);
+    public <T, F extends SqlFilter<K>, K> List<T> read(SqlStandardJsonAggMapping<T, F, K> jsonAggMapping) {
+        var query = this.createQuery(jsonAggMapping);
         logger.info(String.format("executing query '%s'", query));
 
         var entries = new ArrayList<T>();
@@ -40,7 +40,7 @@ public class SqlStandardJsonAggReader {
             reader.beginArray();
             while (reader.hasNext()) {
                 reader.beginArray();
-                var entry = jsonAggConverter.fromJsonAgg(reader);
+                var entry = jsonAggMapping.fromJsonAgg(reader);
                 entries.add(entry);
                 reader.endArray();
             }
@@ -55,13 +55,13 @@ public class SqlStandardJsonAggReader {
     }
 
 
-    private <T, F extends SqlFilter<K>, K> String createQuery(SqlStandardJsonAggConverter<T, F, K> jsonAggConverter) {
+    private <T, F extends SqlFilter<K>, K> String createQuery(SqlStandardJsonAggMapping<T, F, K> jsonAggMapping) {
         return String.format(
             "SELECT JSON_ARRAYAGG(JSON_ARRAY(%s NULL ON NULL) RETURNING CLOB) AS %s FROM %s %s",
-            String.join(",", jsonAggConverter.getSelectFields()),
+            String.join(",", jsonAggMapping.getSelectFields()),
             COL_CLOB,
-            jsonAggConverter.getTable(),
-            this.createWhereClause(jsonAggConverter.getFilters())
+            jsonAggMapping.getTable(),
+            this.createWhereClause(jsonAggMapping.getFilters())
         );
     }
 

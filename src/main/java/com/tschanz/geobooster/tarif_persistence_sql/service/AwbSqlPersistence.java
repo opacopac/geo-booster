@@ -29,7 +29,7 @@ public class AwbSqlPersistence implements AwbPersistence {
 
     @Override
     public ElementVersionChanges<Awb, AwbVersion> findChanges(LocalDateTime changedSince, Collection<Long> currentVersionIds) {
-        var modifiedDeletedVersionIds = this.changeDetector.findModifiedDeletedIds(SqlAwbVersionConverter.TABLE_NAME, changedSince, currentVersionIds);
+        var modifiedDeletedVersionIds = this.changeDetector.findModifiedDeletedIds(SqlAwbVersionMapping.TABLE_NAME, changedSince, currentVersionIds);
         var modifiedVersionIds = modifiedDeletedVersionIds.getList1();
         Collection<AwbVersion> modifiedVersions = !modifiedVersionIds.isEmpty() ? this.readVersions(modifiedVersionIds) : Collections.emptyList();
         var modifiedElementIds = modifiedVersions.stream().map(AwbVersion::getElementId).distinct().collect(Collectors.toList());
@@ -59,9 +59,9 @@ public class AwbSqlPersistence implements AwbPersistence {
 
 
     private Collection<Awb> readElements(Collection<Long> elementIds) {
-        var converter = new SqlAwbElementConverter(elementIds);
+        var mapping = new SqlAwbElementMapping(elementIds);
 
-        return this.sqlStandardReader.read(converter);
+        return this.sqlStandardReader.read(mapping);
     }
 
 
@@ -73,7 +73,7 @@ public class AwbSqlPersistence implements AwbPersistence {
         var includeVerwMap = this.readIncludeVerwMap(versionIds);
         var includeZpMap = this.readIncludeZpMap(versionIds);
         var includeRgaMap = this.readIncludeRgaMap(versionIds);
-        var converter = new SqlAwbVersionConverter(
+        var mapping = new SqlAwbVersionMapping(
             versionIds,
             includeVkMap,
             excludeVkMap,
@@ -84,61 +84,61 @@ public class AwbSqlPersistence implements AwbPersistence {
             includeRgaMap
         );
 
-        return this.sqlStandardReader.read(converter);
+        return this.sqlStandardReader.read(mapping);
     }
 
 
     private Map<Long, Collection<Long>> readIncludeVkMap(Collection<Long> awbVersionIds) {
-        var converter = new SqlAwbIncVkConverter(awbVersionIds);
-        var excludeVks = this.sqlStandardReader.read(converter);
+        var mapping = new SqlAwbIncVkMapping(awbVersionIds);
+        var excludeVks = this.sqlStandardReader.read(mapping);
 
         return ArrayHelper.create1toNLookupMap(excludeVks, KeyValue::getKey, KeyValue::getValue);
     }
 
 
     private Map<Long, Collection<Long>> readExcludeVkMap(Collection<Long> awbVersionIds) {
-        var converter = new SqlAwbExcVkConverter(awbVersionIds);
-        var excludeVks = this.sqlStandardReader.read(converter);
+        var mapping = new SqlAwbExcVkMapping(awbVersionIds);
+        var excludeVks = this.sqlStandardReader.read(mapping);
 
         return ArrayHelper.create1toNLookupMap(excludeVks, KeyValue::getKey, KeyValue::getValue);
     }
 
 
     private Map<Long, Collection<Long>> readIncludeTkMap(Collection<Long> awbVersionIds) {
-        var converter = new SqlAwbIncTkConverter(awbVersionIds);
-        var excludeTks = this.sqlStandardReader.read(converter);
+        var mapping = new SqlAwbIncTkMapping(awbVersionIds);
+        var excludeTks = this.sqlStandardReader.read(mapping);
 
         return ArrayHelper.create1toNLookupMap(excludeTks, KeyValue::getKey, KeyValue::getValue);
     }
 
 
     private Map<Long, Collection<Long>> readExcludeTkMap(Collection<Long> awbVersionIds) {
-        var converter = new SqlAwbExcTkConverter(awbVersionIds);
-        var excludeTks = this.sqlStandardReader.read(converter);
+        var mapping = new SqlAwbExcTkMapping(awbVersionIds);
+        var excludeTks = this.sqlStandardReader.read(mapping);
 
         return ArrayHelper.create1toNLookupMap(excludeTks, KeyValue::getKey, KeyValue::getValue);
     }
 
 
     private Map<Long, Collection<Long>> readIncludeVerwMap(Collection<Long> awbVersionIds) {
-        var converter = new SqlAwbIncVerwConverter(awbVersionIds);
-        var excludeVks = this.sqlStandardReader.read(converter);
+        var mapping = new SqlAwbIncVerwMapping(awbVersionIds);
+        var excludeVks = this.sqlStandardReader.read(mapping);
 
         return ArrayHelper.create1toNLookupMap(excludeVks, KeyValue::getKey, KeyValue::getValue);
     }
 
 
     private Map<Long, Collection<Long>> readIncludeZpMap(Collection<Long> awbVersionIds) {
-        var converter = new SqlAwbIncZpConverter(awbVersionIds);
-        var excludeVks = this.sqlStandardReader.read(converter);
+        var mapping = new SqlAwbIncZpMapping(awbVersionIds);
+        var excludeVks = this.sqlStandardReader.read(mapping);
 
         return ArrayHelper.create1toNLookupMap(excludeVks, KeyValue::getKey, KeyValue::getValue);
     }
 
 
     private Map<Long, Collection<Long>> readIncludeRgaMap(Collection<Long> awbVersionIds) {
-        var converter = new SqlAwbIncRgaConverter(awbVersionIds);
-        var excludeVks = sqlStandardReader.read(converter);
+        var mapping = new SqlAwbIncRgaMapping(awbVersionIds);
+        var excludeVks = sqlStandardReader.read(mapping);
 
         return ArrayHelper.create1toNLookupMap(excludeVks, KeyValue::getKey, KeyValue::getValue);
     }

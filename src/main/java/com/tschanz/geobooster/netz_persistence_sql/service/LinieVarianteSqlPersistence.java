@@ -1,8 +1,8 @@
 package com.tschanz.geobooster.netz_persistence_sql.service;
 
 import com.tschanz.geobooster.netz_persistence.service.LinieVariantePersistence;
-import com.tschanz.geobooster.netz_persistence_sql.model.SqlLinVarTkConverter;
-import com.tschanz.geobooster.netz_persistence_sql.model.SqlLinVarVkConverter;
+import com.tschanz.geobooster.netz_persistence_sql.model.SqlLinVarTkMapping;
+import com.tschanz.geobooster.netz_persistence_sql.model.SqlLinVarVkMapping;
 import com.tschanz.geobooster.persistence_sql.model.ConnectionState;
 import com.tschanz.geobooster.persistence_sql.service.SqlGenericResultsetReader;
 import lombok.RequiredArgsConstructor;
@@ -23,20 +23,20 @@ public class LinieVarianteSqlPersistence implements LinieVariantePersistence {
     @Override
     @SneakyThrows
     public Collection<Long> searchVerkehrskanteIds(Collection<Long> linieVarianteIds) {
-        var converter = new SqlLinVarVkConverter(linieVarianteIds);
+        var mapping = new SqlLinVarVkMapping(linieVarianteIds);
 
-        return this.sqlReader.read(converter);
+        return this.sqlReader.read(mapping);
     }
 
 
     @Override
     public Collection<Long> searchTarifkanteIds(Collection<Long> linieVarianteIds, LocalDate date) {
-        var converter = new SqlLinVarTkConverter(
+        var mapping = new SqlLinVarTkMapping(
             linieVarianteIds,
             date,
             this.connectionState.getSqlDialect()
         );
 
-        return this.sqlReader.read(converter);
+        return this.sqlReader.read(mapping);
     }
 }

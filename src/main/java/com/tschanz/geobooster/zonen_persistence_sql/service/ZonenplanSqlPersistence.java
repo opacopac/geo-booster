@@ -9,8 +9,8 @@ import com.tschanz.geobooster.zonen.model.Zonenplan;
 import com.tschanz.geobooster.zonen.model.ZonenplanVersion;
 import com.tschanz.geobooster.zonen_persistence.service.ZonePersistence;
 import com.tschanz.geobooster.zonen_persistence.service.ZonenplanPersistence;
-import com.tschanz.geobooster.zonen_persistence_sql.model.SqlZonenplanElementConverter;
-import com.tschanz.geobooster.zonen_persistence_sql.model.SqlZonenplanVersionConverter;
+import com.tschanz.geobooster.zonen_persistence_sql.model.SqlZonenplanElementMapping;
+import com.tschanz.geobooster.zonen_persistence_sql.model.SqlZonenplanVersionMapping;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Repository;
@@ -30,9 +30,9 @@ public class ZonenplanSqlPersistence implements ZonenplanPersistence {
     @Override
     @SneakyThrows
     public Collection<Zonenplan> readAllElements() {
-        var converter = new SqlZonenplanElementConverter();
+        var mapping = new SqlZonenplanElementMapping();
 
-        return this.sqlReader.read(converter);
+        return this.sqlReader.read(mapping);
     }
 
 
@@ -61,8 +61,8 @@ public class ZonenplanSqlPersistence implements ZonenplanPersistence {
         // TODO
         Map<Long, Long> excludeVks = Collections.emptyMap();
 
-        var converter = new SqlZonenplanVersionConverter(zpEMap, zoneEByZpMap, zoneByEVMap, zoneVkIdsMap, excludeVks);
+        var mapping = new SqlZonenplanVersionMapping(zpEMap, zoneEByZpMap, zoneByEVMap, zoneVkIdsMap, excludeVks);
 
-        return this.sqlReader.read(converter);
+        return this.sqlReader.read(mapping);
     }
 }

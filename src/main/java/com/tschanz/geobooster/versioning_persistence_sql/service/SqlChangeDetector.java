@@ -1,12 +1,12 @@
 package com.tschanz.geobooster.versioning_persistence_sql.service;
 
 import com.tschanz.geobooster.persistence_sql.model.ConnectionState;
-import com.tschanz.geobooster.persistence_sql.model.SqlRowCountConverter;
+import com.tschanz.geobooster.persistence_sql.model.SqlRowCountMapping;
 import com.tschanz.geobooster.persistence_sql.service.SqlGenericResultsetReader;
 import com.tschanz.geobooster.persistence_sql.service.SqlStandardReader;
 import com.tschanz.geobooster.util.model.DoubleList;
-import com.tschanz.geobooster.versioning_persistence_sql.model.SqlAllIdsConverter;
-import com.tschanz.geobooster.versioning_persistence_sql.model.SqlModifiedIdsConverter;
+import com.tschanz.geobooster.versioning_persistence_sql.model.SqlAllIdsMapping;
+import com.tschanz.geobooster.versioning_persistence_sql.model.SqlModifiedIdsMapping;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -43,26 +43,26 @@ public class SqlChangeDetector {
 
 
     private List<Long> findModifiedIds(String table, LocalDateTime changedSince) {
-        var converter = new SqlModifiedIdsConverter(
+        var mapping = new SqlModifiedIdsMapping(
             table,
             this.connectionState.getSqlDialect(),
             changedSince
         );
 
-        return this.genericReader.read(converter);
+        return this.genericReader.read(mapping);
     }
 
 
     private Long readRowCount(String table) {
-        var converter = new SqlRowCountConverter(table);
+        var mapping = new SqlRowCountMapping(table);
 
-        return this.genericReader.read(converter).get(0);
+        return this.genericReader.read(mapping).get(0);
     }
 
 
     private List<Long> findRemovedIds(String table, Collection<Long> currentIds) {
-        var converter = new SqlAllIdsConverter(table);
-        var allIds = this.standardReader.read(converter);
+        var mapping = new SqlAllIdsMapping(table);
+        var allIds = this.standardReader.read(mapping);
         var allIdsMap = new HashMap<Long, Integer>();
         allIds.forEach(id -> allIdsMap.put(id, 0));
 

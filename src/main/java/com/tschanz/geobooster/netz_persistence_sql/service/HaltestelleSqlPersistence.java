@@ -3,8 +3,8 @@ package com.tschanz.geobooster.netz_persistence_sql.service;
 import com.tschanz.geobooster.netz.model.Haltestelle;
 import com.tschanz.geobooster.netz.model.HaltestelleVersion;
 import com.tschanz.geobooster.netz_persistence.service.HaltestellenPersistence;
-import com.tschanz.geobooster.netz_persistence_sql.model.SqlHaltestelleElementConverter;
-import com.tschanz.geobooster.netz_persistence_sql.model.SqlHaltestelleVersionConverter;
+import com.tschanz.geobooster.netz_persistence_sql.model.SqlHaltestelleElementMapping;
+import com.tschanz.geobooster.netz_persistence_sql.model.SqlHaltestelleVersionMapping;
 import com.tschanz.geobooster.persistence_sql.service.SqlStandardReader;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -22,17 +22,17 @@ public class HaltestelleSqlPersistence implements HaltestellenPersistence {
     @Override
     @SneakyThrows
     public Collection<Haltestelle> readAllElements() {
-        var converter = new SqlHaltestelleElementConverter();
+        var mapping = new SqlHaltestelleElementMapping();
 
-        return this.sqlReader.read(converter);
+        return this.sqlReader.read(mapping);
     }
 
 
     @Override
     @SneakyThrows
     public Collection<HaltestelleVersion> readAllVersions() {
-        var converter = new SqlHaltestelleVersionConverter();
+        var mapping = new SqlHaltestelleVersionMapping();
 
-        return this.sqlReader.read(converter);
+        return this.sqlReader.read(mapping);
     }
 }

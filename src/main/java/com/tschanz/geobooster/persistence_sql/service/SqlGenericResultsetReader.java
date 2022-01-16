@@ -1,6 +1,6 @@
 package com.tschanz.geobooster.persistence_sql.service;
 
-import com.tschanz.geobooster.persistence_sql.model.SqlGenericResultsetConverter;
+import com.tschanz.geobooster.persistence_sql.model.SqlGenericResultsetMapping;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.logging.log4j.LogManager;
@@ -20,8 +20,8 @@ public class SqlGenericResultsetReader {
 
 
     @SneakyThrows
-    public <T> List<T> read(SqlGenericResultsetConverter<T> resultsetConverter) {
-        var query = resultsetConverter.getSelectQuery();
+    public <T> List<T> read(SqlGenericResultsetMapping<T> mapping) {
+        var query = mapping.getSelectQuery();
         logger.info(String.format("executing query '%s'", query));
 
         var entries = new ArrayList<T>();
@@ -30,7 +30,7 @@ public class SqlGenericResultsetReader {
         if (connection.getStatement().execute(query)) {
             while (connection.getStatement().getResultSet().next()) {
                 var resultSet = connection.getStatement().getResultSet();
-                var entry = resultsetConverter.fromResultSet(resultSet);
+                var entry = mapping.fromResultSet(resultSet);
                 entries.add(entry);
             }
         }

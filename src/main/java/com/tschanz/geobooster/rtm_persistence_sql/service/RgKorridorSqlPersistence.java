@@ -4,9 +4,9 @@ import com.tschanz.geobooster.persistence_sql.service.SqlStandardReader;
 import com.tschanz.geobooster.rtm.model.RgKorridor;
 import com.tschanz.geobooster.rtm.model.RgKorridorVersion;
 import com.tschanz.geobooster.rtm_persistence.service.RgKorridorPersistence;
-import com.tschanz.geobooster.rtm_persistence_sql.model.SqlRgKorridorElementConverter;
-import com.tschanz.geobooster.rtm_persistence_sql.model.SqlRgKorridorTkIdsConverter;
-import com.tschanz.geobooster.rtm_persistence_sql.model.SqlRgKorridorVersionConverter;
+import com.tschanz.geobooster.rtm_persistence_sql.model.SqlRgKorridorElementMapping;
+import com.tschanz.geobooster.rtm_persistence_sql.model.SqlRgKorridorTkIdsMapping;
+import com.tschanz.geobooster.rtm_persistence_sql.model.SqlRgKorridorVersionMapping;
 import com.tschanz.geobooster.util.model.KeyValue;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -24,25 +24,25 @@ public class RgKorridorSqlPersistence implements RgKorridorPersistence {
     @Override
     @SneakyThrows
     public Collection<RgKorridor> readAllElements() {
-        var converter = new SqlRgKorridorElementConverter();
+        var mapping = new SqlRgKorridorElementMapping();
 
-        return this.sqlReader.read(converter);
+        return this.sqlReader.read(mapping);
     }
 
 
     @Override
     @SneakyThrows
     public Collection<RgKorridorVersion> readAllVersions() {
-        var converter = new SqlRgKorridorVersionConverter();
+        var mapping = new SqlRgKorridorVersionMapping();
 
-        return this.sqlReader.read(converter);
+        return this.sqlReader.read(mapping);
     }
 
 
     @Override
     public Collection<KeyValue<Long, Long>> readAllKorridorTkIds() {
-        var converter = new SqlRgKorridorTkIdsConverter();
+        var mapping = new SqlRgKorridorTkIdsMapping();
 
-        return this.sqlReader.read(converter);
+        return this.sqlReader.read(mapping);
     }
 }

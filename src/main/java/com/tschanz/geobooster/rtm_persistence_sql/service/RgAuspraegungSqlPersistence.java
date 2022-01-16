@@ -6,8 +6,8 @@ import com.tschanz.geobooster.rtm.model.RgAuspraegungVersion;
 import com.tschanz.geobooster.rtm.model.RgKorridor;
 import com.tschanz.geobooster.rtm_persistence.service.RgAuspraegungPersistence;
 import com.tschanz.geobooster.rtm_persistence.service.RgKorridorPersistence;
-import com.tschanz.geobooster.rtm_persistence_sql.model.SqlRgAuspraegungElementConverter;
-import com.tschanz.geobooster.rtm_persistence_sql.model.SqlRgAuspraegungVersionConverter;
+import com.tschanz.geobooster.rtm_persistence_sql.model.SqlRgAuspraegungElementMapping;
+import com.tschanz.geobooster.rtm_persistence_sql.model.SqlRgAuspraegungVersionMapping;
 import com.tschanz.geobooster.util.model.KeyValue;
 import com.tschanz.geobooster.util.service.ArrayHelper;
 import com.tschanz.geobooster.versioning.service.VersioningHelper;
@@ -28,9 +28,9 @@ public class RgAuspraegungSqlPersistence implements RgAuspraegungPersistence {
     @Override
     @SneakyThrows
     public Collection<RgAuspraegung> readAllElements() {
-        var converter = new SqlRgAuspraegungElementConverter();
+        var mapping = new SqlRgAuspraegungElementMapping();
 
-        return this.sqlReader.read(converter);
+        return this.sqlReader.read(mapping);
     }
 
 
@@ -56,8 +56,8 @@ public class RgAuspraegungSqlPersistence implements RgAuspraegungPersistence {
         var rgKorrTkIds = this.rgKorridorPersistence.readAllKorridorTkIds();
         var rgKorrTkIdsMap = ArrayHelper.create1toNLookupMap(rgKorrTkIds, KeyValue::getKey, KeyValue::getValue);
 
-        var converter = new SqlRgAuspraegungVersionConverter(rgaEMap, rgKorrEByRgMap, rgKorrVMap, rgKorrTkIdsMap);
+        var mapping = new SqlRgAuspraegungVersionMapping(rgaEMap, rgKorrEByRgMap, rgKorrVMap, rgKorrTkIdsMap);
 
-        return this.sqlReader.read(converter);
+        return this.sqlReader.read(mapping);
     }
 }
