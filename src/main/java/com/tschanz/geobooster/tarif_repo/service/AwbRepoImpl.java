@@ -14,7 +14,7 @@ import com.tschanz.geobooster.tarif.model.AwbVersion;
 import com.tschanz.geobooster.tarif_persistence.service.AwbPersistence;
 import com.tschanz.geobooster.tarif_repo.model.AwbRepoState;
 import com.tschanz.geobooster.versioning_repo.model.VersionedObjectMap;
-import com.tschanz.geobooster.zone_repo.service.ZonenplanRepo;
+import com.tschanz.geobooster.zonen_repo.service.ZonenplanRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.Synchronized;
@@ -69,24 +69,40 @@ public class AwbRepoImpl implements AwbRepo {
 
     @Override
     public Awb getElement(long id) {
+        if (this.connectionState.isTrackChanges()) {
+            this.updateWhenChanged();
+        }
+
         return this.versionedObjectMap.getElement(id);
     }
 
 
     @Override
     public AwbVersion getVersion(long id) {
+        if (this.connectionState.isTrackChanges()) {
+            this.updateWhenChanged();
+        }
+
         return this.versionedObjectMap.getVersion(id);
     }
 
 
     @Override
     public Collection<AwbVersion> getElementVersions(long elementId) {
+        if (this.connectionState.isTrackChanges()) {
+            this.updateWhenChanged();
+        }
+
         return this.versionedObjectMap.getElementVersions(elementId);
     }
 
 
     @Override
     public AwbVersion getElementVersionAtDate(long elementId, LocalDate date) {
+        if (this.connectionState.isTrackChanges()) {
+            this.updateWhenChanged();
+        }
+
         return this.versionedObjectMap.getElementVersionAtDate(elementId, date);
     }
 
@@ -114,7 +130,7 @@ public class AwbRepoImpl implements AwbRepo {
         }
 
         var rgaIds = awbVersion.getIncludeRgaIds();
-        Collection<Long> tkIds = rgaIds == null ? Collections.emptyList() : rgaIds.stream()
+        var tkIds = rgaIds == null ? Collections.<Long>emptyList() : rgaIds.stream()
             .map(rgaId -> this.rgAuspraegungRepo.getElementVersionAtDate(rgaId, date))
             .filter(Objects::nonNull)
             .flatMap(rgaV -> rgaV.getTarifkantenIds().stream())
@@ -149,7 +165,7 @@ public class AwbRepoImpl implements AwbRepo {
         }
 
         var zpIds = awbVersion.getIncludeZonenplanIds();
-        Collection<Long> vkIds = zpIds == null ? Collections.emptyList() : zpIds.stream()
+        var vkIds = zpIds == null ? Collections.<Long>emptyList() : zpIds.stream()
             .map(zpId -> this.zonenplanRepo.getElementVersionAtDate(zpId, date))
             .filter(Objects::nonNull)
             .flatMap(zpV -> zpV.getVerkehrskantenIds().stream())
@@ -203,6 +219,5 @@ public class AwbRepoImpl implements AwbRepo {
         }
 
         this.lastChangeCheck = LocalDateTime.now();
-        logger.info("done.");
     }
 }

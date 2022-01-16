@@ -4,7 +4,7 @@ import com.tschanz.geobooster.netz_repo.model.NetzRepoState;
 import com.tschanz.geobooster.presentation.presenter.CachingStatsViewPresenter;
 import com.tschanz.geobooster.rtm_repo.model.RtmRepoState;
 import com.tschanz.geobooster.tarif_repo.model.TarifRepoState;
-import com.tschanz.geobooster.zone_repo.model.ZonenRepoState;
+import com.tschanz.geobooster.zonen_repo.model.ZonenRepoState;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;

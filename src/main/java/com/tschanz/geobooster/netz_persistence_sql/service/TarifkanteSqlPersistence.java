@@ -46,9 +46,9 @@ public class TarifkanteSqlPersistence implements TarifkantePersistence {
     public ElementVersionChanges<Tarifkante, TarifkanteVersion> findChanges(LocalDateTime changedSince, Collection<Long> currentVersionIds) {
         var modifiedDeletedVersionIds = this.changeDetector.findModifiedDeletedIds(SqlTarifkanteVersionMapping.TABLE_NAME, changedSince, currentVersionIds);
         var modifiedVersionIds = modifiedDeletedVersionIds.getList1();
-        Collection<TarifkanteVersion> modifiedVersions = !modifiedVersionIds.isEmpty() ? this.readVersions(modifiedVersionIds) : Collections.emptyList();
+        var modifiedVersions = !modifiedVersionIds.isEmpty() ? this.readVersions(modifiedVersionIds) : Collections.<TarifkanteVersion>emptyList();
         var modifiedElementIds = modifiedVersions.stream().map(TarifkanteVersion::getElementId).distinct().collect(Collectors.toList());
-        Collection<Tarifkante> modifiedElements = !modifiedElementIds.isEmpty() ? this.readElements(modifiedElementIds) : Collections.emptyList();
+        var modifiedElements = !modifiedElementIds.isEmpty() ? this.readElements(modifiedElementIds) : Collections.<Tarifkante>emptyList();
 
         return new ElementVersionChanges<>(
             modifiedElements,
@@ -77,9 +77,9 @@ public class TarifkanteSqlPersistence implements TarifkantePersistence {
         }
 
         // add linked vks
-        List<Long> filterTkVIds = !versionIds.isEmpty()
+        var filterTkVIds = !versionIds.isEmpty()
             ? tkVs.stream().map(TarifkanteVersion::getId).collect(Collectors.toList())
-            : Collections.emptyList();
+            : Collections.<Long>emptyList();
         var tkVkMap = this.readTkVkMap(filterTkVIds);
         tkVs.forEach(tkV -> {
             var vkIds = tkVkMap.get(tkV.getId());

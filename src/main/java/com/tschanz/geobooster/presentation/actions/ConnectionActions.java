@@ -6,7 +6,7 @@ import com.tschanz.geobooster.rtm_repo.service.HaltestelleWegangabeRepo;
 import com.tschanz.geobooster.rtm_repo.service.RgAuspraegungRepo;
 import com.tschanz.geobooster.tarif_repo.service.AwbRepo;
 import com.tschanz.geobooster.util.service.ExceptionHelper;
-import com.tschanz.geobooster.zone_repo.service.ZonenplanRepo;
+import com.tschanz.geobooster.zonen_repo.service.ZonenplanRepo;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

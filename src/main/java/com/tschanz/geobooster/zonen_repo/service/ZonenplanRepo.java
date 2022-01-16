@@ -1,4 +1,4 @@
-package com.tschanz.geobooster.zone_repo.service;
+package com.tschanz.geobooster.zonen_repo.service;
 
 import com.tschanz.geobooster.versioning_repo.service.VersionedObjectRepo;
 import com.tschanz.geobooster.zonen.model.Zonenplan;

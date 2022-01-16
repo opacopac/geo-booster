@@ -7,20 +7,24 @@ import com.tschanz.geobooster.util.service.ArrayHelper;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlHasIdMapping;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlVersionMapping;
 import com.tschanz.geobooster.zonen.model.ZoneVersion;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.sql.ResultSet;
 import java.util.Collection;
-import java.util.Collections;
 
 
+@RequiredArgsConstructor
 public class SqlZoneVersionMapping implements SqlStandardMapping<ZoneVersion, SqlLongFilter, Long> {
+    public final static String TABLE_NAME = "Z_ZONE_V";
     private final static String COL_ID_URSPRUNGSZONE_E = "ID_URSPRUNGSZONE_E";
+
+    private final Collection<Long> versionIds;
 
 
     @Override
     public String getTable() {
-        return "Z_ZONE_V";
+        return TABLE_NAME;
     }
 
 
@@ -32,7 +36,7 @@ public class SqlZoneVersionMapping implements SqlStandardMapping<ZoneVersion, Sq
 
     @Override
     public Collection<SqlLongFilter> getFilters() {
-        return Collections.emptyList();
+        return SqlLongFilter.createSingleton(SqlHasIdMapping.COL_ID, this.versionIds);
     }
 
 

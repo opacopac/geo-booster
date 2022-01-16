@@ -31,9 +31,9 @@ public class AwbSqlPersistence implements AwbPersistence {
     public ElementVersionChanges<Awb, AwbVersion> findChanges(LocalDateTime changedSince, Collection<Long> currentVersionIds) {
         var modifiedDeletedVersionIds = this.changeDetector.findModifiedDeletedIds(SqlAwbVersionMapping.TABLE_NAME, changedSince, currentVersionIds);
         var modifiedVersionIds = modifiedDeletedVersionIds.getList1();
-        Collection<AwbVersion> modifiedVersions = !modifiedVersionIds.isEmpty() ? this.readVersions(modifiedVersionIds) : Collections.emptyList();
+        var modifiedVersions = !modifiedVersionIds.isEmpty() ? this.readVersions(modifiedVersionIds) : Collections.<AwbVersion>emptyList();
         var modifiedElementIds = modifiedVersions.stream().map(AwbVersion::getElementId).distinct().collect(Collectors.toList());
-        Collection<Awb> modifiedElements = !modifiedElementIds.isEmpty() ? this.readElements(modifiedElementIds) : Collections.emptyList();
+        var modifiedElements = !modifiedElementIds.isEmpty() ? this.readElements(modifiedElementIds) : Collections.<Awb>emptyList();
 
         return new ElementVersionChanges<>(
             modifiedElements,

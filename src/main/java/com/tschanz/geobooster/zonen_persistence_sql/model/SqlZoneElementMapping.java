@@ -12,12 +12,13 @@ import lombok.SneakyThrows;
 
 import java.sql.ResultSet;
 import java.util.Collection;
-import java.util.Collections;
 
 
 @RequiredArgsConstructor
 public class SqlZoneElementMapping implements SqlStandardMapping<Zone, SqlLongFilter, Long> {
     private final static String COL_ID_ZONENPLAN = "ID_ZONENPLAN";
+
+    private final Collection<Long> elementIds;
 
 
     @Override
@@ -34,7 +35,7 @@ public class SqlZoneElementMapping implements SqlStandardMapping<Zone, SqlLongFi
 
     @Override
     public Collection<SqlLongFilter> getFilters() {
-        return Collections.emptyList();
+        return SqlLongFilter.createSingleton(SqlHasIdMapping.COL_ID, this.elementIds);
     }
 
 

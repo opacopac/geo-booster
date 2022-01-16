@@ -1,4 +1,4 @@
-package com.tschanz.geobooster.zone_repo.model;
+package com.tschanz.geobooster.zonen_repo.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

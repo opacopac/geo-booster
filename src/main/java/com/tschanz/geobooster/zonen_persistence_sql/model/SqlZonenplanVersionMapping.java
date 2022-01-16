@@ -24,26 +24,31 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class SqlZonenplanVersionMapping implements SqlStandardMapping<ZonenplanVersion, SqlLongFilter, Long> {
+    public static String TABLE_NAME = "Z_ZONENPLAN_V";
+
+    private final Collection<Long> versionIds;
     private final Map<Long, Zonenplan> zonenplanMap;
-    private final Map<Long, Collection<Zone>> zoneByZonenplanMap;
-    private final Map<Long, Collection<ZoneVersion>> zoneVersionMap;
+    private final Map<Long, Collection<Zone>> zoneEByZonenplanMap;
+    private final Map<Long, Collection<ZoneVersion>> zoneVbyElementMap;
     private final Map<Long, Collection<Long>> zoneVkIds;
     private final Map<Long, Long> excludeVkMap;
 
 
     @Override
     public String getTable() {
-        return "Z_ZONENPLAN_V";
+        return TABLE_NAME;
     }
+
 
     @Override
     public String[] getSelectFields() {
         return SqlVersionMapping.SELECT_COLS;
     }
 
+
     @Override
     public Collection<SqlLongFilter> getFilters() {
-        return Collections.emptyList();
+        return SqlLongFilter.createSingleton(SqlHasIdMapping.COL_ID, this.versionIds);
     }
 
 
@@ -77,9 +82,9 @@ public class SqlZonenplanVersionMapping implements SqlStandardMapping<ZonenplanV
         LocalDate gueltigBis
     ) {
         var zpE = this.zonenplanMap.get(elementId);
-        var zoneEs = this.zoneByZonenplanMap.get(zpE.getId());
+        var zoneEs = this.zoneEByZonenplanMap.get(zpE.getId());
 
-        Collection<Long> vkIds = zoneEs == null ? Collections.emptyList() : zoneEs.stream()
+        var vkIds = zoneEs == null ? Collections.<Long>emptyList() : zoneEs.stream()
             .map(zoneE -> this.getZoneOrUberZoneVersion(zoneE, gueltigBis))
             .filter(Objects::nonNull)
             .map(zoneV -> this.zoneVkIds.get(zoneV.getId()))
@@ -100,11 +105,11 @@ public class SqlZonenplanVersionMapping implements SqlStandardMapping<ZonenplanV
 
 
     private ZoneVersion getZoneOrUberZoneVersion(Zone zoneE, LocalDate date) {
-        var zoneVs = this.zoneVersionMap.get(zoneE.getId());
+        var zoneVs = this.zoneVbyElementMap.get(zoneE.getId());
         var zoneV = zoneVs != null ? VersioningHelper.filterSingleVersion(zoneVs, date) : null;
 
         if (zoneV != null && zoneV.getUrsprungsZoneId() > 0) {
-            var uZoneVs = this.zoneVersionMap.get(zoneV.getUrsprungsZoneId());
+            var uZoneVs = this.zoneVbyElementMap.get(zoneV.getUrsprungsZoneId());
             return uZoneVs != null ? VersioningHelper.filterSingleVersion(uZoneVs, date) : null;
         } else {
             return zoneV;

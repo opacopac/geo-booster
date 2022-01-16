@@ -9,7 +9,6 @@ import lombok.SneakyThrows;
 
 import java.sql.ResultSet;
 import java.util.Collection;
-import java.util.Collections;
 
 
 @RequiredArgsConstructor
@@ -17,6 +16,7 @@ public class SqlZoneVkIdsMapping implements SqlStandardMapping<KeyValue<Long, Lo
     private final static String COL_ID_ZONE_VERSION = "ID_ZONE_VERSION";
     private final static String COL_ID_KANTE_ELEMENT = "ID_KANTE_ELEMENT";
 
+    private final Collection<Long> versionIds;
 
     @Override
     public String getTable() {
@@ -32,7 +32,7 @@ public class SqlZoneVkIdsMapping implements SqlStandardMapping<KeyValue<Long, Lo
 
     @Override
     public Collection<SqlLongFilter> getFilters() {
-        return Collections.emptyList();
+        return SqlLongFilter.createSingleton(COL_ID_ZONE_VERSION, this.versionIds);
     }
 
 

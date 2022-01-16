@@ -72,24 +72,40 @@ public class TarifkanteRepoImpl implements TarifkanteRepo {
 
     @Override
     public Tarifkante getElement(long id) {
+        if (this.connectionState.isTrackChanges()) {
+            this.updateWhenChanged();
+        }
+
         return this.versionedObjectMap.getElement(id);
     }
 
 
     @Override
     public TarifkanteVersion getVersion(long id) {
+        if (this.connectionState.isTrackChanges()) {
+            this.updateWhenChanged();
+        }
+
         return this.versionedObjectMap.getVersion(id);
     }
 
 
     @Override
     public Collection<TarifkanteVersion> getElementVersions(long elementId) {
+        if (this.connectionState.isTrackChanges()) {
+            this.updateWhenChanged();
+        }
+
         return this.versionedObjectMap.getElementVersions(elementId);
     }
 
 
     @Override
     public TarifkanteVersion getElementVersionAtDate(long elementId, LocalDate date) {
+        if (this.connectionState.isTrackChanges()) {
+            this.updateWhenChanged();
+        }
+
         return this.versionedObjectMap.getElementVersionAtDate(elementId, date);
     }
 
@@ -240,6 +256,5 @@ public class TarifkanteRepoImpl implements TarifkanteRepo {
         }
 
         this.lastChangeCheck = LocalDateTime.now();
-        logger.info("done.");
     }
 }

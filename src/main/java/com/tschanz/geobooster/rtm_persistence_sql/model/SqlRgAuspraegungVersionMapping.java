@@ -80,7 +80,7 @@ public class SqlRgAuspraegungVersionMapping implements SqlStandardMapping<RgAusp
         var rga = this.rgAuspraegungMap.get(elementId);
         var korrEs = this.rgKorridorByRgMap.get(rga.getRelationsgebietId());
 
-        Collection<Long> tkIds = korrEs == null ? Collections.emptyList() : korrEs.stream()
+        var tkIds = korrEs == null ? Collections.<Long>emptyList() : korrEs.stream()
             .map(korrE -> {
                 var korrVs = this.rgKorridorVersionMap.get(korrE.getId());
                 return korrVs != null ? VersioningHelper.filterSingleVersion(korrVs, gueltigBis) : null;
