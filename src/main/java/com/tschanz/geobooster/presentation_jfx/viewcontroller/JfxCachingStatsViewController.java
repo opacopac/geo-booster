@@ -19,6 +19,7 @@ public class JfxCachingStatsViewController implements CachingStatsViewPresenter 
     @FXML private Label tkCountLabel;
     @FXML private Label hstWaCountLabel;
     @FXML private Label rgaCountLabel;
+    @FXML private Label zoneCountLabel;
     @FXML private Label zpCountLabel;
     @FXML private Label awbCountLabel;
     @FXML private Label betrVersionCountLabel;
@@ -28,6 +29,7 @@ public class JfxCachingStatsViewController implements CachingStatsViewPresenter 
     @FXML private Label tkVersionCountLabel;
     @FXML private Label hstWaVersionCountLabel;
     @FXML private Label rgaVersionCountLabel;
+    @FXML private Label zoneVersionCountLabel;
     @FXML private Label zpVersionCountLabel;
     @FXML private Label awbVersionCountLabel;
     @FXML private ProgressIndicator betrProgressIndicator;
@@ -37,6 +39,7 @@ public class JfxCachingStatsViewController implements CachingStatsViewPresenter 
     @FXML private ProgressIndicator tkProgressIndicator;
     @FXML private ProgressIndicator hstWaProgressIndicator;
     @FXML private ProgressIndicator rgaProgressIndicator;
+    @FXML private ProgressIndicator zoneProgressIndicator;
     @FXML private ProgressIndicator zpProgressIndicator;
     @FXML private ProgressIndicator awbProgressIndicator;
 
@@ -118,6 +121,17 @@ public class JfxCachingStatsViewController implements CachingStatsViewPresenter 
         });
         rtmRepoState.getRgAuspraegungRepoState().getIsLoading$().subscribe(isLoading -> {
             Platform.runLater(() -> rgaProgressIndicator.setVisible(isLoading));
+        });
+
+        // zone
+        zonenRepoState.getZoneRepoState().getLoadedElementCount$().subscribe(elementCount -> {
+            Platform.runLater(() -> zoneCountLabel.setText(elementCount.toString()));
+        });
+        zonenRepoState.getZoneRepoState().getLoadedVersionCount$().subscribe(versionCount -> {
+            Platform.runLater(() -> zoneVersionCountLabel.setText(versionCount.toString()));
+        });
+        zonenRepoState.getZoneRepoState().getIsLoading$().subscribe(isLoading -> {
+            Platform.runLater(() -> zoneProgressIndicator.setVisible(isLoading));
         });
 
         // zp

@@ -49,18 +49,12 @@ public class SqlVerkehrskanteVersionMapping implements SqlStandardMapping<Verkeh
     @Override
     @SneakyThrows
     public VerkehrskanteVersion fromResultSet(ResultSet row) {
-        var vkEId = SqlVersionMapping.getElementId(row);
-        var gueltigVon = SqlVersionMapping.getGueltigVon(row);
-        var gueltigBis = SqlVersionMapping.getGueltigBis(row);
-
-        return new VerkehrskanteVersion(
+        return this.createVerkehrskanteVersion(
             SqlHasIdMapping.getId(row),
-            vkEId,
-            gueltigVon,
-            gueltigBis,
-            SqlVersionMapping.getTerminiertPer(row),
-            this.getVerwaltungIds(vkEId, gueltigBis),
-            this.getVmBitmask(vkEId, gueltigBis)
+            SqlVersionMapping.getElementId(row),
+            SqlVersionMapping.getGueltigVon(row),
+            SqlVersionMapping.getGueltigBis(row),
+            SqlVersionMapping.getTerminiertPer(row)
         );
     }
 
@@ -68,22 +62,33 @@ public class SqlVerkehrskanteVersionMapping implements SqlStandardMapping<Verkeh
     @Override
     @SneakyThrows
     public VerkehrskanteVersion fromJsonAgg(JsonReader reader) {
-        var id = SqlHasIdMapping.getIdFromJsonAgg(reader);
-        var elementId = SqlVersionMapping.getElementIdFromJsonAgg(reader);
-        var gueltigVon = SqlVersionMapping.getGueltigVonFromJsonAgg(reader);
-        var gueltigBis = SqlVersionMapping.getGueltigBisFromJsonAgg(reader);
+        return this.createVerkehrskanteVersion(
+            SqlHasIdMapping.getIdFromJsonAgg(reader),
+            SqlVersionMapping.getElementIdFromJsonAgg(reader),
+            SqlVersionMapping.getGueltigVonFromJsonAgg(reader),
+            SqlVersionMapping.getGueltigBisFromJsonAgg(reader),
+            SqlHelper.parseLocalDateOrNullfromJsonAgg(reader)
+        );
+    }
 
+
+    private VerkehrskanteVersion createVerkehrskanteVersion(
+        long id,
+        long elementId,
+        LocalDate gueltigVon,
+        LocalDate gueltigBis,
+        LocalDate terminiertPer
+    ) {
         return new VerkehrskanteVersion(
             id,
             elementId,
             gueltigVon,
             gueltigBis,
-            SqlHelper.parseLocalDateOrNullfromJsonAgg(reader),
+            terminiertPer,
             this.getVerwaltungIds(elementId, gueltigBis),
             this.getVmBitmask(elementId, gueltigBis)
         );
     }
-
 
 
     private Collection<Long> getVerwaltungIds(long vkEId, LocalDate date) {

@@ -13,6 +13,7 @@ import com.tschanz.geobooster.tarif.model.Awb;
 import com.tschanz.geobooster.tarif.model.AwbVersion;
 import com.tschanz.geobooster.tarif_persistence.service.AwbPersistence;
 import com.tschanz.geobooster.tarif_repo.model.AwbRepoState;
+import com.tschanz.geobooster.util.service.DebounceTimer;
 import com.tschanz.geobooster.versioning_repo.model.VersionedObjectMap;
 import com.tschanz.geobooster.zonen_repo.service.ZonenplanRepo;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,6 @@ import lombok.Synchronized;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -29,8 +29,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class AwbRepoImpl implements AwbRepo {
-    private static final int DEBOUNCE_TIME_LAST_CHANGE_CHECK_SEC = 5;
-
     private final ConnectionState connectionState;
     private final AwbPersistence awbPersistence;
     private final ProgressState progressState;
@@ -41,7 +39,7 @@ public class AwbRepoImpl implements AwbRepo {
     private final VerkehrskanteRepo vkRepo;
 
     private VersionedObjectMap<Awb, AwbVersion> versionedObjectMap;
-    private LocalDateTime lastChangeCheck = LocalDateTime.now();
+    private final DebounceTimer debounceTimer = new DebounceTimer(5);
 
 
     @Override
@@ -59,6 +57,7 @@ public class AwbRepoImpl implements AwbRepo {
         this.progressState.updateProgressText("initializing awb repo...");
         this.versionedObjectMap = new VersionedObjectMap<>(elements, versions);
 
+        this.debounceTimer.touch();
         this.progressState.updateProgressText("loading awbs done");
         this.awbRepoState.updateIsLoading(false);
     }
@@ -162,48 +161,29 @@ public class AwbRepoImpl implements AwbRepo {
         }
 
         var zpIds = awbVersion.getIncludeZonenplanIds();
-        var vkIds = zpIds == null ? Collections.<Long>emptyList() : zpIds.stream()
+        var vkVs = zpIds == null ? Collections.<VerkehrskanteVersion>emptyList() : zpIds.stream()
             .map(zpId -> this.zonenplanRepo.getElementVersionAtDate(zpId, date))
             .filter(Objects::nonNull)
-            .flatMap(zpV -> zpV.getVerkehrskantenIds().stream())
+            .flatMap(zpV -> this.zonenplanRepo.searchZpVerkehrskanten(zpV, date, bbox).stream())
             .distinct()
             .collect(Collectors.toList());
 
-        var vkVs = vkIds.stream()
-            .map(vkId -> this.vkRepo.getElementVersionAtDate(vkId, date))
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
-
-        var filteredZpVkVs = vkVs.stream()
-            .filter(vkV -> {
-                // filter by bbox
-                var vkExtent = Extent.fromCoords(
-                    this.vkRepo.getStartCoordinate(vkV),
-                    this.vkRepo.getEndCoordinate(vkV)
-                );
-
-                return vkExtent.isExtentIntersecting(bbox);
-            })
-            .collect(Collectors.toList());
-
-        return filteredZpVkVs;
+        return vkVs;
     }
 
 
     @SneakyThrows
     @Synchronized
     private void updateWhenChanged() {
-        // skip check in subsequent requests within 5 seconds
-        if (LocalDateTime.now().isBefore(this.lastChangeCheck.plusSeconds(DEBOUNCE_TIME_LAST_CHANGE_CHECK_SEC))) {
+        if (this.debounceTimer.isInDebounceTime()) {
             return;
         }
 
         var changes = this.awbPersistence.findChanges(
-            this.lastChangeCheck,
+            this.debounceTimer.getPreviousChangeCheck(),
             this.versionedObjectMap.getAllVersionKeys()
         );
 
         this.versionedObjectMap.updateChanges(changes);
-        this.lastChangeCheck = LocalDateTime.now();
     }
 }

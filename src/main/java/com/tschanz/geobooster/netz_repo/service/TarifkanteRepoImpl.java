@@ -16,6 +16,7 @@ import com.tschanz.geobooster.quadtree.model.AreaQuadTree;
 import com.tschanz.geobooster.quadtree.model.AreaQuadTreeItem;
 import com.tschanz.geobooster.quadtree.model.QuadTreeCoordinate;
 import com.tschanz.geobooster.quadtree.model.QuadTreeExtent;
+import com.tschanz.geobooster.util.service.DebounceTimer;
 import com.tschanz.geobooster.versioning_repo.model.VersionedObjectMap;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -25,7 +26,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,7 +35,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TarifkanteRepoImpl implements TarifkanteRepo {
     private static final Logger logger = LogManager.getLogger(TarifkanteRepoImpl.class);
-    private static final int DEBOUNCE_TIME_LAST_CHANGE_CHECK_SEC = 5;
 
     private final TarifkantePersistence tkPersistenceRepo;
     private final HaltestelleRepo hstRepo;
@@ -45,7 +44,7 @@ public class TarifkanteRepoImpl implements TarifkanteRepo {
 
     private VersionedObjectMap<Tarifkante, TarifkanteVersion> versionedObjectMap;
     private AreaQuadTree<TarifkanteVersion> versionQuadTree;
-    private LocalDateTime lastChangeCheck = LocalDateTime.now();
+    private final DebounceTimer debounceTimer = new DebounceTimer(5);
 
 
     @Override
@@ -64,7 +63,7 @@ public class TarifkanteRepoImpl implements TarifkanteRepo {
         this.versionedObjectMap = new VersionedObjectMap<>(elements, versions);
         this.versionQuadTree = this.createQuadTree(this.versionedObjectMap);
 
-        this.lastChangeCheck = LocalDateTime.now();
+        this.debounceTimer.touch();
         this.progressState.updateProgressText("loading tarifkanten done");
         this.tarifkanteRepoState.updateIsLoading(false);
     }
@@ -223,13 +222,12 @@ public class TarifkanteRepoImpl implements TarifkanteRepo {
     @SneakyThrows
     @Synchronized
     private void updateWhenChanged() {
-        // skip check in subsequent requests within 5 seconds
-        if (LocalDateTime.now().isBefore(this.lastChangeCheck.plusSeconds(DEBOUNCE_TIME_LAST_CHANGE_CHECK_SEC))) {
+        if (this.debounceTimer.isInDebounceTime()) {
             return;
         }
 
         var changes = this.tkPersistenceRepo.findChanges(
-            this.lastChangeCheck,
+            this.debounceTimer.getPreviousChangeCheck(),
             this.versionedObjectMap.getAllVersionKeys()
         );
 
@@ -250,7 +248,5 @@ public class TarifkanteRepoImpl implements TarifkanteRepo {
                 this.versionQuadTree.removeItem(vId);
             });
         }
-
-        this.lastChangeCheck = LocalDateTime.now();
     }
 }

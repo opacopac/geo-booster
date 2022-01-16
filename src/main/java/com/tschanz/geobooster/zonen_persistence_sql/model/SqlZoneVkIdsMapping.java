@@ -16,7 +16,7 @@ public class SqlZoneVkIdsMapping implements SqlStandardMapping<KeyValue<Long, Lo
     private final static String COL_ID_ZONE_VERSION = "ID_ZONE_VERSION";
     private final static String COL_ID_KANTE_ELEMENT = "ID_KANTE_ELEMENT";
 
-    private final Collection<Long> versionIds;
+    private final Collection<Long> filterVersionIds;
 
     @Override
     public String getTable() {
@@ -32,7 +32,7 @@ public class SqlZoneVkIdsMapping implements SqlStandardMapping<KeyValue<Long, Lo
 
     @Override
     public Collection<SqlLongFilter> getFilters() {
-        return SqlLongFilter.createSingleton(COL_ID_ZONE_VERSION, this.versionIds);
+        return SqlLongFilter.createSingleton(COL_ID_ZONE_VERSION, this.filterVersionIds);
     }
 
 

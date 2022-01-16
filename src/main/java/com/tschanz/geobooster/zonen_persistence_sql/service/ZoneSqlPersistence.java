@@ -2,6 +2,7 @@ package com.tschanz.geobooster.zonen_persistence_sql.service;
 
 import com.tschanz.geobooster.persistence_sql.service.SqlStandardReader;
 import com.tschanz.geobooster.util.model.KeyValue;
+import com.tschanz.geobooster.util.service.ArrayHelper;
 import com.tschanz.geobooster.versioning_persistence.model.ElementVersionChanges;
 import com.tschanz.geobooster.versioning_persistence_sql.service.SqlChangeDetector;
 import com.tschanz.geobooster.zonen.model.Zone;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -39,30 +41,17 @@ public class ZoneSqlPersistence implements ZonePersistence {
 
 
     @Override
-    public Collection<Zone> readElements(Collection<Long> elementIds) {
-        var mapping = new SqlZoneElementMapping(elementIds);
+    public Collection<Zone> readElements(Collection<Long> filterElementIds) {
+        var mapping = new SqlZoneElementMapping(filterElementIds);
 
         return this.sqlReader.read(mapping);
     }
 
 
     @Override
-    public Collection<ZoneVersion> readVersions(Collection<Long> versionIds) {
-        var mapping = new SqlZoneVersionMapping(versionIds);
-
-        return this.sqlReader.read(mapping);
-    }
-
-
-    @Override
-    public Collection<KeyValue<Long, Long>> readAllVkIds() {
-        return this.readVkIds(Collections.emptyList());
-    }
-
-
-    @Override
-    public Collection<KeyValue<Long, Long>> readVkIds(Collection<Long> versionIds) {
-        var mapping = new SqlZoneVkIdsMapping(versionIds);
+    public Collection<ZoneVersion> readVersions(Collection<Long> filterVersionIds) {
+        var vkIdMap = this.readVkIdMap(filterVersionIds);
+        var mapping = new SqlZoneVersionMapping(vkIdMap, filterVersionIds);
 
         return this.sqlReader.read(mapping);
     }
@@ -82,5 +71,14 @@ public class ZoneSqlPersistence implements ZonePersistence {
             Collections.emptyList(), // ignoring deleted elements
             modifiedDeletedVersionIds.getList2()
         );
+    }
+
+
+    private Map<Long, Collection<Long>> readVkIdMap(Collection<Long> filterVersionIds) {
+        var mapping = new SqlZoneVkIdsMapping(filterVersionIds);
+        var zoneVIdsvkIds = this.sqlReader.read(mapping);
+
+        return ArrayHelper.create1toNLookupMap(zoneVIdsvkIds, KeyValue::getKey, KeyValue::getValue);
+
     }
 }

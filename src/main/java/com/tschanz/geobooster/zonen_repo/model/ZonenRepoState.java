@@ -9,5 +9,6 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class ZonenRepoState {
+    private final ZoneRepoState zoneRepoState;
     private final ZonenplanRepoState zonenplanRepoState;
 }

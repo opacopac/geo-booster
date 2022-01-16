@@ -10,7 +10,5 @@ import java.util.Collection;
 
 
 public interface ZonenplanPersistence extends VersionedObjectPersistence<Zonenplan, ZonenplanVersion> {
-    Collection<ZonenplanVersion> readAllVersions(Collection<Zonenplan> elements);
-
-    ElementVersionChanges<Zonenplan, ZonenplanVersion> findChanges(LocalDateTime changedSince, Collection<Long> currentVersionIds, Collection<Zonenplan> elements);
+    ElementVersionChanges<Zonenplan, ZonenplanVersion> findChanges(LocalDateTime changedSince, Collection<Long> currentVersionIds);
 }

@@ -1,7 +1,12 @@
 package com.tschanz.geobooster.zonen_repo.service;
 
+import com.tschanz.geobooster.geofeature.model.Epsg3857Coordinate;
+import com.tschanz.geobooster.geofeature.model.Extent;
+import com.tschanz.geobooster.netz.model.VerkehrskanteVersion;
 import com.tschanz.geobooster.netz_repo.model.ProgressState;
+import com.tschanz.geobooster.netz_repo.service.VerkehrskanteRepo;
 import com.tschanz.geobooster.persistence_sql.model.ConnectionState;
+import com.tschanz.geobooster.util.service.DebounceTimer;
 import com.tschanz.geobooster.versioning_repo.model.VersionedObjectMap;
 import com.tschanz.geobooster.zonen.model.Zonenplan;
 import com.tschanz.geobooster.zonen.model.ZonenplanVersion;
@@ -13,22 +18,23 @@ import lombok.Synchronized;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 
 @Service
 @RequiredArgsConstructor
 public class ZonenplanRepoImpl implements ZonenplanRepo {
-    private static final int DEBOUNCE_TIME_LAST_CHANGE_CHECK_SEC = 5;
-
     private final ConnectionState connectionState;
     private final ZonenplanPersistence zonenplanPersistence;
+    private final ZoneRepo zoneRepo;
+    private final VerkehrskanteRepo vkRepo;
     private final ProgressState progressState;
     private final ZonenplanRepoState zonenplanRepoState;
 
     private VersionedObjectMap<Zonenplan, ZonenplanVersion> versionedObjectMap;
-    private LocalDateTime lastChangeCheck = LocalDateTime.now();
+    private final DebounceTimer debounceTimer = new DebounceTimer(5);
 
 
     @Override
@@ -40,12 +46,13 @@ public class ZonenplanRepoImpl implements ZonenplanRepo {
         this.zonenplanRepoState.updateLoadedElementCount(elements.size());
 
         this.progressState.updateProgressText("loading zonenplan versions...");
-        var versions = this.zonenplanPersistence.readAllVersions(elements);
+        var versions = this.zonenplanPersistence.readAllVersions();
         this.zonenplanRepoState.updateLoadedVersionCount(versions.size());
 
         this.progressState.updateProgressText("initializing zonenplan repo...");
         this.versionedObjectMap = new VersionedObjectMap<>(elements, versions);
 
+        this.debounceTimer.touch();
         this.progressState.updateProgressText("loading zonenplan done");
         this.zonenplanRepoState.updateIsLoading(false);
     }
@@ -91,22 +98,43 @@ public class ZonenplanRepoImpl implements ZonenplanRepo {
     }
 
 
+    @Override
+    public Collection<VerkehrskanteVersion> searchZpVerkehrskanten(ZonenplanVersion zpVersion, LocalDate date, Extent<Epsg3857Coordinate> bbox) {
+        var zoneVs = this.zoneRepo.getVersionsByZonenplanId(zpVersion.getElementId(), date);
+        var vkVs = zoneVs.stream()
+            .map(zV -> zV.getUrsprungsZoneId() == 0 ? zV : this.zoneRepo.getElementVersionAtDate(zV.getUrsprungsZoneId(), date))
+            .flatMap(zV -> zV.getVerkehrskantenIds().stream())
+            .map(vkEId -> this.vkRepo.getElementVersionAtDate(vkEId, date))
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
+
+        var filteredZpVkVs = vkVs.stream()
+            .filter(vkV -> {
+                var vkExtent = Extent.fromCoords(
+                    this.vkRepo.getStartCoordinate(vkV),
+                    this.vkRepo.getEndCoordinate(vkV)
+                );
+
+                return vkExtent.isExtentIntersecting(bbox);
+            })
+            .collect(Collectors.toList());
+
+        return filteredZpVkVs;
+    }
+
+
     @SneakyThrows
     @Synchronized
     private void updateWhenChanged() {
-        // skip check in subsequent requests within 5 seconds
-        if (LocalDateTime.now().isBefore(this.lastChangeCheck.plusSeconds(DEBOUNCE_TIME_LAST_CHANGE_CHECK_SEC))) {
+        if (this.debounceTimer.isInDebounceTime()) {
             return;
         }
 
         var changes = this.zonenplanPersistence.findChanges(
-            this.lastChangeCheck,
-            this.versionedObjectMap.getAllVersionKeys(),
-            this.versionedObjectMap.getAllElements()
+            this.debounceTimer.getPreviousChangeCheck(),
+            this.versionedObjectMap.getAllVersionKeys()
         );
 
         this.versionedObjectMap.updateChanges(changes);
-
-        this.lastChangeCheck = LocalDateTime.now();
     }
 }
