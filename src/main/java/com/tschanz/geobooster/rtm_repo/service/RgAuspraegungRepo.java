@@ -12,5 +12,5 @@ import java.util.Collection;
 
 
 public interface RgAuspraegungRepo extends VersionedObjectRepo<RgAuspraegung, RgAuspraegungVersion> {
-    Collection<TarifkanteVersion> searchRgaTarifkanten(RgAuspraegungVersion rgaVersion, LocalDate date, Extent<Epsg3857Coordinate> bbox);
+    Collection<TarifkanteVersion> searchRgaTarifkanten(long rgaId, LocalDate date, Extent<Epsg3857Coordinate> bbox);
 }

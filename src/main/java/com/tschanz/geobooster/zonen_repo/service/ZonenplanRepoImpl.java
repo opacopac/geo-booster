@@ -99,8 +99,8 @@ public class ZonenplanRepoImpl implements ZonenplanRepo {
 
 
     @Override
-    public Collection<VerkehrskanteVersion> searchZpVerkehrskanten(ZonenplanVersion zpVersion, LocalDate date, Extent<Epsg3857Coordinate> bbox) {
-        var zoneVs = this.zoneRepo.getVersionsByZonenplanId(zpVersion.getElementId(), date);
+    public Collection<VerkehrskanteVersion> searchZpVerkehrskanten(long zonenplanId, LocalDate date, Extent<Epsg3857Coordinate> bbox) {
+        var zoneVs = this.zoneRepo.getVersionsByZonenplanId(zonenplanId, date);
         var vkVs = zoneVs.stream()
             .map(zV -> zV.getUrsprungsZoneId() == 0 ? zV : this.zoneRepo.getElementVersionAtDate(zV.getUrsprungsZoneId(), date))
             .flatMap(zV -> zV.getVerkehrskantenIds().stream())

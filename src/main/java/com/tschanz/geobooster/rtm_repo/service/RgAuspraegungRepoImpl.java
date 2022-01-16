@@ -98,8 +98,8 @@ public class RgAuspraegungRepoImpl implements RgAuspraegungRepo {
 
 
     @Override
-    public Collection<TarifkanteVersion> searchRgaTarifkanten(RgAuspraegungVersion rgaVersion, LocalDate date, Extent<Epsg3857Coordinate> bbox) {
-        var rgaE = this.getElement(rgaVersion.getElementId());
+    public Collection<TarifkanteVersion> searchRgaTarifkanten(long rgaId, LocalDate date, Extent<Epsg3857Coordinate> bbox) {
+        var rgaE = this.getElement(rgaId);
         var tkVs = this.rgKorridorRepo.getVersionsByRgId(rgaE.getRelationsgebietId(), date).stream()
             .flatMap(korrV -> korrV.getTarifkantenIds().stream())
             .map(tkEId -> this.tkRepo.getElementVersionAtDate(tkEId, date))
@@ -108,7 +108,6 @@ public class RgAuspraegungRepoImpl implements RgAuspraegungRepo {
 
         var filteredRgaTkVs = tkVs.stream()
             .filter(tkV -> {
-                // filter by bbox
                 var tkExtent = Extent.fromCoords(
                     this.tkRepo.getStartCoordinate(tkV),
                     this.tkRepo.getEndCoordinate(tkV)

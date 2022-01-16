@@ -21,7 +21,10 @@ import lombok.Synchronized;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -125,9 +128,7 @@ public class AwbRepoImpl implements AwbRepo {
 
         var rgaIds = awbVersion.getIncludeRgaIds();
         var tkVs = rgaIds == null ? Collections.<TarifkanteVersion>emptyList() : rgaIds.stream()
-            .map(rgaId -> this.rgAuspraegungRepo.getElementVersionAtDate(rgaId, date))
-            .filter(Objects::nonNull)
-            .flatMap(rgaV -> this.rgAuspraegungRepo.searchRgaTarifkanten(rgaV, date, bbox).stream())
+            .flatMap(rgaId -> this.rgAuspraegungRepo.searchRgaTarifkanten(rgaId, date, bbox).stream())
             .distinct()
             .collect(Collectors.toList());
 
@@ -143,9 +144,7 @@ public class AwbRepoImpl implements AwbRepo {
 
         var zpIds = awbVersion.getIncludeZonenplanIds();
         var vkVs = zpIds == null ? Collections.<VerkehrskanteVersion>emptyList() : zpIds.stream()
-            .map(zpId -> this.zonenplanRepo.getElementVersionAtDate(zpId, date))
-            .filter(Objects::nonNull)
-            .flatMap(zpV -> this.zonenplanRepo.searchZpVerkehrskanten(zpV, date, bbox).stream())
+            .flatMap(zpId -> this.zonenplanRepo.searchZpVerkehrskanten(zpId, date, bbox).stream())
             .distinct()
             .collect(Collectors.toList());
 

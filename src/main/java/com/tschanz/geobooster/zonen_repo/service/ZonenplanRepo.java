@@ -12,5 +12,5 @@ import java.util.Collection;
 
 
 public interface ZonenplanRepo extends VersionedObjectRepo<Zonenplan, ZonenplanVersion> {
-    Collection<VerkehrskanteVersion> searchZpVerkehrskanten(ZonenplanVersion zpVersion, LocalDate date, Extent<Epsg3857Coordinate> bbox);
+    Collection<VerkehrskanteVersion> searchZpVerkehrskanten(long zonenplanId, LocalDate date, Extent<Epsg3857Coordinate> bbox);
 }
