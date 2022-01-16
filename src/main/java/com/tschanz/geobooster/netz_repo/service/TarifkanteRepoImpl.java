@@ -228,17 +228,15 @@ public class TarifkanteRepoImpl implements TarifkanteRepo {
             return;
         }
 
-        logger.info("checking for changes in tks...");
         var changes = this.tkPersistenceRepo.findChanges(
             this.lastChangeCheck,
             this.versionedObjectMap.getAllVersionKeys()
         );
 
+        this.versionedObjectMap.updateChanges(changes);
+
         if (!changes.getModifiedVersions().isEmpty()) {
-            logger.info(String.format("new/changed tk versions found: %s", changes.getModifiedVersions()));
-            changes.getModifiedElements().forEach(tkE -> this.versionedObjectMap.putElement(tkE));
             changes.getModifiedVersions().forEach(tkV -> {
-                this.versionedObjectMap.putVersion(tkV);
                 this.versionQuadTree.removeItem(tkV.getId());
                 var item = this.createQuadTreeItem(tkV);
                 if (item != null) {
@@ -248,9 +246,7 @@ public class TarifkanteRepoImpl implements TarifkanteRepo {
         }
 
         if (!changes.getDeletedVersionIds().isEmpty()) {
-            logger.info(String.format("removed tk versions found: %s", changes.getDeletedVersionIds()));
             changes.getDeletedVersionIds().forEach(vId -> {
-                this.versionedObjectMap.deleteVersion(vId);
                 this.versionQuadTree.removeItem(vId);
             });
         }

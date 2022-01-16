@@ -3,6 +3,7 @@ package com.tschanz.geobooster.versioning_repo.model;
 import com.tschanz.geobooster.versioning.model.Element;
 import com.tschanz.geobooster.versioning.model.Version;
 import com.tschanz.geobooster.versioning.service.VersioningHelper;
+import com.tschanz.geobooster.versioning_persistence.model.ElementVersionChanges;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -94,5 +95,17 @@ public class VersionedObjectMap<E extends Element, V extends Version> {
 
     public V getElementVersionAtDate(long elementId, LocalDate date) {
         return VersioningHelper.filterSingleVersion(this.getElementVersions(elementId), date);
+    }
+
+
+    public void updateChanges(ElementVersionChanges<E, V> changes) {
+        if (!changes.getModifiedVersions().isEmpty()) {
+            changes.getModifiedElements().forEach(this::putElement);
+            changes.getModifiedVersions().forEach(this::putVersion);
+        }
+
+        if (!changes.getDeletedVersionIds().isEmpty()) {
+            changes.getDeletedVersionIds().forEach(this::deleteVersion);
+        }
     }
 }

@@ -10,8 +10,6 @@ import com.tschanz.geobooster.zonen_repo.model.ZonenplanRepoState;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.Synchronized;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -22,7 +20,6 @@ import java.util.Collection;
 @Service
 @RequiredArgsConstructor
 public class ZonenplanRepoImpl implements ZonenplanRepo {
-    private static final Logger logger = LogManager.getLogger(ZonenplanRepoImpl.class);
     private static final int DEBOUNCE_TIME_LAST_CHANGE_CHECK_SEC = 5;
 
     private final ConnectionState connectionState;
@@ -102,23 +99,13 @@ public class ZonenplanRepoImpl implements ZonenplanRepo {
             return;
         }
 
-        logger.info("checking for changes in zps...");
         var changes = this.zonenplanPersistence.findChanges(
             this.lastChangeCheck,
             this.versionedObjectMap.getAllVersionKeys(),
             this.versionedObjectMap.getAllElements()
         );
 
-        if (!changes.getModifiedVersions().isEmpty()) {
-            logger.info(String.format("new/changed zp versions found: %s", changes.getModifiedVersions()));
-            changes.getModifiedElements().forEach(tkE -> this.versionedObjectMap.putElement(tkE));
-            changes.getModifiedVersions().forEach(tkV -> this.versionedObjectMap.putVersion(tkV));
-        }
-
-        if (!changes.getDeletedVersionIds().isEmpty()) {
-            logger.info(String.format("removed zp versions found: %s", changes.getDeletedVersionIds()));
-            changes.getDeletedVersionIds().forEach(vId -> this.versionedObjectMap.deleteVersion(vId));
-        }
+        this.versionedObjectMap.updateChanges(changes);
 
         this.lastChangeCheck = LocalDateTime.now();
     }
