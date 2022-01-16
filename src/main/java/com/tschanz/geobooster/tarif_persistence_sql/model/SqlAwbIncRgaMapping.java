@@ -48,7 +48,11 @@ public class SqlAwbIncRgaMapping implements SqlStandardMapping<KeyValue<Long, Lo
 
 
     @Override
+    @SneakyThrows
     public KeyValue<Long, Long> fromJsonAgg(JsonReader reader) {
-        return null;
+        return new KeyValue<>(
+            reader.nextLong(),
+            reader.nextLong()
+        );
     }
 }

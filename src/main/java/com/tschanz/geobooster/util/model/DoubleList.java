@@ -10,5 +10,5 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DoubleList<T> {
     private final List<T> list1;
-    private final List<T> List2;
+    private final List<T> list2;
 }
