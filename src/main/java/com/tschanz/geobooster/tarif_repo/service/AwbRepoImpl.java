@@ -7,6 +7,7 @@ import com.tschanz.geobooster.netz.model.VerkehrskanteVersion;
 import com.tschanz.geobooster.netz_repo.model.ProgressState;
 import com.tschanz.geobooster.netz_repo.service.TarifkanteRepo;
 import com.tschanz.geobooster.netz_repo.service.VerkehrskanteRepo;
+import com.tschanz.geobooster.persistence_sql.model.ConnectionState;
 import com.tschanz.geobooster.rtm_repo.service.RgAuspraegungRepo;
 import com.tschanz.geobooster.tarif.model.Awb;
 import com.tschanz.geobooster.tarif.model.AwbVersion;
@@ -15,18 +16,25 @@ import com.tschanz.geobooster.tarif_repo.model.AwbRepoState;
 import com.tschanz.geobooster.versioning_repo.model.VersionedObjectMap;
 import com.tschanz.geobooster.zone_repo.service.ZonenplanRepo;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.Synchronized;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Objects;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
 @Service
 @RequiredArgsConstructor
 public class AwbRepoImpl implements AwbRepo {
+    private static final Logger logger = LogManager.getLogger(AwbRepoImpl.class);
+    private static final int DEBOUNCE_TIME_LAST_CHANGE_CHECK_SEC = 5;
+
+    private final ConnectionState connectionState;
     private final AwbPersistence awbPersistence;
     private final ProgressState progressState;
     private final AwbRepoState awbRepoState;
@@ -36,6 +44,7 @@ public class AwbRepoImpl implements AwbRepo {
     private final VerkehrskanteRepo vkRepo;
 
     private VersionedObjectMap<Awb, AwbVersion> versionedObjectMap;
+    private LocalDateTime lastChangeCheck = LocalDateTime.now();
 
 
     @Override
@@ -83,7 +92,27 @@ public class AwbRepoImpl implements AwbRepo {
 
 
     @Override
-    public Collection<TarifkanteVersion> getRgaTarifkanten(AwbVersion awbVersion, LocalDate date, Extent<Epsg3857Coordinate> bbox) {
+    public Collection<VerkehrskanteVersion> searchVerwaltungKanten(AwbVersion awbVersion, LocalDate date, Extent<Epsg3857Coordinate> bbox) {
+        if (this.connectionState.isTrackChanges()) {
+            this.updateWhenChanged();
+        }
+
+        Map<Long, Long> awbVerwaltungIdMap = new HashMap<>();
+        awbVersion.getIncludeVerwaltungIds().forEach(verwEid -> awbVerwaltungIdMap.put(verwEid, verwEid));
+        var vksByExtent = this.vkRepo.searchByExtent(bbox);
+
+        return vksByExtent.stream()
+            .filter(vkV -> vkV.hasOneOfVerwaltungIds(awbVerwaltungIdMap))
+            .collect(Collectors.toList());
+    }
+
+
+    @Override
+    public Collection<TarifkanteVersion> searchRgaTarifkanten(AwbVersion awbVersion, LocalDate date, Extent<Epsg3857Coordinate> bbox) {
+        if (this.connectionState.isTrackChanges()) {
+            this.updateWhenChanged();
+        }
+
         var rgaIds = awbVersion.getIncludeRgaIds();
         Collection<Long> tkIds = rgaIds == null ? Collections.emptyList() : rgaIds.stream()
             .map(rgaId -> this.rgAuspraegungRepo.getElementVersionAtDate(rgaId, date))
@@ -114,7 +143,11 @@ public class AwbRepoImpl implements AwbRepo {
 
 
     @Override
-    public Collection<VerkehrskanteVersion> getZpVerkehrskanten(AwbVersion awbVersion, LocalDate date, Extent<Epsg3857Coordinate> bbox) {
+    public Collection<VerkehrskanteVersion> searchZpVerkehrskanten(AwbVersion awbVersion, LocalDate date, Extent<Epsg3857Coordinate> bbox) {
+        if (this.connectionState.isTrackChanges()) {
+            this.updateWhenChanged();
+        }
+
         var zpIds = awbVersion.getIncludeZonenplanIds();
         Collection<Long> vkIds = zpIds == null ? Collections.emptyList() : zpIds.stream()
             .map(zpId -> this.zonenplanRepo.getElementVersionAtDate(zpId, date))
@@ -141,5 +174,35 @@ public class AwbRepoImpl implements AwbRepo {
             .collect(Collectors.toList());
 
         return filteredZpVkVs;
+    }
+
+
+    @SneakyThrows
+    @Synchronized
+    private void updateWhenChanged() {
+        // skip check in subsequent requests within 5 seconds
+        if (LocalDateTime.now().isBefore(this.lastChangeCheck.plusSeconds(DEBOUNCE_TIME_LAST_CHANGE_CHECK_SEC))) {
+            return;
+        }
+
+        logger.info("checking for changes in awbs...");
+        var changes = this.awbPersistence.findChanges(
+            this.lastChangeCheck,
+            this.versionedObjectMap.getAllVersionKeys()
+        );
+
+        if (!changes.getModifiedVersions().isEmpty()) {
+            logger.info(String.format("new/changed awb versions found: %s", changes.getModifiedVersions()));
+            changes.getModifiedElements().forEach(tkE -> this.versionedObjectMap.putElement(tkE));
+            changes.getModifiedVersions().forEach(tkV -> this.versionedObjectMap.putVersion(tkV));
+        }
+
+        if (!changes.getDeletedVersionIds().isEmpty()) {
+            logger.info(String.format("removed awb versions found: %s", changes.getDeletedVersionIds()));
+            changes.getDeletedVersionIds().forEach(vId -> this.versionedObjectMap.deleteVersion(vId));
+        }
+
+        this.lastChangeCheck = LocalDateTime.now();
+        logger.info("done.");
     }
 }

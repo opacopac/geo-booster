@@ -3,7 +3,6 @@ package com.tschanz.geobooster.map_layer.service;
 import com.tschanz.geobooster.map_layer.model.AwbVkLayerRequest;
 import com.tschanz.geobooster.netz.model.VerkehrskanteVersion;
 import com.tschanz.geobooster.netz_repo.service.LinieVarianteRepo;
-import com.tschanz.geobooster.netz_repo.service.VerkehrskanteRepo;
 import com.tschanz.geobooster.netz_repo.service.VerwaltungRepo;
 import com.tschanz.geobooster.tarif_repo.service.AwbRepo;
 import com.tschanz.geobooster.util.service.ArrayHelper;
@@ -18,7 +17,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class AwbVkLayerServiceImpl implements AwbVkLayerService {
-    private final VerkehrskanteRepo verkehrskanteRepo;
     private final LinieVarianteRepo linieVarianteRepo;
     private final VerwaltungRepo verwaltungRepo;
     private final AwbRepo awbRepo;
@@ -31,17 +29,14 @@ public class AwbVkLayerServiceImpl implements AwbVkLayerService {
 
         // add zonenplan kanten
         if (!awbVersion.getIncludeZonenplanIds().isEmpty()) {
-            var vksByZp = this.awbRepo.getZpVerkehrskanten(awbVersion, request.getDate(), request.getBbox());
+            var vksByZp = this.awbRepo.searchZpVerkehrskanten(awbVersion, request.getDate(), request.getBbox());
             vkVersions.addAll(vksByZp);
         }
 
         // add verwaltung kanten
         if (!awbVersion.getIncludeVerwaltungIds().isEmpty()) {
-            Map<Long, Long> awbVerwaltungIdMap = new HashMap<>();
-            awbVersion.getIncludeVerwaltungIds().forEach(verwEid -> awbVerwaltungIdMap.put(verwEid, verwEid));
-            var vksByExtent = this.verkehrskanteRepo.searchByExtent(request.getBbox());
-            var vkVsByVerwaltung = vksByExtent.stream().filter(vkV -> vkV.hasOneOfVerwaltungIds(awbVerwaltungIdMap)).collect(Collectors.toList());
-            vkVersions.addAll(vkVsByVerwaltung);
+            var vksByVerw = this.awbRepo.searchVerwaltungKanten(awbVersion, request.getDate(), request.getBbox());
+            vkVersions.addAll(vksByVerw);
         }
 
         // TODO: minus exclude vka

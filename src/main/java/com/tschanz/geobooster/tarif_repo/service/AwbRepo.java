@@ -13,7 +13,9 @@ import java.util.Collection;
 
 
 public interface AwbRepo extends VersionedObjectRepo<Awb, AwbVersion> {
-    Collection<TarifkanteVersion> getRgaTarifkanten(AwbVersion version, LocalDate date, Extent<Epsg3857Coordinate> bbox);
+    Collection<VerkehrskanteVersion> searchVerwaltungKanten(AwbVersion awbVersion, LocalDate date, Extent<Epsg3857Coordinate> bbox);
 
-    Collection<VerkehrskanteVersion> getZpVerkehrskanten(AwbVersion awbVersion, LocalDate date, Extent<Epsg3857Coordinate> bbox);
+    Collection<TarifkanteVersion> searchRgaTarifkanten(AwbVersion version, LocalDate date, Extent<Epsg3857Coordinate> bbox);
+
+    Collection<VerkehrskanteVersion> searchZpVerkehrskanten(AwbVersion awbVersion, LocalDate date, Extent<Epsg3857Coordinate> bbox);
 }

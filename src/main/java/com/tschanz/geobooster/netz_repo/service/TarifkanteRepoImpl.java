@@ -213,16 +213,15 @@ public class TarifkanteRepoImpl implements TarifkanteRepo {
         }
 
         logger.info("checking for changes in tks...");
-        var tkChanges = this.tkPersistenceRepo.findChanges(
+        var changes = this.tkPersistenceRepo.findChanges(
             this.lastChangeCheck,
             this.versionedObjectMap.getAllVersionKeys()
         );
 
-        if (!tkChanges.getModifiedVersions().isEmpty()) {
-            logger.info(String.format("new/changed tk versions found: %s", tkChanges.getModifiedVersions()));
-
-            tkChanges.getModifiedElements().forEach(tkE -> this.versionedObjectMap.putElement(tkE));
-            tkChanges.getModifiedVersions().forEach(tkV -> {
+        if (!changes.getModifiedVersions().isEmpty()) {
+            logger.info(String.format("new/changed tk versions found: %s", changes.getModifiedVersions()));
+            changes.getModifiedElements().forEach(tkE -> this.versionedObjectMap.putElement(tkE));
+            changes.getModifiedVersions().forEach(tkV -> {
                 this.versionedObjectMap.putVersion(tkV);
                 this.versionQuadTree.removeItem(tkV.getId());
                 var item = this.createQuadTreeItem(tkV);
@@ -232,14 +231,13 @@ public class TarifkanteRepoImpl implements TarifkanteRepo {
             });
         }
 
-        if (!tkChanges.getDeletedVersionIds().isEmpty()) {
-            logger.info(String.format("removed tk versions found: %s", tkChanges.getDeletedVersionIds()));
-            tkChanges.getDeletedVersionIds().forEach(vId -> {
+        if (!changes.getDeletedVersionIds().isEmpty()) {
+            logger.info(String.format("removed tk versions found: %s", changes.getDeletedVersionIds()));
+            changes.getDeletedVersionIds().forEach(vId -> {
                 this.versionedObjectMap.deleteVersion(vId);
                 this.versionQuadTree.removeItem(vId);
             });
         }
-
 
         this.lastChangeCheck = LocalDateTime.now();
         logger.info("done.");
