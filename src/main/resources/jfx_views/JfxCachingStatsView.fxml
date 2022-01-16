@@ -25,6 +25,7 @@
             <RowConstraints vgrow="ALWAYS" />
             <RowConstraints vgrow="ALWAYS" />
             <RowConstraints vgrow="ALWAYS" />
+            <RowConstraints vgrow="ALWAYS" />
         </rowConstraints>
         <Label text="Betreiber (E/V):" GridPane.columnIndex="0" GridPane.rowIndex="0" />
         <Label text="Verwaltung (E/V):" GridPane.columnIndex="0" GridPane.rowIndex="1" />
@@ -32,39 +33,43 @@
         <Label text="Verkehrskante (E/V):" GridPane.columnIndex="0" GridPane.rowIndex="3" />
         <Label text="Tarifkante (E/V):" GridPane.columnIndex="0" GridPane.rowIndex="4" />
         <Label text="HST Wegangabe (E/V):" GridPane.columnIndex="0" GridPane.rowIndex="5" />
-        <Label text="RG-Ausprägung (E/V):" GridPane.columnIndex="0" GridPane.rowIndex="6" />
-        <Label text="Zone (E/V):" GridPane.columnIndex="0" GridPane.rowIndex="7" />
-        <Label text="Zonenplan (E/V):" GridPane.columnIndex="0" GridPane.rowIndex="8" />
-        <Label text="AWB (E/V):" GridPane.columnIndex="0" GridPane.rowIndex="9" />
+        <Label text="RG-Korridor (E/V):" GridPane.columnIndex="0" GridPane.rowIndex="6" />
+        <Label text="RG-Ausprägung (E/V):" GridPane.columnIndex="0" GridPane.rowIndex="7" />
+        <Label text="Zone (E/V):" GridPane.columnIndex="0" GridPane.rowIndex="8" />
+        <Label text="Zonenplan (E/V):" GridPane.columnIndex="0" GridPane.rowIndex="9" />
+        <Label text="AWB (E/V):" GridPane.columnIndex="0" GridPane.rowIndex="10" />
         <Label fx:id="betrCountLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="0" />
         <Label fx:id="verwCountLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="1" />
         <Label fx:id="hstCountLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="2" />
         <Label fx:id="vkCountLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="3" />
         <Label fx:id="tkCountLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="4" />
         <Label fx:id="hstWaCountLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-        <Label fx:id="rgaCountLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-        <Label fx:id="zoneCountLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-        <Label fx:id="zpCountLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="8" />
-        <Label fx:id="awbCountLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+        <Label fx:id="rgKorrCountLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+        <Label fx:id="rgaCountLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+        <Label fx:id="zoneCountLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+        <Label fx:id="zpCountLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+        <Label fx:id="awbCountLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="10" />
         <Label fx:id="betrVersionCountLabel" text="-" GridPane.columnIndex="2" GridPane.rowIndex="0" />
         <Label fx:id="verwVersionCountLabel" text="-" GridPane.columnIndex="2" GridPane.rowIndex="1" />
         <Label fx:id="hstVersionCountLabel" text="-" GridPane.columnIndex="2" GridPane.rowIndex="2" />
         <Label fx:id="vkVersionCountLabel" text="-" GridPane.columnIndex="2" GridPane.rowIndex="3" />
         <Label fx:id="tkVersionCountLabel" text="-" GridPane.columnIndex="2" GridPane.rowIndex="4" />
         <Label fx:id="hstWaVersionCountLabel" text="-" GridPane.columnIndex="2" GridPane.rowIndex="5" />
-        <Label fx:id="rgaVersionCountLabel" text="-" GridPane.columnIndex="2" GridPane.rowIndex="6" />
-        <Label fx:id="zoneVersionCountLabel" text="-" GridPane.columnIndex="2" GridPane.rowIndex="7" />
-        <Label fx:id="zpVersionCountLabel" text="-" GridPane.columnIndex="2" GridPane.rowIndex="8" />
-        <Label fx:id="awbVersionCountLabel" text="-" GridPane.columnIndex="2" GridPane.rowIndex="9" />
+        <Label fx:id="rgKorrVersionCountLabel" text="-" GridPane.columnIndex="2" GridPane.rowIndex="6" />
+        <Label fx:id="rgaVersionCountLabel" text="-" GridPane.columnIndex="2" GridPane.rowIndex="7" />
+        <Label fx:id="zoneVersionCountLabel" text="-" GridPane.columnIndex="2" GridPane.rowIndex="8" />
+        <Label fx:id="zpVersionCountLabel" text="-" GridPane.columnIndex="2" GridPane.rowIndex="9" />
+        <Label fx:id="awbVersionCountLabel" text="-" GridPane.columnIndex="2" GridPane.rowIndex="10" />
         <ProgressIndicator fx:id="betrProgressIndicator" maxHeight="16" visible="false" GridPane.columnIndex="3" GridPane.rowIndex="0" />
         <ProgressIndicator fx:id="verwProgressIndicator" maxHeight="16" visible="false" GridPane.columnIndex="3" GridPane.rowIndex="1" />
         <ProgressIndicator fx:id="hstProgressIndicator" maxHeight="16" visible="false" GridPane.columnIndex="3" GridPane.rowIndex="2" />
         <ProgressIndicator fx:id="vkProgressIndicator" maxHeight="16" visible="false" GridPane.columnIndex="3" GridPane.rowIndex="3" />
         <ProgressIndicator fx:id="tkProgressIndicator" maxHeight="16" visible="false" GridPane.columnIndex="3" GridPane.rowIndex="4" />
         <ProgressIndicator fx:id="hstWaProgressIndicator" maxHeight="16" visible="false" GridPane.columnIndex="3" GridPane.rowIndex="5" />
-        <ProgressIndicator fx:id="rgaProgressIndicator" maxHeight="16" visible="false" GridPane.columnIndex="3" GridPane.rowIndex="6" />
-        <ProgressIndicator fx:id="zoneProgressIndicator" maxHeight="16" visible="false" GridPane.columnIndex="3" GridPane.rowIndex="7" />
-        <ProgressIndicator fx:id="zpProgressIndicator" maxHeight="16" visible="false" GridPane.columnIndex="3" GridPane.rowIndex="8" />
-        <ProgressIndicator fx:id="awbProgressIndicator" maxHeight="16" visible="false" GridPane.columnIndex="3" GridPane.rowIndex="9" />
+        <ProgressIndicator fx:id="rgKorrProgressIndicator" maxHeight="16" visible="false" GridPane.columnIndex="3" GridPane.rowIndex="6" />
+        <ProgressIndicator fx:id="rgaProgressIndicator" maxHeight="16" visible="false" GridPane.columnIndex="3" GridPane.rowIndex="7" />
+        <ProgressIndicator fx:id="zoneProgressIndicator" maxHeight="16" visible="false" GridPane.columnIndex="3" GridPane.rowIndex="8" />
+        <ProgressIndicator fx:id="zpProgressIndicator" maxHeight="16" visible="false" GridPane.columnIndex="3" GridPane.rowIndex="9" />
+        <ProgressIndicator fx:id="awbProgressIndicator" maxHeight="16" visible="false" GridPane.columnIndex="3" GridPane.rowIndex="10" />
     </GridPane>
 </AnchorPane>

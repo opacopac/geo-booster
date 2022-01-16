@@ -5,7 +5,6 @@ import com.tschanz.geobooster.geofeature.model.Extent;
 import com.tschanz.geobooster.netz.model.TarifkanteVersion;
 import com.tschanz.geobooster.netz.model.VerkehrskanteVersion;
 import com.tschanz.geobooster.netz_repo.model.ProgressState;
-import com.tschanz.geobooster.netz_repo.service.TarifkanteRepo;
 import com.tschanz.geobooster.netz_repo.service.VerkehrskanteRepo;
 import com.tschanz.geobooster.persistence_sql.model.ConnectionState;
 import com.tschanz.geobooster.rtm_repo.service.RgAuspraegungRepo;
@@ -35,7 +34,6 @@ public class AwbRepoImpl implements AwbRepo {
     private final AwbRepoState awbRepoState;
     private final RgAuspraegungRepo rgAuspraegungRepo;
     private final ZonenplanRepo zonenplanRepo;
-    private final TarifkanteRepo tkRepo;
     private final VerkehrskanteRepo vkRepo;
 
     private VersionedObjectMap<Awb, AwbVersion> versionedObjectMap;
@@ -126,31 +124,14 @@ public class AwbRepoImpl implements AwbRepo {
         }
 
         var rgaIds = awbVersion.getIncludeRgaIds();
-        var tkIds = rgaIds == null ? Collections.<Long>emptyList() : rgaIds.stream()
+        var tkVs = rgaIds == null ? Collections.<TarifkanteVersion>emptyList() : rgaIds.stream()
             .map(rgaId -> this.rgAuspraegungRepo.getElementVersionAtDate(rgaId, date))
             .filter(Objects::nonNull)
-            .flatMap(rgaV -> rgaV.getTarifkantenIds().stream())
+            .flatMap(rgaV -> this.rgAuspraegungRepo.searchRgaTarifkanten(rgaV, date, bbox).stream())
             .distinct()
             .collect(Collectors.toList());
 
-        var tkVs = tkIds.stream()
-            .map(tkId -> this.tkRepo.getElementVersionAtDate(tkId, date))
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
-
-        var filteredRgaTkVs = tkVs.stream()
-            .filter(tkV -> {
-                // filter by bbox
-                var tkExtent = Extent.fromCoords(
-                    this.tkRepo.getStartCoordinate(tkV),
-                    this.tkRepo.getEndCoordinate(tkV)
-                );
-
-                return tkExtent.isExtentIntersecting(bbox);
-            })
-            .collect(Collectors.toList());
-
-        return filteredRgaTkVs;
+        return tkVs;
     }
 
 

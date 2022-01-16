@@ -8,41 +8,74 @@ import com.tschanz.geobooster.rtm_persistence_sql.model.SqlRgKorridorElementMapp
 import com.tschanz.geobooster.rtm_persistence_sql.model.SqlRgKorridorTkIdsMapping;
 import com.tschanz.geobooster.rtm_persistence_sql.model.SqlRgKorridorVersionMapping;
 import com.tschanz.geobooster.util.model.KeyValue;
+import com.tschanz.geobooster.util.service.ArrayHelper;
+import com.tschanz.geobooster.versioning_persistence.model.ElementVersionChanges;
+import com.tschanz.geobooster.versioning_persistence_sql.service.SqlChangeDetector;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @Repository
 @RequiredArgsConstructor
 public class RgKorridorSqlPersistence implements RgKorridorPersistence {
     private final SqlStandardReader sqlReader;
+    private final SqlChangeDetector changeDetector;
 
 
     @Override
-    @SneakyThrows
     public Collection<RgKorridor> readAllElements() {
-        var mapping = new SqlRgKorridorElementMapping();
-
-        return this.sqlReader.read(mapping);
+        return this.readElements(Collections.emptyList());
     }
 
 
     @Override
-    @SneakyThrows
     public Collection<RgKorridorVersion> readAllVersions() {
-        var mapping = new SqlRgKorridorVersionMapping();
+        return this.readVersions(Collections.emptyList());
+    }
+
+
+    @Override
+    public ElementVersionChanges<RgKorridor, RgKorridorVersion> findChanges(LocalDateTime changedSince, Collection<Long> currentVersionIds) {
+        var modifiedDeletedVersionIds = this.changeDetector.findModifiedDeletedIds(SqlRgKorridorVersionMapping.TABLE_NAME, changedSince, currentVersionIds);
+        var modifiedVersionIds = modifiedDeletedVersionIds.getList1();
+        var modifiedVersions = !modifiedVersionIds.isEmpty() ? this.readVersions(modifiedVersionIds) : Collections.<RgKorridorVersion>emptyList();
+        var modifiedElementIds = modifiedVersions.stream().map(RgKorridorVersion::getElementId).distinct().collect(Collectors.toList());
+        var modifiedElements = !modifiedElementIds.isEmpty() ? this.readElements(modifiedElementIds) : Collections.<RgKorridor>emptyList();
+
+        return new ElementVersionChanges<>(
+            modifiedElements,
+            modifiedVersions,
+            Collections.emptyList(), // ignoring deleted elements
+            modifiedDeletedVersionIds.getList2()
+        );
+    }
+
+
+    private Collection<RgKorridor> readElements(Collection<Long> elementIds) {
+        var mapping = new SqlRgKorridorElementMapping(elementIds);
 
         return this.sqlReader.read(mapping);
     }
 
 
-    @Override
-    public Collection<KeyValue<Long, Long>> readAllKorridorTkIds() {
-        var mapping = new SqlRgKorridorTkIdsMapping();
+    private Collection<RgKorridorVersion> readVersions(Collection<Long> versionIds) {
+        var korrTkMap = this.readKorridorTkMap();
+        var mapping = new SqlRgKorridorVersionMapping(korrTkMap, versionIds);
 
         return this.sqlReader.read(mapping);
+    }
+
+
+    private Map<Long, Collection<Long>> readKorridorTkMap() {
+        var mapping = new SqlRgKorridorTkIdsMapping();
+        var rgKorrTkIds = this.sqlReader.read(mapping);
+
+        return ArrayHelper.create1toNLookupMap(rgKorrTkIds, KeyValue::getKey, KeyValue::getValue);
     }
 }

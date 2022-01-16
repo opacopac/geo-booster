@@ -4,6 +4,7 @@ import com.tschanz.geobooster.netz_repo.service.*;
 import com.tschanz.geobooster.presentation.model.GbState;
 import com.tschanz.geobooster.rtm_repo.service.HaltestelleWegangabeRepo;
 import com.tschanz.geobooster.rtm_repo.service.RgAuspraegungRepo;
+import com.tschanz.geobooster.rtm_repo.service.RgKorridorRepo;
 import com.tschanz.geobooster.tarif_repo.service.AwbRepo;
 import com.tschanz.geobooster.util.service.ExceptionHelper;
 import com.tschanz.geobooster.zonen_repo.service.ZoneRepo;
@@ -25,6 +26,7 @@ public class ConnectionActions {
     private final VerkehrskanteRepo verkehrskanteRepo;
     private final TarifkanteRepo tarifkanteRepo;
     private final HaltestelleWegangabeRepo hstWegangabeRepo;
+    private final RgKorridorRepo rgKorridorRepo;
     private final RgAuspraegungRepo rgAuspraegungRepo;
     private final ZoneRepo zoneRepo;
     private final ZonenplanRepo zonenplanRepo;
@@ -52,6 +54,7 @@ public class ConnectionActions {
                 this.verkehrskanteRepo.loadAll();
                 this.tarifkanteRepo.loadAll();
                 this.hstWegangabeRepo.loadAll();
+                this.rgKorridorRepo.loadAll();
                 this.rgAuspraegungRepo.loadAll();
                 this.zoneRepo.loadAll();
                 this.zonenplanRepo.loadAll();

@@ -18,6 +18,7 @@ public class JfxCachingStatsViewController implements CachingStatsViewPresenter 
     @FXML private Label vkCountLabel;
     @FXML private Label tkCountLabel;
     @FXML private Label hstWaCountLabel;
+    @FXML private Label rgKorrCountLabel;
     @FXML private Label rgaCountLabel;
     @FXML private Label zoneCountLabel;
     @FXML private Label zpCountLabel;
@@ -28,6 +29,7 @@ public class JfxCachingStatsViewController implements CachingStatsViewPresenter 
     @FXML private Label vkVersionCountLabel;
     @FXML private Label tkVersionCountLabel;
     @FXML private Label hstWaVersionCountLabel;
+    @FXML private Label rgKorrVersionCountLabel;
     @FXML private Label rgaVersionCountLabel;
     @FXML private Label zoneVersionCountLabel;
     @FXML private Label zpVersionCountLabel;
@@ -38,6 +40,7 @@ public class JfxCachingStatsViewController implements CachingStatsViewPresenter 
     @FXML private ProgressIndicator vkProgressIndicator;
     @FXML private ProgressIndicator tkProgressIndicator;
     @FXML private ProgressIndicator hstWaProgressIndicator;
+    @FXML private ProgressIndicator rgKorrProgressIndicator;
     @FXML private ProgressIndicator rgaProgressIndicator;
     @FXML private ProgressIndicator zoneProgressIndicator;
     @FXML private ProgressIndicator zpProgressIndicator;
@@ -110,6 +113,17 @@ public class JfxCachingStatsViewController implements CachingStatsViewPresenter 
         });
         rtmRepoState.getHstWegangabeRepoState().getIsLoading$().subscribe(isLoading -> {
             Platform.runLater(() -> hstWaProgressIndicator.setVisible(isLoading));
+        });
+
+        // rg korr
+        rtmRepoState.getRgKorridorRepoState().getLoadedElementCount$().subscribe(elementCount -> {
+            Platform.runLater(() -> rgKorrCountLabel.setText(elementCount.toString()));
+        });
+        rtmRepoState.getRgKorridorRepoState().getLoadedVersionCount$().subscribe(versionCount -> {
+            Platform.runLater(() -> rgKorrVersionCountLabel.setText(versionCount.toString()));
+        });
+        rtmRepoState.getRgKorridorRepoState().getIsLoading$().subscribe(isLoading -> {
+            Platform.runLater(() -> rgKorrProgressIndicator.setVisible(isLoading));
         });
 
         // rga

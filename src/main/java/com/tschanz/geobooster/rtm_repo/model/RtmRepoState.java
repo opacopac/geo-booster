@@ -11,4 +11,5 @@ import org.springframework.stereotype.Component;
 public class RtmRepoState {
     private final HaltestelleWegangabeRepoState hstWegangabeRepoState;
     private final RgAuspraegungRepoState rgAuspraegungRepoState;
+    private final RgKorridorRepoState rgKorridorRepoState;
 }

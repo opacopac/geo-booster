@@ -10,12 +10,13 @@ import lombok.SneakyThrows;
 
 import java.sql.ResultSet;
 import java.util.Collection;
-import java.util.Collections;
 
 
 @RequiredArgsConstructor
 public class SqlRgKorridorElementMapping implements SqlStandardMapping<RgKorridor, SqlLongFilter, Long> {
     private final static String COL_ID_RELATIONSGEBIET_E = "ID_RELATIONSGEBIET_E";
+
+    private final Collection<Long> filterElementIds;
 
 
     @Override
@@ -32,7 +33,7 @@ public class SqlRgKorridorElementMapping implements SqlStandardMapping<RgKorrido
 
     @Override
     public Collection<SqlLongFilter> getFilters() {
-        return Collections.emptyList();
+        return SqlLongFilter.createSingleton(SqlHasIdMapping.COL_ID, this.filterElementIds);
     }
 
 

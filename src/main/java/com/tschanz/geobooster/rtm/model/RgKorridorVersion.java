@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.Collection;
 
 
 @Getter
@@ -14,4 +15,5 @@ public class RgKorridorVersion implements Version {
     private final long elementId;
     private final LocalDate gueltigVon;
     private final LocalDate gueltigBis;
+    private final Collection<Long> tarifkantenIds;
 }

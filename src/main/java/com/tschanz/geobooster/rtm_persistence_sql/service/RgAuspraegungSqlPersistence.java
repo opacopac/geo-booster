@@ -3,60 +3,65 @@ package com.tschanz.geobooster.rtm_persistence_sql.service;
 import com.tschanz.geobooster.persistence_sql.service.SqlStandardReader;
 import com.tschanz.geobooster.rtm.model.RgAuspraegung;
 import com.tschanz.geobooster.rtm.model.RgAuspraegungVersion;
-import com.tschanz.geobooster.rtm.model.RgKorridor;
 import com.tschanz.geobooster.rtm_persistence.service.RgAuspraegungPersistence;
-import com.tschanz.geobooster.rtm_persistence.service.RgKorridorPersistence;
 import com.tschanz.geobooster.rtm_persistence_sql.model.SqlRgAuspraegungElementMapping;
 import com.tschanz.geobooster.rtm_persistence_sql.model.SqlRgAuspraegungVersionMapping;
-import com.tschanz.geobooster.util.model.KeyValue;
-import com.tschanz.geobooster.util.service.ArrayHelper;
-import com.tschanz.geobooster.versioning.service.VersioningHelper;
+import com.tschanz.geobooster.versioning_persistence.model.ElementVersionChanges;
+import com.tschanz.geobooster.versioning_persistence_sql.service.SqlChangeDetector;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.stream.Collectors;
 
 
 @Repository
 @RequiredArgsConstructor
 public class RgAuspraegungSqlPersistence implements RgAuspraegungPersistence {
     private final SqlStandardReader sqlReader;
-    private final RgKorridorPersistence rgKorridorPersistence;
+    private final SqlChangeDetector changeDetector;
 
 
     @Override
-    @SneakyThrows
     public Collection<RgAuspraegung> readAllElements() {
-        var mapping = new SqlRgAuspraegungElementMapping();
+        return this.readElements(Collections.emptyList());
+    }
+
+
+    @Override
+    public Collection<RgAuspraegungVersion> readAllVersions() {
+        return this.readVersions(Collections.emptyList());
+    }
+
+
+    @Override
+    public ElementVersionChanges<RgAuspraegung, RgAuspraegungVersion> findChanges(LocalDateTime changedSince, Collection<Long> currentVersionIds) {
+        var modifiedDeletedVersionIds = this.changeDetector.findModifiedDeletedIds(SqlRgAuspraegungVersionMapping.TABLE_NAME, changedSince, currentVersionIds);
+        var modifiedVersionIds = modifiedDeletedVersionIds.getList1();
+        var modifiedVersions = !modifiedVersionIds.isEmpty() ? this.readVersions(modifiedVersionIds) : Collections.<RgAuspraegungVersion>emptyList();
+        var modifiedElementIds = modifiedVersions.stream().map(RgAuspraegungVersion::getElementId).distinct().collect(Collectors.toList());
+        var modifiedElements = !modifiedElementIds.isEmpty() ? this.readElements(modifiedElementIds) : Collections.<RgAuspraegung>emptyList();
+
+        return new ElementVersionChanges<>(
+            modifiedElements,
+            modifiedVersions,
+            Collections.emptyList(), // ignoring deleted elements
+            modifiedDeletedVersionIds.getList2()
+        );
+    }
+
+
+    private Collection<RgAuspraegung> readElements(Collection<Long> filterElementIds) {
+        var mapping = new SqlRgAuspraegungElementMapping(filterElementIds);
 
         return this.sqlReader.read(mapping);
     }
 
 
-    @Override
-    @SneakyThrows
-    public Collection<RgAuspraegungVersion> readAllVersions() {
-        var rgaEs = this.readAllElements();
-
-        return this.readAllVersions(rgaEs);
-    }
-
-
-    @Override
-    public Collection<RgAuspraegungVersion> readAllVersions(Collection<RgAuspraegung> elements) {
-        var rgaEMap = VersioningHelper.createIdMap(elements);
-
-        var rgKorrEs = this.rgKorridorPersistence.readAllElements();
-        var rgKorrEByRgMap = ArrayHelper.create1toNLookupMap(rgKorrEs, RgKorridor::getRelationsgbietId, k -> k);
-
-        var rgKorrVs = this.rgKorridorPersistence.readAllVersions();
-        var rgKorrVMap = VersioningHelper.createElementIdMap(rgKorrVs);
-
-        var rgKorrTkIds = this.rgKorridorPersistence.readAllKorridorTkIds();
-        var rgKorrTkIdsMap = ArrayHelper.create1toNLookupMap(rgKorrTkIds, KeyValue::getKey, KeyValue::getValue);
-
-        var mapping = new SqlRgAuspraegungVersionMapping(rgaEMap, rgKorrEByRgMap, rgKorrVMap, rgKorrTkIdsMap);
+    private Collection<RgAuspraegungVersion> readVersions(Collection<Long> filterVersionIds) {
+        var mapping = new SqlRgAuspraegungVersionMapping(filterVersionIds);
 
         return this.sqlReader.read(mapping);
     }
