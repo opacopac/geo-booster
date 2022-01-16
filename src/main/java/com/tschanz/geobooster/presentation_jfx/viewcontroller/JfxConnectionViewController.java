@@ -4,6 +4,7 @@ import com.tschanz.geobooster.persistence_sql.model.ConnectionState;
 import com.tschanz.geobooster.presentation.actions.ConnectionActions;
 import com.tschanz.geobooster.presentation.controller.ConnectionViewController;
 import com.tschanz.geobooster.presentation.presenter.ConnectionViewPresenter;
+import com.tschanz.geobooster.presentation_jfx.service.JfxHelper;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -24,6 +25,9 @@ public class JfxConnectionViewController implements ConnectionViewPresenter, Con
             connectionChoiceBox.getItems().add(i, connectionState.getConnectionList().get(i));
         }
         this.trackChangesCheckBox.setSelected(connectionState.isTrackChanges());
+
+        var tooltip = JfxHelper.createTooltip("tracking changes in TK, AWB, ZP/Zone, RG/Korridor (TBD)");
+        this.trackChangesCheckBox.setTooltip(tooltip);
     }
 
 

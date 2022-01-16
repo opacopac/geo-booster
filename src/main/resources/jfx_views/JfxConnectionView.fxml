@@ -12,6 +12,6 @@
             <ChoiceBox fx:id="connectionChoiceBox" onAction="#onConnectionSelected" />
             <Button fx:id="loadDrButton" disable="true" mnemonicParsing="false" onAction="#onLoadDrButtonClicked" text="Load DR..."/>
         </HBox>
-        <CheckBox fx:id="trackChangesCheckBox" onAction="#onCheckForChangesClicked" text="track changes" selected="true"/>
+        <CheckBox fx:id="trackChangesCheckBox" onAction="#onCheckForChangesClicked" text="track changes" selected="true" />
     </VBox>
 </AnchorPane>

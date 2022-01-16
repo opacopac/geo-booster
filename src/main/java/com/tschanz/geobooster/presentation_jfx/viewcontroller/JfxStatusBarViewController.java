@@ -2,11 +2,11 @@ package com.tschanz.geobooster.presentation_jfx.viewcontroller;
 
 import com.tschanz.geobooster.netz_repo.model.ProgressState;
 import com.tschanz.geobooster.presentation.presenter.StatusBarViewPresenter;
+import com.tschanz.geobooster.presentation_jfx.service.JfxHelper;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.control.Tooltip;
 import javafx.scene.paint.Color;
 
 
@@ -27,7 +27,7 @@ public class JfxStatusBarViewController implements StatusBarViewPresenter {
         progressState.getProgressText$().subscribe(progressText -> {
             Platform.runLater(() -> {
                 this.progressText.setText(progressText);
-                var tooltip = this.createTooltip(progressText);
+                var tooltip = JfxHelper.createTooltip(progressText);
                 this.progressText.setTooltip(tooltip);
             });
         });
@@ -38,13 +38,5 @@ public class JfxStatusBarViewController implements StatusBarViewPresenter {
                 this.progressText.setTextFill(color);
             });
         });
-    }
-
-
-    private Tooltip createTooltip(String text) {
-        var tip = new Tooltip();
-        tip.setText(text);
-
-        return tip;
     }
 }
