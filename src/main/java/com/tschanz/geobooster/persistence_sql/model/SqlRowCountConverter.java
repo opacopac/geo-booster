@@ -8,7 +8,7 @@ import java.sql.ResultSet;
 
 @RequiredArgsConstructor
 public class SqlRowCountConverter implements SqlGenericResultsetConverter<Long> {
-    private final static String COL_COUNT = "TKV_COUNT";
+    private final static String COL_COUNT = "ROW_COUNT";
 
     private final String table;
 
