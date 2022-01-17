@@ -3,7 +3,9 @@ package com.tschanz.geobooster.webmapservice.service;
 import com.tschanz.geobooster.geofeature.service.CoordinateConverter;
 import com.tschanz.geobooster.map_layer.model.MapLayerType;
 import com.tschanz.geobooster.map_tile_composer.service.MapTileComposer;
+import com.tschanz.geobooster.netz_repo.model.ProgressState;
 import com.tschanz.geobooster.utfgrid_composer.service.UtfGridComposer;
+import com.tschanz.geobooster.util.service.ExceptionHelper;
 import com.tschanz.geobooster.webmapservice.model.GetMapRequest;
 import com.tschanz.geobooster.webmapservice.model.NetzMapTileRequestConverter;
 import com.tschanz.geobooster.webmapservice.model.NetzUtfGridRequestConverter;
@@ -42,6 +44,7 @@ public class WmsController {
     private final UtfGridComposer utfGridComposer;
     private final MapTileComposer mapTileComposer;
     private final WmsState wmsState;
+    private final ProgressState progressState;
 
 
     @GetMapping(
@@ -51,20 +54,25 @@ public class WmsController {
     )
     @ResponseBody
     public byte[] wmsGetMapPngHandler(@RequestParam Map<String,String> allParams, HttpServletResponse response) {
-        var startMs = Instant.now().toEpochMilli();
-        var mapRequest = GetMapRequest.fromParams(allParams);
-        this.logMapRequest("PNG", mapRequest);
+        try {
+            var startMs = Instant.now().toEpochMilli();
+            var mapRequest = GetMapRequest.fromParams(allParams);
+            this.logMapRequest("PNG", mapRequest);
 
-        var mapTileRequest = NetzMapTileRequestConverter.fromMapRequest(mapRequest);
-        var mapTileResponse = this.mapTileComposer.getResponse(mapTileRequest);
+            var mapTileRequest = NetzMapTileRequestConverter.fromMapRequest(mapRequest);
+            var mapTileResponse = this.mapTileComposer.getResponse(mapTileRequest);
 
-        var msElapsed = Instant.now().toEpochMilli() - startMs;
-        this.wmsState.incPngRequestCount();
-        this.wmsState.nextPngRequestMs(msElapsed);
+            var msElapsed = Instant.now().toEpochMilli() - startMs;
+            this.wmsState.incPngRequestCount();
+            this.wmsState.nextPngRequestMs(msElapsed);
 
-        this.setHeaders(response, this.getFilename(mapRequest) + ".png");
+            this.setHeaders(response, this.getFilename(mapRequest) + ".png");
 
-        return mapTileResponse.getImgBytes();
+            return mapTileResponse.getImgBytes();
+        } catch (Exception e) {
+            this.logException(e);
+            throw e;
+        }
     }
 
 
@@ -75,20 +83,25 @@ public class WmsController {
     )
     @ResponseBody
     public String wmsGetMapUtfGridHandler(@RequestParam Map<String,String> allParams, HttpServletResponse response) {
-        var startMs = Instant.now().toEpochMilli();
-        var mapRequest = GetMapRequest.fromParams(allParams);
-        this.logMapRequest("UTF grid", mapRequest);
+        try {
+            var startMs = Instant.now().toEpochMilli();
+            var mapRequest = GetMapRequest.fromParams(allParams);
+            this.logMapRequest("UTF grid", mapRequest);
 
-        var utfGridRequest = NetzUtfGridRequestConverter.fromMapRequest(mapRequest);
-        var utfGridResponse = this.utfGridComposer.getResponse(utfGridRequest);
+            var utfGridRequest = NetzUtfGridRequestConverter.fromMapRequest(mapRequest);
+            var utfGridResponse = this.utfGridComposer.getResponse(utfGridRequest);
 
-        var msElapsed = Instant.now().toEpochMilli() - startMs;
-        this.wmsState.incUtfGridRequestCount();
-        this.wmsState.nextUtfGridRequestMs(msElapsed);
+            var msElapsed = Instant.now().toEpochMilli() - startMs;
+            this.wmsState.incUtfGridRequestCount();
+            this.wmsState.nextUtfGridRequestMs(msElapsed);
 
-        this.setHeaders(response, this.getFilename(mapRequest));
+            this.setHeaders(response, this.getFilename(mapRequest));
 
-        return utfGridResponse.getText();
+            return utfGridResponse.getText();
+        } catch (Exception e) {
+            this.logException(e);
+            throw e;
+        }
     }
 
 
@@ -125,5 +138,15 @@ public class WmsController {
         response.setHeader(RESP_CACHE_CONTROL_KEY, RESP_CACHE_CONTROL_VALUE);
         response.setHeader(RESP_PRAGMA_KEY, RESP_PRAGMA_VALUE);
         response.setHeader(RESP_EXPIRES_KEY, RESP_EXPIRES_VALUE);
+    }
+
+
+    private void logException(Exception e) {
+        logger.error(e);
+        this.progressState.updateProgressText(
+                String.format("ERROR loading dr: %s", ExceptionHelper.getErrorText(e, "\n")),
+                true
+        );
+        this.progressState.updateIsInProgress(false);
     }
 }
