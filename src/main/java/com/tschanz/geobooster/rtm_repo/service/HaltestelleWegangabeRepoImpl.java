@@ -74,6 +74,7 @@ public class HaltestelleWegangabeRepoImpl implements HaltestelleWegangabeRepo {
             .collect(Collectors.toList());
     }
 
+
     @Override
     public HaltestelleVersion getHaltestelleVersion(HaltestelleWegangabeVersion hstWegangabeVersion) {
         var hstWaE = this.getElement(hstWegangabeVersion.getElementId());
@@ -148,5 +149,23 @@ public class HaltestelleWegangabeRepoImpl implements HaltestelleWegangabeRepo {
         );
 
         this.versionedObjectMap.updateChanges(changes);
+
+        if (!changes.getModifiedVersions().isEmpty()) {
+            changes.getModifiedVersions().forEach(hstWaV -> {
+                this.versionQuadTree.removeItem(hstWaV.getId());
+
+                var coord = this.getHaltestelleCoordinate(hstWaV);
+                if (coord != null) {
+                    var item = new QuadTreeItem<>(coord, hstWaV);
+                    this.versionQuadTree.addItem(item);
+                }
+            });
+        }
+
+        if (!changes.getDeletedVersionIds().isEmpty()) {
+            changes.getDeletedVersionIds().forEach(vId -> {
+                this.versionQuadTree.removeItem(vId);
+            });
+        }
     }
 }

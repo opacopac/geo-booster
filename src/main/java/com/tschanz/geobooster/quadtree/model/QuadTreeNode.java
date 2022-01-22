@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -49,23 +50,31 @@ public class QuadTreeNode<T extends HasId> {
     }
 
 
-    public boolean addItem(QuadTreeItem<T> item) {
+    public void addItem(QuadTreeItem<T> item, Map<Long, QuadTreeNode<T>> idLookupMap) {
         if (this.isLeafNode()) {
-            items.add(item);
+            this.items.add(item);
+            idLookupMap.put(item.getItem().getId(), this);
         } else {
             if (this.childNodes.size() == 0) {
                 this.createChildNodes();
             }
 
-            var child = this.getChildForCoordinate(item.getCoordinate());
+            var child = this.findChildNode(item.getCoordinate());
             if (child != null) {
-                child.addItem(item);
+                child.addItem(item, idLookupMap);
             } else {
-                return false;
+                this.items.add(item);
+                idLookupMap.put(item.getItem().getId(), this);
             }
         }
+    }
 
-        return true;
+
+    public void removeItem(long itemId) {
+        this.items.stream()
+            .filter(item -> item.getItem().getId() == itemId)
+            .findFirst()
+            .ifPresent(this.items::remove);
     }
 
 
@@ -90,7 +99,7 @@ public class QuadTreeNode<T extends HasId> {
     }
 
 
-    private QuadTreeNode<T> getChildForCoordinate(Coordinate coordinate) {
+    private QuadTreeNode<T> findChildNode(Coordinate coordinate) {
         return this.childNodes.stream()
             .filter(childNode -> childNode.extent.isPointInside(coordinate))
             .findFirst()

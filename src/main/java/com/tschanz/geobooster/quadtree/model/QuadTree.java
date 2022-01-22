@@ -5,9 +5,7 @@ import com.tschanz.geobooster.geofeature.model.Extent;
 import com.tschanz.geobooster.versioning.model.HasId;
 import lombok.Getter;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 
 
@@ -16,6 +14,7 @@ public class QuadTree<T extends HasId> {
     private final int maxDepth;
     private QuadTreeNode<T> rootNode;
     private Extent<Epsg3857Coordinate> extent;
+    private final Map<Long, QuadTreeNode<T>> idLookupMap = new HashMap<>();
 
 
     public QuadTree(int maxDepth) {
@@ -45,6 +44,20 @@ public class QuadTree<T extends HasId> {
         this.extent = Extent.fromEpsg3857Points (minX, minY, maxX, maxY);
         this.rootNode = new QuadTreeNode<T>(this.extent, null, this.maxDepth);
 
-        qtItems.forEach(qtItem -> this.rootNode.addItem(qtItem));
+        qtItems.forEach(this::addItem);
+    }
+
+
+    public void addItem(QuadTreeItem<T> item) {
+        this.rootNode.addItem(item, this.idLookupMap);
+    }
+
+
+    public void removeItem(long itemId) {
+        var node = this.idLookupMap.get(itemId);
+        if (node != null) {
+            node.removeItem(itemId);
+            this.idLookupMap.remove(itemId);
+        }
     }
 }
