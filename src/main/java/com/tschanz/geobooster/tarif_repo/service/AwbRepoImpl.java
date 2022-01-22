@@ -116,7 +116,7 @@ public class AwbRepoImpl implements AwbRepo {
             this.updateWhenChanged();
         }
 
-        var awbIncVerwaltungen = this.awbIncVerwaltungenByAwbVIdMap.get(awbVersion.getId());
+        var awbIncVerwaltungen = this.awbIncVerwaltungenByAwbVIdMap.getOrDefault(awbVersion.getId(), Collections.emptyList());
         var awbVerwaltungIdMap = ArrayHelper.create1to1LookupMap(awbIncVerwaltungen, AwbIncVerwaltung::getVerwaltungId, AwbIncVerwaltung::getVerwaltungId);
         var vksByExtent = this.vkRepo.searchByExtent(bbox);
 
@@ -175,12 +175,15 @@ public class AwbRepoImpl implements AwbRepo {
         // awb include verwaltung changes
         var awbIncVerwaltungChanges = this.awbPersistence.findAwbIncVerwaltungChanges(
             this.debounceTimer.getPreviousChangeCheck(),
-            this.awbIncVerwaltungenByAwbVIdMap.keySet()
+            this.awbIncVerwaltungenByAwbVIdMap.values().stream()
+                .flatMap(Collection::stream)
+                .map(AwbIncVerwaltung::getId)
+                .collect(Collectors.toList())
         );
 
         // new/modified awbIncVerw
         awbIncVerwaltungChanges.getFirst().forEach(aiv -> {
-            var aivs = this.awbIncVerwaltungenByAwbVIdMap.get(aiv.getAwbVersionId());
+            var aivs = this.awbIncVerwaltungenByAwbVIdMap.getOrDefault(aiv.getAwbVersionId(), Collections.emptyList());
             var newAivs = ArrayHelper.concatCollectionsDistinct(aivs, Collections.singletonList(aiv));
             this.awbIncVerwaltungenByAwbVIdMap.put(aiv.getAwbVersionId(), newAivs);
         });
