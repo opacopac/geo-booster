@@ -26,7 +26,7 @@ public class JfxConnectionViewController implements ConnectionViewPresenter, Con
         }
         this.trackChangesCheckBox.setSelected(connectionState.isTrackChanges());
 
-        var tooltip = JfxHelper.createTooltip("tracking changes in TK, AWB, ZP/Zone, RG/Korridor");
+        var tooltip = JfxHelper.createTooltip("tracking changes in TK, AWB, ZP/Zone, RG/Korridor, HST WA");
         this.trackChangesCheckBox.setTooltip(tooltip);
     }
 
