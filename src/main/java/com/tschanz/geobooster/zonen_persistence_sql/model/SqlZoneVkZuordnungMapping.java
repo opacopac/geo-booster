@@ -3,7 +3,8 @@ package com.tschanz.geobooster.zonen_persistence_sql.model;
 import com.google.gson.stream.JsonReader;
 import com.tschanz.geobooster.persistence_sql.model.SqlLongFilter;
 import com.tschanz.geobooster.persistence_sql.model.SqlStandardMapping;
-import com.tschanz.geobooster.util.model.Tuple2;
+import com.tschanz.geobooster.versioning_persistence_sql.model.SqlHasIdMapping;
+import com.tschanz.geobooster.zonen.model.ZoneVkZuordnung;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
@@ -12,7 +13,8 @@ import java.util.Collection;
 
 
 @RequiredArgsConstructor
-public class SqlZoneVkIdsMapping implements SqlStandardMapping<Tuple2<Long, Long>, SqlLongFilter, Long> {
+public class SqlZoneVkZuordnungMapping implements SqlStandardMapping<ZoneVkZuordnung, SqlLongFilter, Long> {
+    public final static String TABLE_NAME = "Z_ZONE_KANTE_ZUORDNUNG";
     private final static String COL_ID_ZONE_VERSION = "ID_ZONE_VERSION";
     private final static String COL_ID_KANTE_ELEMENT = "ID_KANTE_ELEMENT";
 
@@ -20,36 +22,36 @@ public class SqlZoneVkIdsMapping implements SqlStandardMapping<Tuple2<Long, Long
 
     @Override
     public String getTable() {
-        return "Z_ZONE_KANTE_ZUORDNUNG";
+        return TABLE_NAME;
     }
 
 
     @Override
     public String[] getSelectFields() {
-        return new String[] { COL_ID_ZONE_VERSION, COL_ID_KANTE_ELEMENT };
+        return new String[] { SqlHasIdMapping.COL_ID, COL_ID_ZONE_VERSION, COL_ID_KANTE_ELEMENT };
     }
 
 
     @Override
     public Collection<SqlLongFilter> getFilters() {
-        return SqlLongFilter.createSingleton(COL_ID_ZONE_VERSION, this.filterVersionIds);
+        return SqlLongFilter.createSingleton(SqlHasIdMapping.COL_ID, this.filterVersionIds);
     }
 
 
-    @Override
     @SneakyThrows
-    public Tuple2<Long, Long> fromResultSet(ResultSet row) {
-        return new Tuple2<>(
+    public ZoneVkZuordnung fromResultSet(ResultSet row) {
+        return new ZoneVkZuordnung(
+            SqlHasIdMapping.getId(row),
             row.getLong(COL_ID_ZONE_VERSION),
             row.getLong(COL_ID_KANTE_ELEMENT)
         );
     }
 
 
-    @Override
     @SneakyThrows
-    public Tuple2<Long, Long> fromJsonAgg(JsonReader reader) {
-        return new Tuple2<>(
+    public ZoneVkZuordnung fromJsonAgg(JsonReader reader) {
+        return new ZoneVkZuordnung(
+            SqlHasIdMapping.getIdFromJsonAgg(reader),
             reader.nextLong(),
             reader.nextLong()
         );

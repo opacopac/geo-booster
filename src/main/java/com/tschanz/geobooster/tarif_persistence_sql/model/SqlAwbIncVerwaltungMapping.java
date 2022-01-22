@@ -19,7 +19,7 @@ public class SqlAwbIncVerwaltungMapping implements SqlStandardMapping<AwbIncVerw
     private final static String COL_ID_ANWBER_V = "ID_ANWBER_V";
     private final static String ID_VERWALTUNG_E = "ID_VERWALTUNG_E";
 
-    private final Collection<Long> ids;
+    private final Collection<Long> filterIds;
 
 
     @Override
@@ -36,7 +36,7 @@ public class SqlAwbIncVerwaltungMapping implements SqlStandardMapping<AwbIncVerw
 
     @Override
     public Collection<SqlLongFilter> getFilters() {
-        return SqlLongFilter.createSingleton(SqlHasIdMapping.COL_ID, this.ids);
+        return SqlLongFilter.createSingleton(SqlHasIdMapping.COL_ID, this.filterIds);
     }
 
 

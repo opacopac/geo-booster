@@ -25,7 +25,6 @@ public class SqlAwbVersionMapping implements SqlStandardMapping<AwbVersion, SqlL
     private final Map<Long, Collection<Long>> excludeVkMap;
     private final Map<Long, Collection<Long>> includeTkMap;
     private final Map<Long, Collection<Long>> excludeTkMap;
-    private final Map<Long, Collection<Long>> includeVerwMap;
     private final Map<Long, Collection<Long>> includeZpMap;
     private final Map<Long, Collection<Long>> includeRgaMap;
 

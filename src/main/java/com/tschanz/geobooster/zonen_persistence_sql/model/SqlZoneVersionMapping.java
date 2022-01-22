@@ -14,7 +14,6 @@ import lombok.SneakyThrows;
 import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Map;
 
 
 @RequiredArgsConstructor
@@ -22,7 +21,6 @@ public class SqlZoneVersionMapping implements SqlStandardMapping<ZoneVersion, Sq
     public final static String TABLE_NAME = "Z_ZONE_V";
     private final static String COL_ID_URSPRUNGSZONE_E = "ID_URSPRUNGSZONE_E";
 
-    private final Map<Long, Collection<Long>> vkIdsMap;
     private final Collection<Long> filterVersionIds;
 
 
@@ -82,8 +80,7 @@ public class SqlZoneVersionMapping implements SqlStandardMapping<ZoneVersion, Sq
             elementId,
             gueltigVon,
             gueltigBis,
-            ursprungsZone,
-            this.vkIdsMap.get(id)
+            ursprungsZone
         );
     }
 }
