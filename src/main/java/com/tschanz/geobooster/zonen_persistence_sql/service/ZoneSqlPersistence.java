@@ -2,22 +2,21 @@ package com.tschanz.geobooster.zonen_persistence_sql.service;
 
 import com.tschanz.geobooster.persistence_sql.service.SqlStandardReader;
 import com.tschanz.geobooster.util.model.Tuple2;
-import com.tschanz.geobooster.util.service.ArrayHelper;
 import com.tschanz.geobooster.versioning_persistence.model.ElementVersionChanges;
 import com.tschanz.geobooster.versioning_persistence_sql.service.SqlChangeDetector;
 import com.tschanz.geobooster.zonen.model.Zone;
 import com.tschanz.geobooster.zonen.model.ZoneVersion;
+import com.tschanz.geobooster.zonen.model.ZoneVkZuordnung;
 import com.tschanz.geobooster.zonen_persistence.service.ZonePersistence;
 import com.tschanz.geobooster.zonen_persistence_sql.model.SqlZoneElementMapping;
 import com.tschanz.geobooster.zonen_persistence_sql.model.SqlZoneVersionMapping;
-import com.tschanz.geobooster.zonen_persistence_sql.model.SqlZoneVkIdsMapping;
+import com.tschanz.geobooster.zonen_persistence_sql.model.SqlZoneVkZuordnungMapping;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -41,24 +40,13 @@ public class ZoneSqlPersistence implements ZonePersistence {
 
 
     @Override
-    public Collection<Zone> readElements(Collection<Long> filterElementIds) {
-        var mapping = new SqlZoneElementMapping(filterElementIds);
-
-        return this.sqlReader.read(mapping);
+    public Collection<ZoneVkZuordnung> readAllZoneVkZuordnung() {
+        return this.readZoneVkZuordnungen(Collections.emptyList());
     }
 
 
     @Override
-    public Collection<ZoneVersion> readVersions(Collection<Long> filterVersionIds) {
-        var vkIdMap = this.readVkIdMap(filterVersionIds);
-        var mapping = new SqlZoneVersionMapping(vkIdMap, filterVersionIds);
-
-        return this.sqlReader.read(mapping);
-    }
-
-
-    @Override
-    public ElementVersionChanges<Zone, ZoneVersion> findChanges(LocalDateTime changedSince, Collection<Long> currentVersionIds) {
+    public ElementVersionChanges<Zone, ZoneVersion> findZoneVersionChanges(LocalDateTime changedSince, Collection<Long> currentVersionIds) {
         var changes = this.changeDetector.findModifiedDeletedChanges(SqlZoneVersionMapping.TABLE_NAME, changedSince, currentVersionIds);
         var modifiedVersionIds = changes.getModifiedIds();
         var modifiedVersions = !modifiedVersionIds.isEmpty() ? this.readVersions(modifiedVersionIds) : Collections.<ZoneVersion>emptyList();
@@ -73,12 +61,38 @@ public class ZoneSqlPersistence implements ZonePersistence {
         );
     }
 
+    @Override
+    public Tuple2<Collection<ZoneVkZuordnung>, Collection<Long>> findZoneVkZuordnungChanges(LocalDateTime changedSince, Collection<Long> currentIds) {
+        var changes = this.changeDetector.findModifiedDeletedChanges(SqlZoneVkZuordnungMapping.TABLE_NAME, changedSince, currentIds);
+        var modifiedIds = changes.getModifiedIds();
+        var deletedIds = changes.getDeletedIds();
 
-    private Map<Long, Collection<Long>> readVkIdMap(Collection<Long> filterVersionIds) {
-        var mapping = new SqlZoneVkIdsMapping(filterVersionIds);
-        var zoneVIdsvkIds = this.sqlReader.read(mapping);
+        var modifiedZoneVkZuordnungen = !modifiedIds.isEmpty() ? this.readZoneVkZuordnungen(modifiedIds) : Collections.<ZoneVkZuordnung>emptyList();
 
-        return ArrayHelper.create1toNLookupMap(zoneVIdsvkIds, Tuple2::getFirst, Tuple2::getSecond);
+        return new Tuple2<>(
+            modifiedZoneVkZuordnungen,
+            deletedIds
+        );
+    }
 
+
+    private Collection<Zone> readElements(Collection<Long> filterElementIds) {
+        var mapping = new SqlZoneElementMapping(filterElementIds);
+
+        return this.sqlReader.read(mapping);
+    }
+
+
+    private Collection<ZoneVersion> readVersions(Collection<Long> filterVersionIds) {
+        var mapping = new SqlZoneVersionMapping(filterVersionIds);
+
+        return this.sqlReader.read(mapping);
+    }
+
+
+    private Collection<ZoneVkZuordnung> readZoneVkZuordnungen(Collection<Long> filterIds) {
+        var mapping = new SqlZoneVkZuordnungMapping(filterIds);
+
+        return this.sqlReader.read(mapping);
     }
 }

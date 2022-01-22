@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.Collection;
 
 
 @Getter
@@ -16,5 +15,4 @@ public class ZoneVersion implements Version {
     private final LocalDate gueltigVon;
     private final LocalDate gueltigBis;
     private final long ursprungsZoneId;
-    private final Collection<Long> verkehrskantenIds;
 }

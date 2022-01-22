@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -103,23 +102,10 @@ public class ZonenplanRepoImpl implements ZonenplanRepo {
         var zoneVs = this.zoneRepo.getVersionsByZonenplanId(zonenplanId, date);
         var vkVs = zoneVs.stream()
             .map(zV -> zV.getUrsprungsZoneId() == 0 ? zV : this.zoneRepo.getElementVersionAtDate(zV.getUrsprungsZoneId(), date))
-            .flatMap(zV -> zV.getVerkehrskantenIds().stream())
-            .map(vkEId -> this.vkRepo.getElementVersionAtDate(vkEId, date))
-            .filter(Objects::nonNull)
+            .flatMap(zV -> this.zoneRepo.searchZoneVersionVks(zV.getId(), date, bbox).stream())
             .collect(Collectors.toList());
 
-        var filteredZpVkVs = vkVs.stream()
-            .filter(vkV -> {
-                var vkExtent = Extent.fromCoords(
-                    this.vkRepo.getStartCoordinate(vkV),
-                    this.vkRepo.getEndCoordinate(vkV)
-                );
-
-                return vkExtent.isExtentIntersecting(bbox);
-            })
-            .collect(Collectors.toList());
-
-        return filteredZpVkVs;
+        return vkVs;
     }
 
 

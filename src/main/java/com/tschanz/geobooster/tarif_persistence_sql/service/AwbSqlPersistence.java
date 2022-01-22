@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class AwbSqlPersistence implements AwbPersistence {
-    private final SqlStandardReader sqlStandardReader;
+    private final SqlStandardReader sqlReader;
     private final SqlChangeDetector changeDetector;
 
 
@@ -85,7 +85,7 @@ public class AwbSqlPersistence implements AwbPersistence {
     private Collection<Awb> readElements(Collection<Long> elementIds) {
         var mapping = new SqlAwbElementMapping(elementIds);
 
-        return this.sqlStandardReader.read(mapping);
+        return this.sqlReader.read(mapping);
     }
 
 
@@ -94,7 +94,6 @@ public class AwbSqlPersistence implements AwbPersistence {
         var excludeVkMap = this.readExcludeVkMap(versionIds);
         var includeTkMap = this.readIncludeTkMap(versionIds);
         var excludeTkMap = this.readExcludeTkMap(versionIds);
-        var includeVerwMap = this.readIncludeVerwMap(versionIds);
         var includeZpMap = this.readIncludeZpMap(versionIds);
         var includeRgaMap = this.readIncludeRgaMap(versionIds);
         var mapping = new SqlAwbVersionMapping(
@@ -103,25 +102,24 @@ public class AwbSqlPersistence implements AwbPersistence {
             excludeVkMap,
             includeTkMap,
             excludeTkMap,
-            includeVerwMap,
             includeZpMap,
             includeRgaMap
         );
 
-        return this.sqlStandardReader.read(mapping);
+        return this.sqlReader.read(mapping);
     }
 
 
-    private Collection<AwbIncVerwaltung> readAwbIncVerwaltungen(Collection<Long> versionIds) {
-        var mapping = new SqlAwbIncVerwaltungMapping(versionIds);
+    private Collection<AwbIncVerwaltung> readAwbIncVerwaltungen(Collection<Long> ids) {
+        var mapping = new SqlAwbIncVerwaltungMapping(ids);
 
-        return this.sqlStandardReader.read(mapping);
+        return this.sqlReader.read(mapping);
     }
 
 
     private Map<Long, Collection<Long>> readIncludeVkMap(Collection<Long> awbVersionIds) {
         var mapping = new SqlAwbIncVkMapping(awbVersionIds);
-        var excludeVks = this.sqlStandardReader.read(mapping);
+        var excludeVks = this.sqlReader.read(mapping);
 
         return ArrayHelper.create1toNLookupMap(excludeVks, Tuple2::getFirst, Tuple2::getSecond);
     }
@@ -129,7 +127,7 @@ public class AwbSqlPersistence implements AwbPersistence {
 
     private Map<Long, Collection<Long>> readExcludeVkMap(Collection<Long> awbVersionIds) {
         var mapping = new SqlAwbExcVkMapping(awbVersionIds);
-        var excludeVks = this.sqlStandardReader.read(mapping);
+        var excludeVks = this.sqlReader.read(mapping);
 
         return ArrayHelper.create1toNLookupMap(excludeVks, Tuple2::getFirst, Tuple2::getSecond);
     }
@@ -137,7 +135,7 @@ public class AwbSqlPersistence implements AwbPersistence {
 
     private Map<Long, Collection<Long>> readIncludeTkMap(Collection<Long> awbVersionIds) {
         var mapping = new SqlAwbIncTkMapping(awbVersionIds);
-        var excludeTks = this.sqlStandardReader.read(mapping);
+        var excludeTks = this.sqlReader.read(mapping);
 
         return ArrayHelper.create1toNLookupMap(excludeTks, Tuple2::getFirst, Tuple2::getSecond);
     }
@@ -145,23 +143,15 @@ public class AwbSqlPersistence implements AwbPersistence {
 
     private Map<Long, Collection<Long>> readExcludeTkMap(Collection<Long> awbVersionIds) {
         var mapping = new SqlAwbExcTkMapping(awbVersionIds);
-        var excludeTks = this.sqlStandardReader.read(mapping);
+        var excludeTks = this.sqlReader.read(mapping);
 
         return ArrayHelper.create1toNLookupMap(excludeTks, Tuple2::getFirst, Tuple2::getSecond);
     }
 
 
-    private Map<Long, Collection<Long>> readIncludeVerwMap(Collection<Long> awbVersionIds) {
-        var mapping = new SqlAwbIncVerwMapping(awbVersionIds);
-        var excludeVks = this.sqlStandardReader.read(mapping);
-
-        return ArrayHelper.create1toNLookupMap(excludeVks, Tuple2::getFirst, Tuple2::getSecond);
-    }
-
-
     private Map<Long, Collection<Long>> readIncludeZpMap(Collection<Long> awbVersionIds) {
         var mapping = new SqlAwbIncZpMapping(awbVersionIds);
-        var excludeVks = this.sqlStandardReader.read(mapping);
+        var excludeVks = this.sqlReader.read(mapping);
 
         return ArrayHelper.create1toNLookupMap(excludeVks, Tuple2::getFirst, Tuple2::getSecond);
     }
@@ -169,7 +159,7 @@ public class AwbSqlPersistence implements AwbPersistence {
 
     private Map<Long, Collection<Long>> readIncludeRgaMap(Collection<Long> awbVersionIds) {
         var mapping = new SqlAwbIncRgaMapping(awbVersionIds);
-        var excludeVks = sqlStandardReader.read(mapping);
+        var excludeVks = sqlReader.read(mapping);
 
         return ArrayHelper.create1toNLookupMap(excludeVks, Tuple2::getFirst, Tuple2::getSecond);
     }
