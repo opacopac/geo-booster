@@ -12,12 +12,13 @@ import lombok.SneakyThrows;
 
 import java.sql.ResultSet;
 import java.util.Collection;
-import java.util.Collections;
 
 
 @RequiredArgsConstructor
 public class SqlHaltestelleWegangabeElementMapping implements SqlStandardMapping<HaltestelleWegangabe, SqlLongFilter, Long> {
     private final static String COL_CODE = "CODE";
+
+    private final Collection<Long> filterElementIds;
 
 
     @Override
@@ -34,7 +35,7 @@ public class SqlHaltestelleWegangabeElementMapping implements SqlStandardMapping
 
     @Override
     public Collection<SqlLongFilter> getFilters() {
-        return Collections.emptyList();
+        return SqlLongFilter.createSingleton(SqlHasIdMapping.COL_ID, this.filterElementIds);
     }
 
 
