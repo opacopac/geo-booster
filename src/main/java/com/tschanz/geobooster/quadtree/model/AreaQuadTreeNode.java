@@ -56,7 +56,7 @@ public class AreaQuadTreeNode<T extends HasId> {
                 this.createChildNodes();
             }
 
-            var child = this.getChildForArea(item.getExtent());
+            var child = this.findChildNode(item.getExtent());
             if (child != null) {
                 child.addItem(item, idLookupMap);
             } else {
@@ -96,7 +96,7 @@ public class AreaQuadTreeNode<T extends HasId> {
     }
 
 
-    private AreaQuadTreeNode<T> getChildForArea(QuadTreeExtent extent) {
+    private AreaQuadTreeNode<T> findChildNode(QuadTreeExtent extent) {
         return this.childNodes.stream()
             .filter(childNode -> childNode.extent.isFullyInside(extent))
             .findFirst()

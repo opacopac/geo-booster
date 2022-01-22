@@ -41,6 +41,7 @@ public class AreaQuadTree<T extends HasId> {
         var node = this.idLookupMap.get(itemId);
         if (node != null) {
             node.removeItem(itemId);
+            this.idLookupMap.remove(itemId);
         }
     }
 }
