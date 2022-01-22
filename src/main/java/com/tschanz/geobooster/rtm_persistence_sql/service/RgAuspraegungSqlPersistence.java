@@ -38,8 +38,8 @@ public class RgAuspraegungSqlPersistence implements RgAuspraegungPersistence {
 
     @Override
     public ElementVersionChanges<RgAuspraegung, RgAuspraegungVersion> findChanges(LocalDateTime changedSince, Collection<Long> currentVersionIds) {
-        var modifiedDeletedVersionIds = this.changeDetector.findModifiedDeletedIds(SqlRgAuspraegungVersionMapping.TABLE_NAME, changedSince, currentVersionIds);
-        var modifiedVersionIds = modifiedDeletedVersionIds.getList1();
+        var changes = this.changeDetector.findModifiedDeletedChanges(SqlRgAuspraegungVersionMapping.TABLE_NAME, changedSince, currentVersionIds);
+        var modifiedVersionIds = changes.getModifiedIds();
         var modifiedVersions = !modifiedVersionIds.isEmpty() ? this.readVersions(modifiedVersionIds) : Collections.<RgAuspraegungVersion>emptyList();
         var modifiedElementIds = modifiedVersions.stream().map(RgAuspraegungVersion::getElementId).distinct().collect(Collectors.toList());
         var modifiedElements = !modifiedElementIds.isEmpty() ? this.readElements(modifiedElementIds) : Collections.<RgAuspraegung>emptyList();
@@ -48,7 +48,7 @@ public class RgAuspraegungSqlPersistence implements RgAuspraegungPersistence {
             modifiedElements,
             modifiedVersions,
             Collections.emptyList(), // ignoring deleted elements
-            modifiedDeletedVersionIds.getList2()
+            changes.getDeletedIds()
         );
     }
 

@@ -44,8 +44,8 @@ public class TarifkanteSqlPersistence implements TarifkantePersistence {
 
     @Override
     public ElementVersionChanges<Tarifkante, TarifkanteVersion> findChanges(LocalDateTime changedSince, Collection<Long> currentVersionIds) {
-        var modifiedDeletedVersionIds = this.changeDetector.findModifiedDeletedIds(SqlTarifkanteVersionMapping.TABLE_NAME, changedSince, currentVersionIds);
-        var modifiedVersionIds = modifiedDeletedVersionIds.getList1();
+        var changes = this.changeDetector.findModifiedDeletedChanges(SqlTarifkanteVersionMapping.TABLE_NAME, changedSince, currentVersionIds);
+        var modifiedVersionIds = changes.getModifiedIds();
         var modifiedVersions = !modifiedVersionIds.isEmpty() ? this.readVersions(modifiedVersionIds) : Collections.<TarifkanteVersion>emptyList();
         var modifiedElementIds = modifiedVersions.stream().map(TarifkanteVersion::getElementId).distinct().collect(Collectors.toList());
         var modifiedElements = !modifiedElementIds.isEmpty() ? this.readElements(modifiedElementIds) : Collections.<Tarifkante>emptyList();
@@ -54,7 +54,7 @@ public class TarifkanteSqlPersistence implements TarifkantePersistence {
             modifiedElements,
             modifiedVersions,
             Collections.emptyList(), // ignoring deleted elements
-            modifiedDeletedVersionIds.getList2()
+            changes.getDeletedIds()
         );
     }
 

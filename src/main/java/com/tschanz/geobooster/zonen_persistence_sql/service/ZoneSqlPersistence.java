@@ -59,8 +59,8 @@ public class ZoneSqlPersistence implements ZonePersistence {
 
     @Override
     public ElementVersionChanges<Zone, ZoneVersion> findChanges(LocalDateTime changedSince, Collection<Long> currentVersionIds) {
-        var modifiedDeletedVersionIds = this.changeDetector.findModifiedDeletedIds(SqlZoneVersionMapping.TABLE_NAME, changedSince, currentVersionIds);
-        var modifiedVersionIds = modifiedDeletedVersionIds.getList1();
+        var changes = this.changeDetector.findModifiedDeletedChanges(SqlZoneVersionMapping.TABLE_NAME, changedSince, currentVersionIds);
+        var modifiedVersionIds = changes.getModifiedIds();
         var modifiedVersions = !modifiedVersionIds.isEmpty() ? this.readVersions(modifiedVersionIds) : Collections.<ZoneVersion>emptyList();
         var modifiedElementIds = modifiedVersions.stream().map(ZoneVersion::getElementId).distinct().collect(Collectors.toList());
         var modifiedElements = !modifiedElementIds.isEmpty() ? this.readElements(modifiedElementIds) : Collections.<Zone>emptyList();
@@ -69,7 +69,7 @@ public class ZoneSqlPersistence implements ZonePersistence {
             modifiedElements,
             modifiedVersions,
             Collections.emptyList(), // ignoring deleted elements
-            modifiedDeletedVersionIds.getList2()
+            changes.getDeletedIds()
         );
     }
 

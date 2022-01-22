@@ -4,7 +4,7 @@ import com.tschanz.geobooster.persistence_sql.model.ConnectionState;
 import com.tschanz.geobooster.persistence_sql.model.SqlRowCountMapping;
 import com.tschanz.geobooster.persistence_sql.service.SqlGenericResultsetReader;
 import com.tschanz.geobooster.persistence_sql.service.SqlStandardReader;
-import com.tschanz.geobooster.util.model.DoubleList;
+import com.tschanz.geobooster.versioning_persistence.model.ModifiedDeletedChanges;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlAllIdsMapping;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlModifiedIdsMapping;
 import lombok.RequiredArgsConstructor;
@@ -26,18 +26,18 @@ public class SqlChangeDetector {
     private final SqlGenericResultsetReader genericReader;
 
 
-    public DoubleList<Long> findModifiedDeletedIds(String table, LocalDateTime changedSince, Collection<Long> currentIds) {
+    public ModifiedDeletedChanges findModifiedDeletedChanges(String table, LocalDateTime changedSince, Collection<Long> currentIds) {
         var modifiedIds = this.findModifiedIds(table, changedSince);
         var rowCount = this.readRowCount(table);
 
-        List<Long> removedIds = Collections.emptyList();
+        List<Long> deletedIds = Collections.emptyList();
         if (currentIds.size() + modifiedIds.size() > rowCount) {
-            removedIds = this.findRemovedIds(table, currentIds);
+            deletedIds = this.findRemovedIds(table, currentIds);
         }
 
-        return new DoubleList<>(
+        return new ModifiedDeletedChanges(
             modifiedIds,
-            removedIds
+            deletedIds
         );
     }
 

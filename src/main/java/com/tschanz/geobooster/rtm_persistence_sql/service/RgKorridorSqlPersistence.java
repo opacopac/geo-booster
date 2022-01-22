@@ -42,8 +42,8 @@ public class RgKorridorSqlPersistence implements RgKorridorPersistence {
 
     @Override
     public ElementVersionChanges<RgKorridor, RgKorridorVersion> findChanges(LocalDateTime changedSince, Collection<Long> currentVersionIds) {
-        var modifiedDeletedVersionIds = this.changeDetector.findModifiedDeletedIds(SqlRgKorridorVersionMapping.TABLE_NAME, changedSince, currentVersionIds);
-        var modifiedVersionIds = modifiedDeletedVersionIds.getList1();
+        var changes = this.changeDetector.findModifiedDeletedChanges(SqlRgKorridorVersionMapping.TABLE_NAME, changedSince, currentVersionIds);
+        var modifiedVersionIds = changes.getModifiedIds();
         var modifiedVersions = !modifiedVersionIds.isEmpty() ? this.readVersions(modifiedVersionIds) : Collections.<RgKorridorVersion>emptyList();
         var modifiedElementIds = modifiedVersions.stream().map(RgKorridorVersion::getElementId).distinct().collect(Collectors.toList());
         var modifiedElements = !modifiedElementIds.isEmpty() ? this.readElements(modifiedElementIds) : Collections.<RgKorridor>emptyList();
@@ -52,7 +52,7 @@ public class RgKorridorSqlPersistence implements RgKorridorPersistence {
             modifiedElements,
             modifiedVersions,
             Collections.emptyList(), // ignoring deleted elements
-            modifiedDeletedVersionIds.getList2()
+            changes.getDeletedIds()
         );
     }
 

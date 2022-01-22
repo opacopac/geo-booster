@@ -81,7 +81,6 @@ public class SqlAwbVersionMapping implements SqlStandardMapping<AwbVersion, SqlL
             this.excludeVkMap.getOrDefault(id, Collections.emptyList()),
             this.includeTkMap.getOrDefault(id, Collections.emptyList()),
             this.excludeTkMap.getOrDefault(id, Collections.emptyList()),
-            this.includeVerwMap.getOrDefault(id, Collections.emptyList()),
             this.includeZpMap.getOrDefault(id, Collections.emptyList()),
             this.includeRgaMap.getOrDefault(id, Collections.emptyList())
         );

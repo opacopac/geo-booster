@@ -8,5 +8,4 @@ public interface Version extends HasId {
     long getElementId();
     LocalDate getGueltigVon();
     LocalDate getGueltigBis();
-
 }

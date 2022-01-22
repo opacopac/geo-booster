@@ -9,9 +9,11 @@ import com.tschanz.geobooster.netz_repo.service.VerkehrskanteRepo;
 import com.tschanz.geobooster.persistence_sql.model.ConnectionState;
 import com.tschanz.geobooster.rtm_repo.service.RgAuspraegungRepo;
 import com.tschanz.geobooster.tarif.model.Awb;
+import com.tschanz.geobooster.tarif.model.AwbIncVerwaltung;
 import com.tschanz.geobooster.tarif.model.AwbVersion;
 import com.tschanz.geobooster.tarif_persistence.service.AwbPersistence;
 import com.tschanz.geobooster.tarif_repo.model.AwbRepoState;
+import com.tschanz.geobooster.util.service.ArrayHelper;
 import com.tschanz.geobooster.util.service.DebounceTimer;
 import com.tschanz.geobooster.versioning_repo.model.VersionedObjectMap;
 import com.tschanz.geobooster.zonen_repo.service.ZonenplanRepo;
@@ -23,7 +25,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -40,6 +41,7 @@ public class AwbRepoImpl implements AwbRepo {
     private final VerkehrskanteRepo vkRepo;
 
     private VersionedObjectMap<Awb, AwbVersion> versionedObjectMap;
+    private Map<Long, Collection<AwbIncVerwaltung>> awbIncVerwaltungenByAwbVIdMap;
     private final DebounceTimer debounceTimer = new DebounceTimer(5);
 
 
@@ -55,8 +57,12 @@ public class AwbRepoImpl implements AwbRepo {
         var versions = this.awbPersistence.readAllVersions();
         this.awbRepoState.updateLoadedVersionCount(versions.size());
 
+        this.progressState.updateProgressText("loading awb inc verwaltung...");
+        var awbIncVerw = this.awbPersistence.readAllAwbIncVerwaltungen();
+
         this.progressState.updateProgressText("initializing awb repo...");
         this.versionedObjectMap = new VersionedObjectMap<>(elements, versions);
+        this.awbIncVerwaltungenByAwbVIdMap = ArrayHelper.create1toNLookupMap(awbIncVerw, AwbIncVerwaltung::getAwbVersionId, k -> k);
 
         this.debounceTimer.touch();
         this.progressState.updateProgressText("loading awbs done");
@@ -110,8 +116,8 @@ public class AwbRepoImpl implements AwbRepo {
             this.updateWhenChanged();
         }
 
-        Map<Long, Long> awbVerwaltungIdMap = new HashMap<>();
-        awbVersion.getIncludeVerwaltungIds().forEach(verwEid -> awbVerwaltungIdMap.put(verwEid, verwEid));
+        var awbIncVerwaltungen = this.awbIncVerwaltungenByAwbVIdMap.get(awbVersion.getId());
+        var awbVerwaltungIdMap = ArrayHelper.create1to1LookupMap(awbIncVerwaltungen, AwbIncVerwaltung::getVerwaltungId, AwbIncVerwaltung::getVerwaltungId);
         var vksByExtent = this.vkRepo.searchByExtent(bbox);
 
         return vksByExtent.stream()
@@ -159,11 +165,35 @@ public class AwbRepoImpl implements AwbRepo {
             return;
         }
 
-        var changes = this.awbPersistence.findChanges(
+        // awb version changes
+        var versionChanges = this.awbPersistence.findAwbVersionChanges(
             this.debounceTimer.getPreviousChangeCheck(),
             this.versionedObjectMap.getAllVersionKeys()
         );
+        this.versionedObjectMap.updateChanges(versionChanges);
 
-        this.versionedObjectMap.updateChanges(changes);
+        // awb include verwaltung changes
+        var awbIncVerwaltungChanges = this.awbPersistence.findAwbIncVerwaltungChanges(
+            this.debounceTimer.getPreviousChangeCheck(),
+            this.awbIncVerwaltungenByAwbVIdMap.keySet()
+        );
+
+        // new/modified awbIncVerw
+        awbIncVerwaltungChanges.getKey().forEach(aiv -> {
+            var aivs = this.awbIncVerwaltungenByAwbVIdMap.get(aiv.getAwbVersionId());
+            var newAivs = ArrayHelper.concatCollectionsDistinct(aivs, Collections.singletonList(aiv));
+            this.awbIncVerwaltungenByAwbVIdMap.put(aiv.getAwbVersionId(), newAivs);
+        });
+        // deleted awbIncVerw
+        if (!awbIncVerwaltungChanges.getValue().isEmpty()) {
+            var deletedAwbIncVerwIds = awbIncVerwaltungChanges.getValue();
+            for (var awbVId: this.awbIncVerwaltungenByAwbVIdMap.keySet()) {
+                var awbIncVerwaltungen = this.awbIncVerwaltungenByAwbVIdMap.get(awbVId);
+                var newAwbIncVerwaltungen = awbIncVerwaltungen.stream()
+                    .filter(aiv -> !deletedAwbIncVerwIds.contains(aiv.getId()))
+                    .collect(Collectors.toList());
+                this.awbIncVerwaltungenByAwbVIdMap.put(awbVId, newAwbIncVerwaltungen);
+            }
+        }
     }
 }

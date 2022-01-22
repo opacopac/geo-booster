@@ -2,6 +2,7 @@ package com.tschanz.geobooster.tarif_persistence_sql.service;
 
 import com.tschanz.geobooster.persistence_sql.service.SqlStandardReader;
 import com.tschanz.geobooster.tarif.model.Awb;
+import com.tschanz.geobooster.tarif.model.AwbIncVerwaltung;
 import com.tschanz.geobooster.tarif.model.AwbVersion;
 import com.tschanz.geobooster.tarif_persistence.service.AwbPersistence;
 import com.tschanz.geobooster.tarif_persistence_sql.model.*;
@@ -28,9 +29,11 @@ public class AwbSqlPersistence implements AwbPersistence {
 
 
     @Override
-    public ElementVersionChanges<Awb, AwbVersion> findChanges(LocalDateTime changedSince, Collection<Long> currentVersionIds) {
-        var modifiedDeletedVersionIds = this.changeDetector.findModifiedDeletedIds(SqlAwbVersionMapping.TABLE_NAME, changedSince, currentVersionIds);
-        var modifiedVersionIds = modifiedDeletedVersionIds.getList1();
+    public ElementVersionChanges<Awb, AwbVersion> findAwbVersionChanges(LocalDateTime changedSince, Collection<Long> currentIds) {
+        var changes = this.changeDetector.findModifiedDeletedChanges(SqlAwbVersionMapping.TABLE_NAME, changedSince, currentIds);
+        var modifiedVersionIds = changes.getModifiedIds();
+        var deletedVersionIds = changes.getDeletedIds();
+
         var modifiedVersions = !modifiedVersionIds.isEmpty() ? this.readVersions(modifiedVersionIds) : Collections.<AwbVersion>emptyList();
         var modifiedElementIds = modifiedVersions.stream().map(AwbVersion::getElementId).distinct().collect(Collectors.toList());
         var modifiedElements = !modifiedElementIds.isEmpty() ? this.readElements(modifiedElementIds) : Collections.<Awb>emptyList();
@@ -39,7 +42,22 @@ public class AwbSqlPersistence implements AwbPersistence {
             modifiedElements,
             modifiedVersions,
             Collections.emptyList(), // ignoring deleted elements
-            modifiedDeletedVersionIds.getList2()
+            deletedVersionIds
+        );
+    }
+
+
+    @Override
+    public KeyValue<Collection<AwbIncVerwaltung>, Collection<Long>> findAwbIncVerwaltungChanges(LocalDateTime changedSince, Collection<Long> currentIds) {
+        var changes = this.changeDetector.findModifiedDeletedChanges(SqlAwbIncVerwaltungMapping.TABLE_NAME, changedSince, currentIds);
+        var modifiedIds = changes.getModifiedIds();
+        var deletedIds = changes.getDeletedIds();
+
+        var modifiedAwbIncVerwaltungen = !modifiedIds.isEmpty() ? this.readAwbIncVerwaltungen(modifiedIds) : Collections.<AwbIncVerwaltung>emptyList();
+
+        return new KeyValue<>(
+            modifiedAwbIncVerwaltungen,
+            deletedIds
         );
     }
 
@@ -55,6 +73,12 @@ public class AwbSqlPersistence implements AwbPersistence {
     @SneakyThrows
     public Collection<AwbVersion> readAllVersions() {
         return this.readVersions(Collections.emptyList());
+    }
+
+
+    @Override
+    public Collection<AwbIncVerwaltung> readAllAwbIncVerwaltungen() {
+        return this.readAwbIncVerwaltungen(Collections.emptyList());
     }
 
 
@@ -83,6 +107,13 @@ public class AwbSqlPersistence implements AwbPersistence {
             includeZpMap,
             includeRgaMap
         );
+
+        return this.sqlStandardReader.read(mapping);
+    }
+
+
+    private Collection<AwbIncVerwaltung> readAwbIncVerwaltungen(Collection<Long> versionIds) {
+        var mapping = new SqlAwbIncVerwaltungMapping(versionIds);
 
         return this.sqlStandardReader.read(mapping);
     }
