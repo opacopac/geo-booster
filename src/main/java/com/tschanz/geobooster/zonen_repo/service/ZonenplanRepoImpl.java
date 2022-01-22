@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 
@@ -101,7 +102,14 @@ public class ZonenplanRepoImpl implements ZonenplanRepo {
     public Collection<VerkehrskanteVersion> searchZpVerkehrskanten(long zonenplanId, LocalDate date, Extent<Epsg3857Coordinate> bbox) {
         var zoneVs = this.zoneRepo.getVersionsByZonenplanId(zonenplanId, date);
         var vkVs = zoneVs.stream()
-            .map(zV -> zV.getUrsprungsZoneId() == 0 ? zV : this.zoneRepo.getElementVersionAtDate(zV.getUrsprungsZoneId(), date))
+            .flatMap(zV -> {
+                var zones = Collections.singletonList(zV);
+                if (zV.getUrsprungsZoneId() != 0) {
+                    var uzV = this.zoneRepo.getElementVersionAtDate(zV.getUrsprungsZoneId(), date);
+                    zones.add(uzV);
+                }
+                return zones.stream();
+            })
             .flatMap(zV -> this.zoneRepo.searchZoneVersionVks(zV.getId(), date, bbox).stream())
             .collect(Collectors.toList());
 
