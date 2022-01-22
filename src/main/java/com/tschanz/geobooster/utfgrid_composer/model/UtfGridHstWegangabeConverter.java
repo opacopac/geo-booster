@@ -7,7 +7,7 @@ import com.tschanz.geobooster.netz_repo.service.HaltestelleRepo;
 import com.tschanz.geobooster.rtm.model.HaltestelleWegangabeVersion;
 import com.tschanz.geobooster.rtm_repo.service.HaltestelleWegangabeRepo;
 import com.tschanz.geobooster.utfgrid.model.UtfGridPointItem;
-import com.tschanz.geobooster.util.model.KeyValue;
+import com.tschanz.geobooster.util.model.Tuple2;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -31,12 +31,12 @@ public class UtfGridHstWegangabeConverter {
             hstVersion.getCoordinate(),
             HaltestelleStyle.WIDTH.getWidth(zoomLevel),
             Arrays.asList(
-                new KeyValue<>("id", "WHALTESTELLEN." + hstVersion.getId()),
-                new KeyValue<>("ID", hstVersion.getId()),
-                new KeyValue<>("UIC_CODE", hstElement.getUicCode()),
-                new KeyValue<>("NAME", hstVersion.getName()),
-                new KeyValue<>("LAT", latLon.getLatitude()),
-                new KeyValue<>("LNG", latLon.getLongitude())
+                new Tuple2<>("id", "WHALTESTELLEN." + hstVersion.getId()),
+                new Tuple2<>("ID", hstVersion.getId()),
+                new Tuple2<>("UIC_CODE", hstElement.getUicCode()),
+                new Tuple2<>("NAME", hstVersion.getName()),
+                new Tuple2<>("LAT", latLon.getLatitude()),
+                new Tuple2<>("LNG", latLon.getLongitude())
             )
         );
     }

@@ -8,7 +8,7 @@ public class JsonKeyPartConverter {
     public static JsonArray toJson(UtfGrid utfGrid) {
         var jsonKeys = new JsonArray();
         jsonKeys.add("");
-        utfGrid.getNumberedItems().forEach(item -> jsonKeys.add(item.getKey().toString()));
+        utfGrid.getNumberedItems().forEach(item -> jsonKeys.add(item.getFirst().toString()));
 
         return jsonKeys;
     }

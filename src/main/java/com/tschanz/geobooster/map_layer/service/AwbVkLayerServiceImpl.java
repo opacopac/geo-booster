@@ -28,16 +28,12 @@ public class AwbVkLayerServiceImpl implements AwbVkLayerService {
         var awbVersion = this.awbRepo.getVersion(request.getAwbVersionId());
 
         // add zonenplan kanten
-        if (!awbVersion.getIncludeZonenplanIds().isEmpty()) {
-            var vksByZp = this.awbRepo.searchZpVerkehrskanten(awbVersion, request.getDate(), request.getBbox());
-            vkVersions.addAll(vksByZp);
-        }
+        var vksByZp = this.awbRepo.searchZpVerkehrskanten(awbVersion, request.getDate(), request.getBbox());
+        vkVersions.addAll(vksByZp);
 
         // add verwaltung kanten
-        if (!awbVersion.getIncludeVerwaltungIds().isEmpty()) {
-            var vksByVerw = this.awbRepo.searchVerwaltungKanten(awbVersion, request.getDate(), request.getBbox());
-            vkVersions.addAll(vksByVerw);
-        }
+        var vksByVerw = this.awbRepo.searchVerwaltungKanten(awbVersion, request.getDate(), request.getBbox());
+        vkVersions.addAll(vksByVerw);
 
         // TODO: minus exclude vka
 

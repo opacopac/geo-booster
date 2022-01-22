@@ -3,7 +3,8 @@ package com.tschanz.geobooster.tarif_persistence_sql.model;
 import com.google.gson.stream.JsonReader;
 import com.tschanz.geobooster.persistence_sql.model.SqlLongFilter;
 import com.tschanz.geobooster.persistence_sql.model.SqlStandardMapping;
-import com.tschanz.geobooster.util.model.Tuple2;
+import com.tschanz.geobooster.tarif.model.AwbIncVerwaltung;
+import com.tschanz.geobooster.versioning_persistence_sql.model.SqlHasIdMapping;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
@@ -12,22 +13,24 @@ import java.util.Collection;
 
 
 @RequiredArgsConstructor
-public class SqlAwbExcTkMapping implements SqlStandardMapping<Tuple2<Long, Long>, SqlLongFilter, Long> {
+public class SqlAwbIncVerwaltungMapping implements SqlStandardMapping<AwbIncVerwaltung, SqlLongFilter, Long> {
+    public static final String TABLE_NAME = "T_ANWBER_X_INCLUDE_VERWALTUNG";
+
     private final static String COL_ID_ANWBER_V = "ID_ANWBER_V";
-    private final static String COL_ID_TARIF_KANTE_E = "ID_TARIF_KANTE_E";
+    private final static String ID_VERWALTUNG_E = "ID_VERWALTUNG_E";
 
     private final Collection<Long> awbVersionIds;
 
 
     @Override
     public String getTable() {
-        return "T_ANWBER_X_EX_TARIF_KANTEN";
+        return TABLE_NAME;
     }
 
 
     @Override
     public String[] getSelectFields() {
-        return new String[] { COL_ID_ANWBER_V, COL_ID_TARIF_KANTE_E };
+        return new String[] { SqlHasIdMapping.COL_ID, COL_ID_ANWBER_V, ID_VERWALTUNG_E};
     }
 
 
@@ -39,18 +42,20 @@ public class SqlAwbExcTkMapping implements SqlStandardMapping<Tuple2<Long, Long>
 
     @Override
     @SneakyThrows
-    public Tuple2<Long, Long> fromResultSet(ResultSet row) {
-        return new Tuple2<>(
+    public AwbIncVerwaltung fromResultSet(ResultSet row) {
+        return new AwbIncVerwaltung(
+            SqlHasIdMapping.getId(row),
             row.getLong(COL_ID_ANWBER_V),
-            row.getLong(COL_ID_TARIF_KANTE_E)
+            row.getLong(ID_VERWALTUNG_E)
         );
     }
 
 
     @Override
     @SneakyThrows
-    public Tuple2<Long, Long> fromJsonAgg(JsonReader reader) {
-        return new Tuple2<>(
+    public AwbIncVerwaltung fromJsonAgg(JsonReader reader) {
+        return new AwbIncVerwaltung(
+            SqlHasIdMapping.getIdFromJsonAgg(reader),
             reader.nextLong(),
             reader.nextLong()
         );

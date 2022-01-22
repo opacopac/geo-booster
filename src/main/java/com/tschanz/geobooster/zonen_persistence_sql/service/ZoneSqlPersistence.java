@@ -1,7 +1,7 @@
 package com.tschanz.geobooster.zonen_persistence_sql.service;
 
 import com.tschanz.geobooster.persistence_sql.service.SqlStandardReader;
-import com.tschanz.geobooster.util.model.KeyValue;
+import com.tschanz.geobooster.util.model.Tuple2;
 import com.tschanz.geobooster.util.service.ArrayHelper;
 import com.tschanz.geobooster.versioning_persistence.model.ElementVersionChanges;
 import com.tschanz.geobooster.versioning_persistence_sql.service.SqlChangeDetector;
@@ -59,8 +59,8 @@ public class ZoneSqlPersistence implements ZonePersistence {
 
     @Override
     public ElementVersionChanges<Zone, ZoneVersion> findChanges(LocalDateTime changedSince, Collection<Long> currentVersionIds) {
-        var modifiedDeletedVersionIds = this.changeDetector.findModifiedDeletedIds(SqlZoneVersionMapping.TABLE_NAME, changedSince, currentVersionIds);
-        var modifiedVersionIds = modifiedDeletedVersionIds.getList1();
+        var changes = this.changeDetector.findModifiedDeletedChanges(SqlZoneVersionMapping.TABLE_NAME, changedSince, currentVersionIds);
+        var modifiedVersionIds = changes.getModifiedIds();
         var modifiedVersions = !modifiedVersionIds.isEmpty() ? this.readVersions(modifiedVersionIds) : Collections.<ZoneVersion>emptyList();
         var modifiedElementIds = modifiedVersions.stream().map(ZoneVersion::getElementId).distinct().collect(Collectors.toList());
         var modifiedElements = !modifiedElementIds.isEmpty() ? this.readElements(modifiedElementIds) : Collections.<Zone>emptyList();
@@ -69,7 +69,7 @@ public class ZoneSqlPersistence implements ZonePersistence {
             modifiedElements,
             modifiedVersions,
             Collections.emptyList(), // ignoring deleted elements
-            modifiedDeletedVersionIds.getList2()
+            changes.getDeletedIds()
         );
     }
 
@@ -78,7 +78,7 @@ public class ZoneSqlPersistence implements ZonePersistence {
         var mapping = new SqlZoneVkIdsMapping(filterVersionIds);
         var zoneVIdsvkIds = this.sqlReader.read(mapping);
 
-        return ArrayHelper.create1toNLookupMap(zoneVIdsvkIds, KeyValue::getKey, KeyValue::getValue);
+        return ArrayHelper.create1toNLookupMap(zoneVIdsvkIds, Tuple2::getFirst, Tuple2::getSecond);
 
     }
 }

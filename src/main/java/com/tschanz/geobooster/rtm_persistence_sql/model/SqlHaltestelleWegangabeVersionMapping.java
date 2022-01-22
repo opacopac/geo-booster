@@ -6,17 +6,23 @@ import com.tschanz.geobooster.persistence_sql.model.SqlStandardMapping;
 import com.tschanz.geobooster.rtm.model.HaltestelleWegangabeVersion;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlHasIdMapping;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlVersionMapping;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.sql.ResultSet;
 import java.util.Collection;
-import java.util.Collections;
 
 
+@RequiredArgsConstructor
 public class SqlHaltestelleWegangabeVersionMapping implements SqlStandardMapping<HaltestelleWegangabeVersion, SqlLongFilter, Long> {
+    public static final String TABLE_NAME = "R_HALTESTELLEN_WEGANGABE_V";
+
+    private final Collection<Long> filterVersionIds;
+
+
     @Override
     public String getTable() {
-        return "R_HALTESTELLEN_WEGANGABE_V";
+        return TABLE_NAME;
     }
 
 
@@ -28,7 +34,7 @@ public class SqlHaltestelleWegangabeVersionMapping implements SqlStandardMapping
 
     @Override
     public Collection<SqlLongFilter> getFilters() {
-        return Collections.emptyList();
+        return SqlLongFilter.createSingleton(SqlHasIdMapping.COL_ID, this.filterVersionIds);
     }
 
 

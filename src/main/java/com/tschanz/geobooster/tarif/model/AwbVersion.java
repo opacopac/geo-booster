@@ -19,7 +19,6 @@ public class AwbVersion implements Version {
     private final Collection<Long> excludeVkIds;
     private final Collection<Long> includeTkIds;
     private final Collection<Long> excludeTkIds;
-    private final Collection<Long> includeVerwaltungIds;
     private final Collection<Long> includeZonenplanIds;
     private final Collection<Long> includeRgaIds;
 }

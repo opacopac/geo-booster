@@ -6,7 +6,7 @@ import com.tschanz.geobooster.map_style.model.MapStyle;
 import com.tschanz.geobooster.netz.model.TarifkanteVersion;
 import com.tschanz.geobooster.netz_repo.service.TarifkanteRepo;
 import com.tschanz.geobooster.utfgrid.model.UtfGridLineItem;
-import com.tschanz.geobooster.util.model.KeyValue;
+import com.tschanz.geobooster.util.model.Tuple2;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -34,21 +34,21 @@ public class UtfGridTarifkanteConverter {
             hst2V.getCoordinate(),
             KanteBlueBoldDashedStyle.WIDTH.getWidth(zoomLevel),
             Arrays.asList(
-                new KeyValue<>("id", idPrefix + tkVersion.getId()),
-                new KeyValue<>("ID", tkVersion.getId()),
-                new KeyValue<>("HS1_ID", hst1V.getId()),
-                new KeyValue<>("HS1_UIC_CODE", hst1E.getUicCode()),
-                new KeyValue<>("HS1_NAME", hst1V.getName()),
-                new KeyValue<>("HS1_LAT", latLon1.getLatitude()),
-                new KeyValue<>("HS1_LNG", latLon1.getLongitude()),
-                new KeyValue<>("HS2_ID", hst2V.getId()),
-                new KeyValue<>("HS2_UIC_CODE", hst2E.getUicCode()),
-                new KeyValue<>("HS2_NAME", hst2V.getName()),
-                new KeyValue<>("HS2_LAT", latLon2.getLatitude()),
-                new KeyValue<>("HS2_LNG", latLon2.getLongitude()),
-                new KeyValue<>("GUELTIG_VON", tkVersion.getGueltigVon()),
-                new KeyValue<>("GUELTIG_BIS", tkVersion.getGueltigBis()),
-                new KeyValue<>("TERMINIERT_PER", tkVersion.getTerminiertPer())
+                new Tuple2<>("id", idPrefix + tkVersion.getId()),
+                new Tuple2<>("ID", tkVersion.getId()),
+                new Tuple2<>("HS1_ID", hst1V.getId()),
+                new Tuple2<>("HS1_UIC_CODE", hst1E.getUicCode()),
+                new Tuple2<>("HS1_NAME", hst1V.getName()),
+                new Tuple2<>("HS1_LAT", latLon1.getLatitude()),
+                new Tuple2<>("HS1_LNG", latLon1.getLongitude()),
+                new Tuple2<>("HS2_ID", hst2V.getId()),
+                new Tuple2<>("HS2_UIC_CODE", hst2E.getUicCode()),
+                new Tuple2<>("HS2_NAME", hst2V.getName()),
+                new Tuple2<>("HS2_LAT", latLon2.getLatitude()),
+                new Tuple2<>("HS2_LNG", latLon2.getLongitude()),
+                new Tuple2<>("GUELTIG_VON", tkVersion.getGueltigVon()),
+                new Tuple2<>("GUELTIG_BIS", tkVersion.getGueltigBis()),
+                new Tuple2<>("TERMINIERT_PER", tkVersion.getTerminiertPer())
             )
         );
     }
