@@ -14,7 +14,7 @@ public class JsonDataPartConverter {
     public static JsonObject toJson(UtfGrid utfGrid) {
         var jsonDataPart = new JsonObject();
         utfGrid.getNumberedItems().forEach(entry -> {
-            jsonDataPart.add(entry.getKey().toString(), itemToJson(entry.getValue()));
+            jsonDataPart.add(entry.getFirst().toString(), itemToJson(entry.getSecond()));
         });
 
         return jsonDataPart;
@@ -24,7 +24,7 @@ public class JsonDataPartConverter {
     private static JsonObject itemToJson(UtfGridItem item) {
         var jsonItem = new JsonObject();
         item.getDataFields().forEach(field -> {
-            jsonItem.add(field.getKey(), valueToJson(field.getValue()));
+            jsonItem.add(field.getFirst(), valueToJson(field.getSecond()));
         });
 
         return jsonItem;

@@ -179,14 +179,14 @@ public class AwbRepoImpl implements AwbRepo {
         );
 
         // new/modified awbIncVerw
-        awbIncVerwaltungChanges.getKey().forEach(aiv -> {
+        awbIncVerwaltungChanges.getFirst().forEach(aiv -> {
             var aivs = this.awbIncVerwaltungenByAwbVIdMap.get(aiv.getAwbVersionId());
             var newAivs = ArrayHelper.concatCollectionsDistinct(aivs, Collections.singletonList(aiv));
             this.awbIncVerwaltungenByAwbVIdMap.put(aiv.getAwbVersionId(), newAivs);
         });
         // deleted awbIncVerw
-        if (!awbIncVerwaltungChanges.getValue().isEmpty()) {
-            var deletedAwbIncVerwIds = awbIncVerwaltungChanges.getValue();
+        if (!awbIncVerwaltungChanges.getSecond().isEmpty()) {
+            var deletedAwbIncVerwIds = awbIncVerwaltungChanges.getSecond();
             for (var awbVId: this.awbIncVerwaltungenByAwbVIdMap.keySet()) {
                 var awbIncVerwaltungen = this.awbIncVerwaltungenByAwbVIdMap.get(awbVId);
                 var newAwbIncVerwaltungen = awbIncVerwaltungen.stream()

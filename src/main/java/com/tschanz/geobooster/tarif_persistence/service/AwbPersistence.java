@@ -3,7 +3,7 @@ package com.tschanz.geobooster.tarif_persistence.service;
 import com.tschanz.geobooster.tarif.model.Awb;
 import com.tschanz.geobooster.tarif.model.AwbIncVerwaltung;
 import com.tschanz.geobooster.tarif.model.AwbVersion;
-import com.tschanz.geobooster.util.model.KeyValue;
+import com.tschanz.geobooster.util.model.Tuple2;
 import com.tschanz.geobooster.versioning_persistence.model.ElementVersionChanges;
 import com.tschanz.geobooster.versioning_persistence.service.VersionedObjectPersistence;
 
@@ -16,5 +16,5 @@ public interface AwbPersistence extends VersionedObjectPersistence<Awb, AwbVersi
 
     ElementVersionChanges<Awb, AwbVersion> findAwbVersionChanges(LocalDateTime changedSince, Collection<Long> currentIds);
 
-    KeyValue<Collection<AwbIncVerwaltung>, Collection<Long>> findAwbIncVerwaltungChanges(LocalDateTime changedSince, Collection<Long> currentIds);
+    Tuple2<Collection<AwbIncVerwaltung>, Collection<Long>> findAwbIncVerwaltungChanges(LocalDateTime changedSince, Collection<Long> currentIds);
 }

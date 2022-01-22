@@ -1,7 +1,7 @@
 package com.tschanz.geobooster.zonen_persistence_sql.service;
 
 import com.tschanz.geobooster.persistence_sql.service.SqlStandardReader;
-import com.tschanz.geobooster.util.model.KeyValue;
+import com.tschanz.geobooster.util.model.Tuple2;
 import com.tschanz.geobooster.util.service.ArrayHelper;
 import com.tschanz.geobooster.versioning_persistence.model.ElementVersionChanges;
 import com.tschanz.geobooster.versioning_persistence_sql.service.SqlChangeDetector;
@@ -78,7 +78,7 @@ public class ZoneSqlPersistence implements ZonePersistence {
         var mapping = new SqlZoneVkIdsMapping(filterVersionIds);
         var zoneVIdsvkIds = this.sqlReader.read(mapping);
 
-        return ArrayHelper.create1toNLookupMap(zoneVIdsvkIds, KeyValue::getKey, KeyValue::getValue);
+        return ArrayHelper.create1toNLookupMap(zoneVIdsvkIds, Tuple2::getFirst, Tuple2::getSecond);
 
     }
 }

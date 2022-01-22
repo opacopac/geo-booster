@@ -6,7 +6,7 @@ import com.tschanz.geobooster.tarif.model.AwbIncVerwaltung;
 import com.tschanz.geobooster.tarif.model.AwbVersion;
 import com.tschanz.geobooster.tarif_persistence.service.AwbPersistence;
 import com.tschanz.geobooster.tarif_persistence_sql.model.*;
-import com.tschanz.geobooster.util.model.KeyValue;
+import com.tschanz.geobooster.util.model.Tuple2;
 import com.tschanz.geobooster.util.service.ArrayHelper;
 import com.tschanz.geobooster.versioning_persistence.model.ElementVersionChanges;
 import com.tschanz.geobooster.versioning_persistence_sql.service.SqlChangeDetector;
@@ -48,14 +48,14 @@ public class AwbSqlPersistence implements AwbPersistence {
 
 
     @Override
-    public KeyValue<Collection<AwbIncVerwaltung>, Collection<Long>> findAwbIncVerwaltungChanges(LocalDateTime changedSince, Collection<Long> currentIds) {
+    public Tuple2<Collection<AwbIncVerwaltung>, Collection<Long>> findAwbIncVerwaltungChanges(LocalDateTime changedSince, Collection<Long> currentIds) {
         var changes = this.changeDetector.findModifiedDeletedChanges(SqlAwbIncVerwaltungMapping.TABLE_NAME, changedSince, currentIds);
         var modifiedIds = changes.getModifiedIds();
         var deletedIds = changes.getDeletedIds();
 
         var modifiedAwbIncVerwaltungen = !modifiedIds.isEmpty() ? this.readAwbIncVerwaltungen(modifiedIds) : Collections.<AwbIncVerwaltung>emptyList();
 
-        return new KeyValue<>(
+        return new Tuple2<>(
             modifiedAwbIncVerwaltungen,
             deletedIds
         );
@@ -123,7 +123,7 @@ public class AwbSqlPersistence implements AwbPersistence {
         var mapping = new SqlAwbIncVkMapping(awbVersionIds);
         var excludeVks = this.sqlStandardReader.read(mapping);
 
-        return ArrayHelper.create1toNLookupMap(excludeVks, KeyValue::getKey, KeyValue::getValue);
+        return ArrayHelper.create1toNLookupMap(excludeVks, Tuple2::getFirst, Tuple2::getSecond);
     }
 
 
@@ -131,7 +131,7 @@ public class AwbSqlPersistence implements AwbPersistence {
         var mapping = new SqlAwbExcVkMapping(awbVersionIds);
         var excludeVks = this.sqlStandardReader.read(mapping);
 
-        return ArrayHelper.create1toNLookupMap(excludeVks, KeyValue::getKey, KeyValue::getValue);
+        return ArrayHelper.create1toNLookupMap(excludeVks, Tuple2::getFirst, Tuple2::getSecond);
     }
 
 
@@ -139,7 +139,7 @@ public class AwbSqlPersistence implements AwbPersistence {
         var mapping = new SqlAwbIncTkMapping(awbVersionIds);
         var excludeTks = this.sqlStandardReader.read(mapping);
 
-        return ArrayHelper.create1toNLookupMap(excludeTks, KeyValue::getKey, KeyValue::getValue);
+        return ArrayHelper.create1toNLookupMap(excludeTks, Tuple2::getFirst, Tuple2::getSecond);
     }
 
 
@@ -147,7 +147,7 @@ public class AwbSqlPersistence implements AwbPersistence {
         var mapping = new SqlAwbExcTkMapping(awbVersionIds);
         var excludeTks = this.sqlStandardReader.read(mapping);
 
-        return ArrayHelper.create1toNLookupMap(excludeTks, KeyValue::getKey, KeyValue::getValue);
+        return ArrayHelper.create1toNLookupMap(excludeTks, Tuple2::getFirst, Tuple2::getSecond);
     }
 
 
@@ -155,7 +155,7 @@ public class AwbSqlPersistence implements AwbPersistence {
         var mapping = new SqlAwbIncVerwMapping(awbVersionIds);
         var excludeVks = this.sqlStandardReader.read(mapping);
 
-        return ArrayHelper.create1toNLookupMap(excludeVks, KeyValue::getKey, KeyValue::getValue);
+        return ArrayHelper.create1toNLookupMap(excludeVks, Tuple2::getFirst, Tuple2::getSecond);
     }
 
 
@@ -163,7 +163,7 @@ public class AwbSqlPersistence implements AwbPersistence {
         var mapping = new SqlAwbIncZpMapping(awbVersionIds);
         var excludeVks = this.sqlStandardReader.read(mapping);
 
-        return ArrayHelper.create1toNLookupMap(excludeVks, KeyValue::getKey, KeyValue::getValue);
+        return ArrayHelper.create1toNLookupMap(excludeVks, Tuple2::getFirst, Tuple2::getSecond);
     }
 
 
@@ -171,6 +171,6 @@ public class AwbSqlPersistence implements AwbPersistence {
         var mapping = new SqlAwbIncRgaMapping(awbVersionIds);
         var excludeVks = sqlStandardReader.read(mapping);
 
-        return ArrayHelper.create1toNLookupMap(excludeVks, KeyValue::getKey, KeyValue::getValue);
+        return ArrayHelper.create1toNLookupMap(excludeVks, Tuple2::getFirst, Tuple2::getSecond);
     }
 }

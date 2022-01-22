@@ -1,7 +1,7 @@
 package com.tschanz.geobooster.utfgrid.model;
 
 import com.tschanz.geobooster.geofeature.model.Epsg3857Coordinate;
-import com.tschanz.geobooster.util.model.KeyValue;
+import com.tschanz.geobooster.util.model.Tuple2;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -20,7 +20,7 @@ public class UtfGrid {
     @Getter private final List<UtfGridPointItem> pointItems;
     @Getter private final List<UtfGridLineItem> lineItems;
     @Getter private UtfGridImg utfGridImg;
-    private List<KeyValue<Integer, UtfGridItem>> numberedItems;
+    private List<Tuple2<Integer, UtfGridItem>> numberedItems;
     private int imgWidth;
     private int imgHeight;
 
@@ -31,10 +31,10 @@ public class UtfGrid {
         this.utfGridImg = new UtfGridImg(this.imgWidth, this.imgHeight);
 
         for (var entry: this.getNumberedItems()) {
-            var symbol = this.getSymbol(entry.getKey());
+            var symbol = this.getSymbol(entry.getFirst());
 
-            if (entry.getValue() instanceof UtfGridLineItem) {
-                var lineItem = (UtfGridLineItem) entry.getValue();
+            if (entry.getSecond() instanceof UtfGridLineItem) {
+                var lineItem = (UtfGridLineItem) entry.getSecond();
                 var width = lineItem.getWidth() / REDUCTION_FACTOR;
                 var x0 = this.getX(lineItem.getStartCoordinate());
                 var y0 = this.getY(lineItem.getStartCoordinate());
@@ -43,8 +43,8 @@ public class UtfGrid {
                 this.utfGridImg.drawLine(x0, y0, x1, y1, width, symbol);
             }
 
-            if (entry.getValue() instanceof UtfGridPointItem) {
-                var pointItem = (UtfGridPointItem) entry.getValue();
+            if (entry.getSecond() instanceof UtfGridPointItem) {
+                var pointItem = (UtfGridPointItem) entry.getSecond();
                 var width = pointItem.getWidth() / REDUCTION_FACTOR;
                 var x = this.getX(pointItem.getCoordinate());
                 var y = this.getY(pointItem.getCoordinate());
@@ -54,7 +54,7 @@ public class UtfGrid {
     }
 
 
-    public List<KeyValue<Integer, UtfGridItem>> getNumberedItems() {
+    public List<Tuple2<Integer, UtfGridItem>> getNumberedItems() {
         if (this.numberedItems == null) {
             this.numberedItems = this.calcNumberedItems();
         }
@@ -63,15 +63,15 @@ public class UtfGrid {
     }
 
 
-    private List<KeyValue<Integer, UtfGridItem>> calcNumberedItems() {
-        var list = new ArrayList<KeyValue<Integer, UtfGridItem>>();
+    private List<Tuple2<Integer, UtfGridItem>> calcNumberedItems() {
+        var list = new ArrayList<Tuple2<Integer, UtfGridItem>>();
         for (var i = 0; i < lineItems.size(); i++) {
-            list.add(new KeyValue<>(i + 1, lineItems.get(i)));
+            list.add(new Tuple2<>(i + 1, lineItems.get(i)));
         }
 
         var offset = list.size() + 1;
         for (var i = 0; i < pointItems.size(); i++) {
-            list.add(new KeyValue<>(i + offset, pointItems.get(i)));
+            list.add(new Tuple2<>(i + offset, pointItems.get(i)));
         }
 
         return list;

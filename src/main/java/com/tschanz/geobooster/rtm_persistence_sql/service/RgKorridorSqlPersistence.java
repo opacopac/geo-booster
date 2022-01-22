@@ -7,7 +7,7 @@ import com.tschanz.geobooster.rtm_persistence.service.RgKorridorPersistence;
 import com.tschanz.geobooster.rtm_persistence_sql.model.SqlRgKorridorElementMapping;
 import com.tschanz.geobooster.rtm_persistence_sql.model.SqlRgKorridorTkIdsMapping;
 import com.tschanz.geobooster.rtm_persistence_sql.model.SqlRgKorridorVersionMapping;
-import com.tschanz.geobooster.util.model.KeyValue;
+import com.tschanz.geobooster.util.model.Tuple2;
 import com.tschanz.geobooster.util.service.ArrayHelper;
 import com.tschanz.geobooster.versioning_persistence.model.ElementVersionChanges;
 import com.tschanz.geobooster.versioning_persistence_sql.service.SqlChangeDetector;
@@ -76,6 +76,6 @@ public class RgKorridorSqlPersistence implements RgKorridorPersistence {
         var mapping = new SqlRgKorridorTkIdsMapping();
         var rgKorrTkIds = this.sqlReader.read(mapping);
 
-        return ArrayHelper.create1toNLookupMap(rgKorrTkIds, KeyValue::getKey, KeyValue::getValue);
+        return ArrayHelper.create1toNLookupMap(rgKorrTkIds, Tuple2::getFirst, Tuple2::getSecond);
     }
 }

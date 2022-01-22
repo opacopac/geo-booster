@@ -7,7 +7,7 @@ import com.tschanz.geobooster.netz_persistence_sql.model.SqlTarifkanteElementMap
 import com.tschanz.geobooster.netz_persistence_sql.model.SqlTarifkanteVersionMapping;
 import com.tschanz.geobooster.netz_persistence_sql.model.SqlTkVkMapping;
 import com.tschanz.geobooster.persistence_sql.service.SqlStandardReader;
-import com.tschanz.geobooster.util.model.KeyValue;
+import com.tschanz.geobooster.util.model.Tuple2;
 import com.tschanz.geobooster.util.service.ArrayHelper;
 import com.tschanz.geobooster.versioning_persistence.model.ElementVersionChanges;
 import com.tschanz.geobooster.versioning_persistence_sql.service.SqlChangeDetector;
@@ -97,6 +97,6 @@ public class TarifkanteSqlPersistence implements TarifkantePersistence {
         var mapping = new SqlTkVkMapping(filterTkVIds);
         var tkVkList = this.sqlStandardReader.read(mapping);
 
-        return ArrayHelper.create1toNLookupMap(tkVkList, KeyValue::getKey, KeyValue::getValue);
+        return ArrayHelper.create1toNLookupMap(tkVkList, Tuple2::getFirst, Tuple2::getSecond);
     }
 }
