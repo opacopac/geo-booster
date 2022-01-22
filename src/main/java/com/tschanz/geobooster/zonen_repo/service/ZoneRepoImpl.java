@@ -121,6 +121,10 @@ public class ZoneRepoImpl implements ZoneRepo {
 
     @Override
     public Collection<ZoneVersion> getVersionsByZonenplanId(long zonenplanId, LocalDate date) {
+        if (this.connectionState.isTrackChanges()) {
+            this.updateWhenChanged();
+        }
+
         var zoneEs = this.getElementsByZonenplanId(zonenplanId);
 
         return zoneEs.stream()
@@ -132,6 +136,10 @@ public class ZoneRepoImpl implements ZoneRepo {
 
     @Override
     public Collection<VerkehrskanteVersion> searchZoneVersionVks(long zoneVersionId, LocalDate date, Extent<Epsg3857Coordinate> bbox) {
+        if (this.connectionState.isTrackChanges()) {
+            this.updateWhenChanged();
+        }
+
         var zoneVkZuordnungen = this.zoneVkZuordnungenByZoneVIdMap.getOrDefault(zoneVersionId, Collections.emptyList());
         var vkVs = zoneVkZuordnungen.stream()
             .map(ZoneVkZuordnung::getVerkehrskanteId)
