@@ -116,7 +116,11 @@ public class AwbRepoImpl implements AwbRepo {
             this.updateWhenChanged();
         }
 
-        var awbIncVerwaltungen = this.awbIncVerwaltungenByAwbVIdMap.getOrDefault(awbVersion.getId(), Collections.emptyList());
+        var awbIncVerwaltungen = this.awbIncVerwaltungenByAwbVIdMap.get(awbVersion.getId());
+        if (awbIncVerwaltungen == null) {
+            return Collections.emptyList();
+        }
+
         var awbVerwaltungIdMap = ArrayHelper.create1to1LookupMap(awbIncVerwaltungen, AwbIncVerwaltung::getVerwaltungId, AwbIncVerwaltung::getVerwaltungId);
         var vksByExtent = this.vkRepo.searchByExtent(bbox);
 

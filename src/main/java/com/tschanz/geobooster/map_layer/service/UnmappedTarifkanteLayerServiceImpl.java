@@ -24,6 +24,7 @@ public class UnmappedTarifkanteLayerServiceImpl implements UnmappedTarifkanteLay
         return tkVersions.stream()
             .filter(unmTkV -> unmTkV.getVerkehrskanteIds().size() == 0)
             .filter(unmTkV -> VersioningHelper.isVersionInTimespan(unmTkV, request.getDate()))
+            .filter(unmTkV -> this.tarifkanteRepo.hasOneOfVerwaltungIds(unmTkV, request.getVerwaltungVersionIds()))
             .collect(Collectors.toList());
     }
 }
