@@ -3,10 +3,7 @@ package com.tschanz.geobooster.netz_repo.service;
 
 import com.tschanz.geobooster.geofeature.model.Epsg3857Coordinate;
 import com.tschanz.geobooster.geofeature.model.Extent;
-import com.tschanz.geobooster.netz.model.Haltestelle;
-import com.tschanz.geobooster.netz.model.HaltestelleVersion;
-import com.tschanz.geobooster.netz.model.Tarifkante;
-import com.tschanz.geobooster.netz.model.TarifkanteVersion;
+import com.tschanz.geobooster.netz.model.*;
 import com.tschanz.geobooster.netz_persistence.service.TarifkantePersistence;
 import com.tschanz.geobooster.netz_repo.model.ProgressState;
 import com.tschanz.geobooster.netz_repo.model.QuadTreeConfig;
@@ -16,6 +13,7 @@ import com.tschanz.geobooster.quadtree.model.AreaQuadTree;
 import com.tschanz.geobooster.quadtree.model.AreaQuadTreeItem;
 import com.tschanz.geobooster.quadtree.model.QuadTreeCoordinate;
 import com.tschanz.geobooster.quadtree.model.QuadTreeExtent;
+import com.tschanz.geobooster.util.service.ArrayHelper;
 import com.tschanz.geobooster.util.service.DebounceTimer;
 import com.tschanz.geobooster.versioning_repo.model.VersionedObjectMap;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +26,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -38,6 +37,7 @@ public class TarifkanteRepoImpl implements TarifkanteRepo {
 
     private final TarifkantePersistence tkPersistenceRepo;
     private final HaltestelleRepo hstRepo;
+    private final VerkehrskanteRepo verkehrskanteRepo;
     private final ProgressState progressState;
     private final TarifkanteRepoState tarifkanteRepoState;
     private final ConnectionState connectionState;
@@ -168,6 +168,48 @@ public class TarifkanteRepoImpl implements TarifkanteRepo {
         var hst2V = this.getEndHaltestelleVersion(tkVersion);
 
         return hst2V.getCoordinate();
+    }
+
+
+    @Override
+    public boolean hasOneOfVmTypes(TarifkanteVersion tkVersion, Collection<VerkehrsmittelTyp> vmTypes) {
+        if (vmTypes.isEmpty()) {
+            return true;
+        }
+
+        for (var vkV: this.getVerkehrskanteVersions(tkVersion)) {
+            if (vkV.hasOneOfVmTypes(vmTypes)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
+    @Override
+    public boolean hasOneOfVerwaltungIds(TarifkanteVersion tkVersion, Collection<Long> verwaltungIds) {
+        if (verwaltungIds.isEmpty()) {
+            return true;
+        }
+
+        var verwaltungMap = ArrayHelper.create1to1LookupMap(verwaltungIds, k -> k, k -> k);
+        for (var vkV: this.getVerkehrskanteVersions(tkVersion)) {
+            if (vkV.hasOneOfVerwaltungIds(verwaltungMap)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
+    private List<VerkehrskanteVersion> getVerkehrskanteVersions(TarifkanteVersion tkVersion) {
+        return tkVersion.getVerkehrskanteIds()
+            .stream()
+            .map(vkId -> this.verkehrskanteRepo.getElementVersionAtDate(vkId, tkVersion.getGueltigBis()))
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
     }
 
 

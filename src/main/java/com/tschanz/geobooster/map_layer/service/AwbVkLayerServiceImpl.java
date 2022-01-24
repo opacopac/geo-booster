@@ -51,8 +51,8 @@ public class AwbVkLayerServiceImpl implements AwbVkLayerService {
 
         return vkVersions.stream()
             .filter(vkV -> VersioningHelper.isVersionInTimespan(vkV, request.getDate()))
-            .filter(vkV -> request.getVmTypes().isEmpty() || vkV.hasOneOfVmTypes(request.getVmTypes()))
-            .filter(vkV -> filterVerwaltungIdMap.isEmpty() || vkV.hasOneOfVerwaltungIds(filterVerwaltungIdMap))
+            .filter(vkV -> vkV.hasOneOfVmTypes(request.getVmTypes()))
+            .filter(vkV -> vkV.hasOneOfVerwaltungIds(filterVerwaltungIdMap))
             .filter(vkV -> request.isShowTerminiert() || vkV.getTerminiertPer() == null || vkV.getTerminiertPer().isAfter(request.getDate()))
             .filter(vkV -> vkByLinieMap.isEmpty() || vkByLinieMap.containsKey(vkV.getId()))
             .collect(Collectors.toList());

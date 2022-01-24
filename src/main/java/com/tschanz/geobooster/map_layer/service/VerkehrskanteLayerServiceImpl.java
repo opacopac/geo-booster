@@ -41,8 +41,8 @@ public class VerkehrskanteLayerServiceImpl implements VerkehrskanteLayerService 
 
         return vkVersions.stream()
             .filter(vkV -> VersioningHelper.isVersionInTimespan(vkV, request.getDate()))
-            .filter(vkV -> request.getVmTypes().isEmpty() || vkV.hasOneOfVmTypes(request.getVmTypes()))
-            .filter(vkV -> verwaltungIdMap.isEmpty() || vkV.hasOneOfVerwaltungIds(verwaltungIdMap))
+            .filter(vkV -> vkV.hasOneOfVmTypes(request.getVmTypes()))
+            .filter(vkV -> vkV.hasOneOfVerwaltungIds(verwaltungIdMap))
             .filter(vkV -> request.isShowTerminiert() || vkV.getTerminiertPer() == null || vkV.getTerminiertPer().isAfter(request.getDate()))
             .collect(Collectors.toList());
     }

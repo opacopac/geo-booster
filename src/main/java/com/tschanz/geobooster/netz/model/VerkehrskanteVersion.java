@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -28,13 +29,22 @@ public class VerkehrskanteVersion implements Version {
 
 
     public boolean hasOneOfVmTypes(Collection<VerkehrsmittelTyp> vmTypes) {
+        if (vmTypes.isEmpty()) {
+            return true;
+        }
+
         return (VerkehrsmittelTyp.getBitMask(vmTypes) & this.vmTypeBitmask) > 0;
     }
 
 
     public boolean hasOneOfVerwaltungIds(Map<Long, Long> verwaltungIdMap) {
+        if (verwaltungIdMap.isEmpty()) {
+            return true;
+        }
+
+        var fussweg = Collections.singletonList(VerkehrsmittelTyp.FUSSWEG);
         for (var verwaltungId: this.verwaltungIds) {
-            if (verwaltungIdMap.containsKey(verwaltungId)) {
+            if (verwaltungIdMap.containsKey(verwaltungId) || this.hasOneOfVmTypes(fussweg)) {
                 return true;
             }
         };
