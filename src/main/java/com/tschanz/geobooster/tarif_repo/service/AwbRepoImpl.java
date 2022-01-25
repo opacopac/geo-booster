@@ -16,6 +16,7 @@ import com.tschanz.geobooster.tarif_persistence.service.AwbPersistence;
 import com.tschanz.geobooster.tarif_repo.model.AwbRepoState;
 import com.tschanz.geobooster.util.service.ArrayHelper;
 import com.tschanz.geobooster.util.service.DebounceTimer;
+import com.tschanz.geobooster.versioning.service.VersioningHelper;
 import com.tschanz.geobooster.versioning_repo.model.VersionedObjectMap;
 import com.tschanz.geobooster.zonen_repo.service.ZonenplanRepo;
 import lombok.RequiredArgsConstructor;
@@ -126,6 +127,7 @@ public class AwbRepoImpl implements AwbRepo {
         var vksByExtent = this.vkRepo.searchByExtent(bbox);
 
         return vksByExtent.stream()
+            .filter(vkV -> VersioningHelper.isVersionInTimespan(vkV, date))
             .filter(vkV -> vkV.hasOneOfVerwaltungAndVmTypes(VerkehrsmittelTyp.ANY, awbVerwaltungIdMap))
             .collect(Collectors.toList());
     }
