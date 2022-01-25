@@ -6,6 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -18,9 +19,10 @@ class VerkehrskanteVersionTests {
         var vkVmTypes = VerkehrsmittelTyp.getBitMask(Arrays.asList(VerkehrsmittelTyp.BAHN, VerkehrsmittelTyp.BUS));
         var vkV = new VerkehrskanteVersion(0, 0, LocalDate.now(), LocalDate.now(), null, Collections.emptyList(), vkVmTypes);
 
-        var result1 = vkV.hasOneOfVmTypes(Collections.singletonList(VerkehrsmittelTyp.BAHN));
-        var result2 = vkV.hasOneOfVmTypes(Collections.singletonList(VerkehrsmittelTyp.BUS));
-        var result3 = vkV.hasOneOfVmTypes(Collections.singletonList(VerkehrsmittelTyp.SCHIFF));
+        var empty = new HashMap<Long, Long>();
+        var result1 = vkV.hasOneOfVerwaltungAndVmTypes(Collections.singletonList(VerkehrsmittelTyp.BAHN), empty);
+        var result2 = vkV.hasOneOfVerwaltungAndVmTypes(Collections.singletonList(VerkehrsmittelTyp.BUS), empty);
+        var result3 = vkV.hasOneOfVerwaltungAndVmTypes(Collections.singletonList(VerkehrsmittelTyp.SCHIFF), empty);
 
         assertTrue(result1);
         assertTrue(result2);
@@ -33,8 +35,9 @@ class VerkehrskanteVersionTests {
         var vkVmTypes = VerkehrsmittelTyp.getBitMask(Arrays.asList(VerkehrsmittelTyp.BAHN, VerkehrsmittelTyp.BUS));
         var vkV = new VerkehrskanteVersion(0, 0, LocalDate.now(), LocalDate.now(), null, Collections.emptyList(), vkVmTypes);
 
-        var result1 = vkV.hasOneOfVmTypes(Arrays.asList(VerkehrsmittelTyp.BAHN, VerkehrsmittelTyp.SCHIFF));
-        var result2 = vkV.hasOneOfVmTypes(Arrays.asList(VerkehrsmittelTyp.TRAM, VerkehrsmittelTyp.SCHIFF));
+        var empty = new HashMap<Long, Long>();
+        var result1 = vkV.hasOneOfVerwaltungAndVmTypes(Arrays.asList(VerkehrsmittelTyp.BAHN, VerkehrsmittelTyp.SCHIFF), empty);
+        var result2 = vkV.hasOneOfVerwaltungAndVmTypes(Arrays.asList(VerkehrsmittelTyp.TRAM, VerkehrsmittelTyp.SCHIFF), empty);
 
         assertTrue(result1);
         assertFalse(result2);

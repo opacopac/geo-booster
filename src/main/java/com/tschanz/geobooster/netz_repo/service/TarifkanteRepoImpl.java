@@ -13,7 +13,6 @@ import com.tschanz.geobooster.quadtree.model.AreaQuadTree;
 import com.tschanz.geobooster.quadtree.model.AreaQuadTreeItem;
 import com.tschanz.geobooster.quadtree.model.QuadTreeCoordinate;
 import com.tschanz.geobooster.quadtree.model.QuadTreeExtent;
-import com.tschanz.geobooster.util.service.ArrayHelper;
 import com.tschanz.geobooster.util.service.DebounceTimer;
 import com.tschanz.geobooster.versioning_repo.model.VersionedObjectMap;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +25,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -172,35 +172,14 @@ public class TarifkanteRepoImpl implements TarifkanteRepo {
 
 
     @Override
-    public boolean hasOneOfVmTypes(TarifkanteVersion tkVersion, Collection<VerkehrsmittelTyp> vmTypes) {
-        if (vmTypes.isEmpty()) {
-            return true;
-        }
-
-        for (var vkV: this.getVerkehrskanteVersions(tkVersion)) {
-            if (vkV.hasOneOfVmTypes(vmTypes)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-
-    @Override
-    public boolean hasOneOfVerwaltungIds(TarifkanteVersion tkVersion, Collection<Long> verwaltungIds) {
-        if (verwaltungIds.isEmpty()) {
-            return true;
-        }
-
-        var verwaltungMap = ArrayHelper.create1to1LookupMap(verwaltungIds, k -> k, k -> k);
-        for (var vkV: this.getVerkehrskanteVersions(tkVersion)) {
-            if (vkV.hasOneOfVerwaltungIds(verwaltungMap)) {
-                return true;
-            }
-        }
-
-        return false;
+    public boolean hasOneOfVerwaltungAndVmTypes(
+        TarifkanteVersion tkVersion,
+        Collection<VerkehrsmittelTyp> vmTypes,
+        Map<Long, Long> verwaltungIdMap
+    ) {
+        return this.getVerkehrskanteVersions(tkVersion)
+            .stream()
+            .anyMatch(vkV -> vkV.hasOneOfVerwaltungAndVmTypes(vmTypes, verwaltungIdMap));
     }
 
 

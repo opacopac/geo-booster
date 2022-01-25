@@ -4,6 +4,7 @@ import com.tschanz.geobooster.geofeature.model.Epsg3857Coordinate;
 import com.tschanz.geobooster.geofeature.model.Extent;
 import com.tschanz.geobooster.netz.model.TarifkanteVersion;
 import com.tschanz.geobooster.netz.model.VerkehrskanteVersion;
+import com.tschanz.geobooster.netz.model.VerkehrsmittelTyp;
 import com.tschanz.geobooster.netz_repo.model.ProgressState;
 import com.tschanz.geobooster.netz_repo.service.VerkehrskanteRepo;
 import com.tschanz.geobooster.persistence_sql.model.ConnectionState;
@@ -125,7 +126,7 @@ public class AwbRepoImpl implements AwbRepo {
         var vksByExtent = this.vkRepo.searchByExtent(bbox);
 
         return vksByExtent.stream()
-            .filter(vkV -> vkV.hasOneOfVerwaltungIds(awbVerwaltungIdMap))
+            .filter(vkV -> vkV.hasOneOfVerwaltungAndVmTypes(VerkehrsmittelTyp.ANY, awbVerwaltungIdMap))
             .collect(Collectors.toList());
     }
 

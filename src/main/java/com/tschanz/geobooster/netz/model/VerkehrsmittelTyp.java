@@ -2,10 +2,7 @@ package com.tschanz.geobooster.netz.model;
 
 import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 
 @RequiredArgsConstructor
@@ -19,6 +16,10 @@ public enum VerkehrsmittelTyp {
 
 
     private final byte bitMask;
+
+
+    public static Collection<VerkehrsmittelTyp> ANY = Arrays.asList(BAHN, BUS, SCHIFF, SEILBAHN, TRAM, FUSSWEG);
+    public static Collection<VerkehrsmittelTyp> FUSSWEG_ONLY = Collections.singletonList(FUSSWEG);
 
 
     public static byte getBitMask(Collection<VerkehrsmittelTyp> vmTypes) {

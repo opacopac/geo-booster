@@ -5,7 +5,6 @@ import com.tschanz.geobooster.netz.model.VerkehrskanteVersion;
 import com.tschanz.geobooster.netz_repo.service.LinieVarianteRepo;
 import com.tschanz.geobooster.netz_repo.service.VerkehrskanteRepo;
 import com.tschanz.geobooster.netz_repo.service.VerwaltungRepo;
-import com.tschanz.geobooster.tarif_repo.service.AwbRepo;
 import com.tschanz.geobooster.versioning.service.VersioningHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,7 +21,6 @@ public class VerkehrskanteLayerServiceImpl implements VerkehrskanteLayerService 
     private final VerwaltungRepo verwaltungRepo;
     private final VerkehrskanteRepo verkehrskanteRepo;
     private final LinieVarianteRepo linieVarianteRepo;
-    private final AwbRepo awbRepo;
 
 
     @Override
@@ -41,8 +39,7 @@ public class VerkehrskanteLayerServiceImpl implements VerkehrskanteLayerService 
 
         return vkVersions.stream()
             .filter(vkV -> VersioningHelper.isVersionInTimespan(vkV, request.getDate()))
-            .filter(vkV -> vkV.hasOneOfVmTypes(request.getVmTypes()))
-            .filter(vkV -> vkV.hasOneOfVerwaltungIds(verwaltungIdMap))
+            .filter(vkV -> vkV.hasOneOfVerwaltungAndVmTypes(request.getVmTypes(), verwaltungIdMap))
             .filter(vkV -> request.isShowTerminiert() || vkV.getTerminiertPer() == null || vkV.getTerminiertPer().isAfter(request.getDate()))
             .collect(Collectors.toList());
     }

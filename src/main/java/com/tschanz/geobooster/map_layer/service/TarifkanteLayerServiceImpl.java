@@ -5,6 +5,7 @@ import com.tschanz.geobooster.netz.model.TarifkanteVersion;
 import com.tschanz.geobooster.netz_repo.service.LinieVarianteRepo;
 import com.tschanz.geobooster.netz_repo.service.TarifkanteRepo;
 import com.tschanz.geobooster.netz_repo.service.VerwaltungRepo;
+import com.tschanz.geobooster.util.service.ArrayHelper;
 import com.tschanz.geobooster.versioning.service.VersioningHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -33,11 +34,11 @@ public class TarifkanteLayerServiceImpl implements TarifkanteLayerService {
         var verwaltungIds = request.getVerwaltungVersionIds().stream()
             .map(verwVId -> this.verwaltungRepo.getVersion(verwVId).getElementId())
             .collect(Collectors.toList());
+        var verwaltungMap = ArrayHelper.create1to1LookupMap(verwaltungIds, k -> k, k -> k);
 
         return tkVersions.stream()
             .filter(tkV -> VersioningHelper.isVersionInTimespan(tkV, request.getDate()))
-            .filter(tkV -> this.tarifkanteRepo.hasOneOfVmTypes(tkV, request.getVmTypes()))
-            .filter(tkV -> this.tarifkanteRepo.hasOneOfVerwaltungIds(tkV, verwaltungIds))
+            .filter(tkV -> this.tarifkanteRepo.hasOneOfVerwaltungAndVmTypes(tkV, request.getVmTypes(), verwaltungMap))
             .collect(Collectors.toList());
     }
 }

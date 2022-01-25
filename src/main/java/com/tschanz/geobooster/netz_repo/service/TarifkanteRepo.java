@@ -7,6 +7,7 @@ import com.tschanz.geobooster.versioning_repo.service.VersionedObjectRepo;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 
 public interface TarifkanteRepo extends VersionedObjectRepo<Tarifkante, TarifkanteVersion> {
@@ -24,7 +25,5 @@ public interface TarifkanteRepo extends VersionedObjectRepo<Tarifkante, Tarifkan
 
     Epsg3857Coordinate getEndCoordinate(TarifkanteVersion tkVersion);
 
-    boolean hasOneOfVmTypes(TarifkanteVersion tkVersion, Collection<VerkehrsmittelTyp> vmTypes);
-
-    boolean hasOneOfVerwaltungIds(TarifkanteVersion tkVersion, Collection<Long> verwaltungIds);
+    boolean hasOneOfVerwaltungAndVmTypes(TarifkanteVersion tkVersion, Collection<VerkehrsmittelTyp> vmTypes, Map<Long, Long> verwaltungIdMap);
 }
