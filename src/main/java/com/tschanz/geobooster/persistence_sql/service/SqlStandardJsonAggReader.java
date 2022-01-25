@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,7 +35,11 @@ public class SqlStandardJsonAggReader {
         if (connection.getStatement().execute(query)) {
             connection.getStatement().getResultSet().next();
             var resultSet = connection.getStatement().getResultSet();
-            var jsonStream = resultSet.getClob(COL_CLOB).getCharacterStream();
+            var clob = resultSet.getClob(COL_CLOB);
+            if (clob == null) {
+                return Collections.emptyList();
+            }
+            var jsonStream = clob.getCharacterStream();
 
             JsonReader reader = new JsonReader(jsonStream);
             reader.beginArray();

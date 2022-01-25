@@ -6,8 +6,6 @@ import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 
@@ -23,32 +21,26 @@ public class VerkehrskanteVersion implements Version {
     private final byte vmTypeBitmask;
 
 
-    public List<VerkehrsmittelTyp> getVmTypes() {
-        return VerkehrsmittelTyp.getVmTypes(this.vmTypeBitmask);
-    }
-
-
-    public boolean hasOneOfVmTypes(Collection<VerkehrsmittelTyp> vmTypes) {
-        if (vmTypes.isEmpty()) {
-            return true;
+    public boolean hasOneOfVerwaltungAndVmTypes(Collection<VerkehrsmittelTyp> vmTypes, Map<Long, Long> verwaltungIdMap) {
+        if (!this.hasOneOfVmTypes(vmTypes)) {
+            return false;
         }
 
-        return (VerkehrsmittelTyp.getBitMask(vmTypes) & this.vmTypeBitmask) > 0;
-    }
-
-
-    public boolean hasOneOfVerwaltungIds(Map<Long, Long> verwaltungIdMap) {
         if (verwaltungIdMap.isEmpty()) {
             return true;
         }
 
-        var fussweg = Collections.singletonList(VerkehrsmittelTyp.FUSSWEG);
         for (var verwaltungId: this.verwaltungIds) {
-            if (verwaltungIdMap.containsKey(verwaltungId) || this.hasOneOfVmTypes(fussweg)) {
+            if (verwaltungIdMap.containsKey(verwaltungId)) {
                 return true;
             }
         };
 
-        return false;
+        return this.hasOneOfVmTypes(VerkehrsmittelTyp.FUSSWEG_ONLY) && vmTypes.contains(VerkehrsmittelTyp.FUSSWEG);
+    }
+
+
+    private boolean hasOneOfVmTypes(Collection<VerkehrsmittelTyp> vmTypes) {
+        return (VerkehrsmittelTyp.getBitMask(vmTypes) & this.vmTypeBitmask) > 0;
     }
 }
