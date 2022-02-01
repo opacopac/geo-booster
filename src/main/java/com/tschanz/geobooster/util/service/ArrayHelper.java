@@ -45,4 +45,11 @@ public class ArrayHelper {
 
         return lookupMap;
     }
+
+
+    public static <T> List<T> removeRandomEntries(Collection<T> collection, double factor) {
+        return collection.stream()
+            .filter(entry -> Math.random() < factor)
+            .collect(Collectors.toList());
+    }
 }

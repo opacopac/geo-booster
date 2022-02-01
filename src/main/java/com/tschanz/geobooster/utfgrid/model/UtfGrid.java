@@ -25,7 +25,7 @@ public class UtfGrid {
     private int imgHeight;
 
 
-    public void render() {
+    public void draw() {
         this.imgWidth = this.width / REDUCTION_FACTOR;
         this.imgHeight = this.height / REDUCTION_FACTOR;
         this.utfGridImg = new UtfGridImg(this.imgWidth, this.imgHeight);
