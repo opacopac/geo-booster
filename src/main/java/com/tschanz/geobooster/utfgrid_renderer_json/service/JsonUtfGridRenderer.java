@@ -16,7 +16,7 @@ public class JsonUtfGridRenderer implements UtfGridRenderer {
         var utfGridJson = JsonUtfGridConverter.toJson(utfGrid);
         var gson = new GsonBuilder()
             .serializeNulls()
-            .setPrettyPrinting()
+            //.setPrettyPrinting()
             .create();
 
         return gson.toJson(utfGridJson);
