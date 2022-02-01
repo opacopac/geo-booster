@@ -10,7 +10,9 @@ import com.tschanz.geobooster.versioning.service.VersioningHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 
@@ -24,12 +26,11 @@ public class AwbVkLayerServiceImpl implements AwbVkLayerService {
 
     @Override
     public Collection<VerkehrskanteVersion> searchObjects(AwbVkLayerRequest request) {
-        List<VerkehrskanteVersion> vkVersions = new ArrayList<>();
         var awbVersion = this.awbRepo.getVersion(request.getAwbVersionId());
 
         // add zonenplan kanten
         var vksByZp = this.awbRepo.searchZpVerkehrskanten(awbVersion, request.getDate(), request.getBbox());
-        vkVersions.addAll(vksByZp);
+        var vkVersions = new ArrayList<>(vksByZp);
 
         // add verwaltung kanten
         var vksByVerw = this.awbRepo.searchVerwaltungKanten(awbVersion, request.getDate(), request.getBbox());
@@ -44,14 +45,14 @@ public class AwbVkLayerServiceImpl implements AwbVkLayerService {
         var vkByLinieMap = ArrayHelper.create1to1LookupMap(vksByLinie, VerkehrskanteVersion::getId, k -> k);
 
         // verwaltung filter
-        Map<Long, Long> filterVerwaltungIdMap = new HashMap<>();
-        request.getVerwaltungVersionIds().stream()
+        var verwaltungIds = request.getVerwaltungVersionIds().stream()
             .map(verwVId -> this.verwaltungRepo.getVersion(verwVId).getElementId())
-            .forEach(verwEid -> filterVerwaltungIdMap.put(verwEid, verwEid));
+            .collect(Collectors.toList());
+        var verwaltungMap = ArrayHelper.create1to1LookupMap(verwaltungIds, k -> k, k -> k);
 
         return vkVersions.stream()
             .filter(vkV -> VersioningHelper.isVersionInTimespan(vkV, request.getDate()))
-            .filter(vkV -> vkV.hasOneOfVerwaltungAndVmTypes(request.getVmTypes(), filterVerwaltungIdMap))
+            .filter(vkV -> vkV.hasOneOfVerwaltungAndVmTypes(request.getVmTypes(), verwaltungMap))
             .filter(vkV -> request.isShowTerminiert() || vkV.getTerminiertPer() == null || vkV.getTerminiertPer().isAfter(request.getDate()))
             .filter(vkV -> vkByLinieMap.isEmpty() || vkByLinieMap.containsKey(vkV.getId()))
             .collect(Collectors.toList());
