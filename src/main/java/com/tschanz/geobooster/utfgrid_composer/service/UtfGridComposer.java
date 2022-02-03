@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 @Service
 @RequiredArgsConstructor
 public class UtfGridComposer {
-    private final static int MAX_POINT_ENTRIES = 10000;
+    private final static int MAX_POINT_ENTRIES = 5000;
     private final static int MAX_LINE_ENTRIES = 2500;
 
     private final MapLayerService mapLayerService;
