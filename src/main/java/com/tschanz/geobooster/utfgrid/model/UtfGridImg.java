@@ -10,7 +10,7 @@ public class UtfGridImg {
     private static final String EMPTY_SYMBOL = " ";
     private final int width;
     private final int height;
-    private final char[][] bitMap; // [height - y - 1, x]
+    private final char[][] bitMap;
 
 
     public UtfGridImg(int width, int height) {
@@ -31,8 +31,8 @@ public class UtfGridImg {
         var ymin = (int) Math.round(y - width / 2.0);
         var ymax = (int) Math.round(y + width / 2.0);
 
-        for (var i = xmin; i <= xmax; i++) {
-            for (var j = ymin; j <= ymax; j++) {
+        for (var i = xmin; i < xmax; i++) {
+            for (var j = ymin; j < ymax; j++) {
                 this.setSymbol(i, j, symbol);
             }
         }
@@ -74,19 +74,20 @@ public class UtfGridImg {
         var ymin = (int) Math.round(y - width / 2.0);
         var ymax = (int) Math.round(y + width / 2.0);
 
-        for (var i = xmin; i <= xmax; i++) {
+        for (var i = xmin; i < xmax; i++) {
             this.setSymbol(i, ymin, symbol);
         }
 
-        for (var j = ymin; j <= ymax; j++) {
+        for (var j = ymin; j < ymax; j++) {
             this.setSymbol(xmin, j, symbol);
         }
     }
 
 
     private void setSymbol(int x, int y, char symbol) {
-        if (x >= 0 && y >= 0 && x < this.width && y < this.height) {
-            this.bitMap[this.height - y - 1][x] = symbol;
+        var yInv = this.height - y - 2;
+        if (x >= 0 && yInv >= 0 && x < this.width && yInv < this.height) {
+            this.bitMap[yInv][x] = symbol;
         }
     }
 }
