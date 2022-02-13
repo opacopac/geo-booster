@@ -11,7 +11,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 public class UtfGrid {
-    private static final int REDUCTION_FACTOR = 4;
+    public static final int REDUCTION_FACTOR = 4;
 
     @Getter private final int width;
     @Getter private final int height;
