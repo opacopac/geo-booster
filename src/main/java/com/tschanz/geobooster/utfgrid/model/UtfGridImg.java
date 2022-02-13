@@ -26,10 +26,10 @@ public class UtfGridImg {
 
 
     public void drawPoint(int x, int y, float width, char symbol) {
-        var xmin = (int) Math.round(x - width / 2.0);
-        var xmax = (int) Math.round(x + width / 2.0);
-        var ymin = (int) Math.round(y - width / 2.0);
-        var ymax = (int) Math.round(y + width / 2.0);
+        var xmin = x - width / 2.0f;
+        var xmax = x + width / 2.0f;
+        var ymin = y - width / 2.0f;
+        var ymax = y + width / 2.0f;
 
         for (var i = xmin; i < xmax; i++) {
             for (var j = ymin; j < ymax; j++) {
@@ -50,7 +50,7 @@ public class UtfGridImg {
         int e2; /* error value e_xy */
 
         while (true) {
-            this.drawLineWidth(x0, y0, width, symbol);
+            this.drawLineStep(x0, y0, width, symbol);
 
             if (x0 == x1 && y0 == y1) break;
             e2 = 2 * err;
@@ -68,11 +68,11 @@ public class UtfGridImg {
     }
 
 
-    private void drawLineWidth(int x, int y, float width, char symbol) {
-        var xmin = (int) Math.round(x - width / 2.0);
-        var xmax = (int) Math.round(x + width / 2.0);
-        var ymin = (int) Math.round(y - width / 2.0);
-        var ymax = (int) Math.round(y + width / 2.0);
+    private void drawLineStep(int x, int y, float width, char symbol) {
+        var xmin = x - width / 2.0f;
+        var xmax = x + width / 2.0f;
+        var ymin = y - width / 2.0f;
+        var ymax = y + width / 2.0f;
 
         for (var i = xmin; i < xmax; i++) {
             this.setSymbol(i, ymin, symbol);
@@ -84,10 +84,11 @@ public class UtfGridImg {
     }
 
 
-    private void setSymbol(int x, int y, char symbol) {
-        var yInv = this.height - y - 2;
-        if (x >= 0 && yInv >= 0 && x < this.width && yInv < this.height) {
-            this.bitMap[yInv][x] = symbol;
+    private void setSymbol(float x, float y, char symbol) {
+        var xGrid = Math.round(x);
+        var yGrid = this.height - Math.round(y) - 2;
+        if (xGrid >= 0 && yGrid >= 0 && xGrid < this.width && yGrid < this.height) {
+            this.bitMap[yGrid][xGrid] = symbol;
         }
     }
 }
