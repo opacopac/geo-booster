@@ -37,7 +37,10 @@ public class LinieVarianteRepoImpl implements LinieVarianteRepo {
             this.linieVarianteRepoState.updateIsLoading(true);
             this.progressState.updateProgressText("loading linienvariante vks...");
 
-            vkIds = this.linieVariantePersistence.searchVerkehrskanteIds(linienVarianteIds);
+            vkIds = this.linieVariantePersistence.searchVerkehrskanteIds(linienVarianteIds
+                .stream()
+                .distinct()
+                .collect(Collectors.toList()));
             this.linienVariantenVkIdCache.put(linienVarianteIds, vkIds);
 
             this.progressState.updateProgressText("loading linienvariante vks done");
@@ -60,7 +63,10 @@ public class LinieVarianteRepoImpl implements LinieVarianteRepo {
             this.linieVarianteRepoState.updateIsLoading(true);
             this.progressState.updateProgressText("loading linienvariante tks...");
 
-            tkIds = this.linieVariantePersistence.searchTarifkanteIds(linienVarianteIds, date);
+            tkIds = this.linieVariantePersistence.searchTarifkanteIds(linienVarianteIds, date)
+                .stream()
+                .distinct()
+                .collect(Collectors.toList());
             this.linienVariantenTkIdCache.put(linienVarianteIds, tkIds);
 
             this.progressState.updateProgressText("loading linienvariante tks done");
