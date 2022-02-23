@@ -24,7 +24,7 @@ public class SqlLinVarTkMapping implements SqlGenericResultsetMapping<Long> {
     public String getSelectQuery() {
         var dateString = SqlHelper.getToDate(this.sqlDialect, this.date);
         return String.format(
-            "SELECT tk_e.ID as %s FROM N_TARIFKANTE_E tk_e"
+            "SELECT DISTINCT tk_e.ID as %s FROM N_TARIFKANTE_E tk_e"
                 + " INNER JOIN N_TARIFKANTE_V tk_v ON tk_v.ID_ELEMENT = tk_e.ID"
                 + " INNER JOIN N_TARIFKANTE_X_N_VERK_KANTE_E tk_vk ON tk_vk.ID_TARIFKANTE_V = tk_v.ID"
                 + " INNER JOIN N_VERKEHRSKANTE_E vk_e ON vk_e.ID = tk_vk.ID_VERKEHRS_KANTE_E"

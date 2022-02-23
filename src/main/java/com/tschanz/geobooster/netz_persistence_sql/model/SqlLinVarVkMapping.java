@@ -18,7 +18,7 @@ public class SqlLinVarVkMapping implements SqlGenericResultsetMapping<Long> {
     @Override
     public String getSelectQuery() {
         return String.format(
-            "SELECT vk_e.ID as %s FROM N_VERKEHRSKANTE_E vk_e"
+            "SELECT DISTINCT vk_e.ID as %s FROM N_VERKEHRSKANTE_E vk_e"
                 + " INNER JOIN N_VERKEHRS_KANTE_AUSPR_E vka_e ON vka_e.ID_VERKEHRSKANTE_E = vk_e.ID"
                 + " INNER JOIN N_LINIE_VARIANTE_KANTEN lvk ON lvk.ID_KANTEN_AUSPRAEGUNG_E = vka_e.ID"
                 + " WHERE lvk.ID_LINIE_VARIANTE IN (%s)",
