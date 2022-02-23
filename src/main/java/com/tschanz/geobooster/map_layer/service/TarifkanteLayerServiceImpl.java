@@ -25,8 +25,8 @@ public class TarifkanteLayerServiceImpl implements TarifkanteLayerService {
     @Override
     public Collection<TarifkanteVersion> searchObjects(TarifkanteLayerRequest request) {
         Collection<TarifkanteVersion> tkVersions;
-        if (request.getLinieVarianteIds().size() > 0) {
-            tkVersions = this.linieVarianteRepo.searchTarifkanteVersions(request.getLinieVarianteIds(), request.getDate());
+        if (!request.getLinieVarianteIds().isEmpty()) {
+            tkVersions = this.linieVarianteRepo.searchTarifkanteVersions(request.getLinieVarianteIds(), request.getDate(), request.getBbox());
         } else {
             tkVersions = this.tarifkanteRepo.searchByExtent(request.getBbox());
         }

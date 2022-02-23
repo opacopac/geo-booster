@@ -40,7 +40,7 @@ public class AwbVkLayerServiceImpl implements AwbVkLayerService {
 
         // linien filter
         var vksByLinie = !request.getLinieVarianteIds().isEmpty()
-            ? this.linieVarianteRepo.searchVerkehrskanteVersions(request.getLinieVarianteIds(), request.getDate())
+            ? this.linieVarianteRepo.searchVerkehrskanteVersions(request.getLinieVarianteIds(), request.getDate(), request.getBbox())
             : Collections.<VerkehrskanteVersion>emptyList();
         var vkByLinieMap = ArrayHelper.create1to1LookupMap(vksByLinie, VerkehrskanteVersion::getId, k -> k);
 

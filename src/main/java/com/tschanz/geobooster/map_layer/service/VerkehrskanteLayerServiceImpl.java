@@ -26,8 +26,8 @@ public class VerkehrskanteLayerServiceImpl implements VerkehrskanteLayerService 
     @Override
     public Collection<VerkehrskanteVersion> searchObjects(VerkehrskanteLayerRequest request) {
         Collection<VerkehrskanteVersion> vkVersions;
-        if (request.getLinieVarianteIds().size() > 0) {
-            vkVersions = this.linieVarianteRepo.searchVerkehrskanteVersions(request.getLinieVarianteIds(), request.getDate());
+        if (!request.getLinieVarianteIds().isEmpty()) {
+            vkVersions = this.linieVarianteRepo.searchVerkehrskanteVersions(request.getLinieVarianteIds(), request.getDate(), request.getBbox());
         } else {
             vkVersions = this.verkehrskanteRepo.searchByExtent(request.getBbox());
         }

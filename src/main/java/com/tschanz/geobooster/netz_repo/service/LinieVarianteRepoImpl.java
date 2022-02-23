@@ -1,5 +1,7 @@
 package com.tschanz.geobooster.netz_repo.service;
 
+import com.tschanz.geobooster.geofeature.model.Epsg3857Coordinate;
+import com.tschanz.geobooster.geofeature.model.Extent;
 import com.tschanz.geobooster.netz.model.TarifkanteVersion;
 import com.tschanz.geobooster.netz.model.VerkehrskanteVersion;
 import com.tschanz.geobooster.netz_persistence.service.LinieVariantePersistence;
@@ -30,7 +32,8 @@ public class LinieVarianteRepoImpl implements LinieVarianteRepo {
     @Override
     public Collection<VerkehrskanteVersion> searchVerkehrskanteVersions(
         Collection<Long> linienVarianteIds,
-        LocalDate date
+        LocalDate date,
+        Extent<Epsg3857Coordinate> extent
     ) {
         var vkIds = this.linienVariantenVkIdCache.get(linienVarianteIds);
         if (vkIds == null) {
@@ -46,6 +49,12 @@ public class LinieVarianteRepoImpl implements LinieVarianteRepo {
 
         return vkIds.stream()
             .map(vkId -> this.verkehrskanteRepo.getElementVersionAtDate(vkId, date))
+            .filter(vkV -> {
+                return Extent.fromCoords(
+                    this.verkehrskanteRepo.getStartCoordinate(vkV),
+                    this.verkehrskanteRepo.getEndCoordinate(vkV)
+                ).isExtentIntersecting(extent);
+            })
             .collect(Collectors.toList());
     }
 
@@ -53,7 +62,8 @@ public class LinieVarianteRepoImpl implements LinieVarianteRepo {
     @Override
     public Collection<TarifkanteVersion> searchTarifkanteVersions(
         Collection<Long> linienVarianteIds,
-        LocalDate date
+        LocalDate date,
+        Extent<Epsg3857Coordinate> extent
     ) {
         var tkIds = this.linienVariantenTkIdCache.get(linienVarianteIds);
         if (tkIds == null) {
@@ -68,7 +78,13 @@ public class LinieVarianteRepoImpl implements LinieVarianteRepo {
         }
 
         return tkIds.stream()
-            .map(vkId -> this.tarifkanteRepo.getElementVersionAtDate(vkId, date))
+            .map(tkId -> this.tarifkanteRepo.getElementVersionAtDate(tkId, date))
+            .filter(tkV -> {
+                return Extent.fromCoords(
+                    this.tarifkanteRepo.getStartCoordinate(tkV),
+                    this.tarifkanteRepo.getEndCoordinate(tkV)
+                ).isExtentIntersecting(extent);
+            })
             .collect(Collectors.toList());
     }
 }
