@@ -22,4 +22,3 @@ public class GeoBoosterStartupRunner implements ApplicationRunner {
         System.exit(0);
     }
 }
-
