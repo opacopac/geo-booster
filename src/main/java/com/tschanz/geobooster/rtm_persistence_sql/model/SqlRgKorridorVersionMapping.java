@@ -12,6 +12,7 @@ import lombok.SneakyThrows;
 import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 
@@ -70,12 +71,13 @@ public class SqlRgKorridorVersionMapping implements SqlStandardMapping<RgKorrido
         LocalDate gueltigVon,
         LocalDate gueltigBis
     ) {
+        var tkIds = this.korrTkMap.getOrDefault(id, Collections.emptyList());
         return new RgKorridorVersion(
             id,
             elementId,
             gueltigVon,
             gueltigBis,
-            this.korrTkMap.get(id)
+            tkIds
         );
     }
 }
