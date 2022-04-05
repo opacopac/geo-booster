@@ -22,12 +22,10 @@ public class UnmappedTarifkanteLayerServiceImpl implements UnmappedTarifkanteLay
     @Override
     public Collection<TarifkanteVersion> searchObjects(UnmappedTarifkanteLayerRequest request) {
         var tkVersions = this.tarifkanteRepo.searchByExtent(request.getBbox());
-        var verwaltungMap = ArrayHelper.create1to1LookupMap(request.getVerwaltungVersionIds(), k -> k, k -> k);
 
         return tkVersions.stream()
-            .filter(unmTkV -> unmTkV.getVerkehrskanteIds().size() == 0)
+            .filter(unmTkV -> unmTkV.getVerkehrskanteIds().isEmpty())
             .filter(unmTkV -> VersioningHelper.isVersionInTimespan(unmTkV, request.getDate()))
-            .filter(unmTkV -> this.tarifkanteRepo.hasOneOfVerwaltungAndVmTypes(unmTkV, VerkehrsmittelTyp.ANY, verwaltungMap))
             .collect(Collectors.toList());
     }
 }
