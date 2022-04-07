@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>GeoBooster - Admin</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+    <h3>Connection</h3>
+    <div>
+        <p>DB Connection: <span th:text="${connectionData.connection}"></span></p>
+        <p>Track Changes: <span th:text="${connectionData.trackChanges}"></span></p>
+    </div>
+    <h3>Caching Stats</h3>
+    <ul>
+        <li>Betreiber (E/V): <span th:text="${cachingStatsData.betreiberEV}"></span></li>
+        <li>Verwaltung (E/V): <span th:text="${cachingStatsData.verwaltungEV}"></span></li>
+        <li>Haltestelle (E/V): <span th:text="${cachingStatsData.haltestelleEV}"></span></li>
+        <li>Verkehrskante (E/V): <span th:text="${cachingStatsData.verkehrskanteEV}"></span></li>
+        <li>Tarifkante (E/V): <span th:text="${cachingStatsData.tarifkanteEV}"></span></li>
+        <li>HST Wegangabe (E/V): <span th:text="${cachingStatsData.hstWaEV}"></span></li>
+        <li>RG-Korridor (E/V): <span th:text="${cachingStatsData.rgKorrEV}"></span></li>
+        <li>RG-Ausprägung (E/V): <span th:text="${cachingStatsData.rgAuspraegungEV}"></span></li>
+        <li>Zone (E/V): <span th:text="${cachingStatsData.zoneEV}"></span></li>
+        <li>Zonenplan (E/V): <span th:text="${cachingStatsData.zonenplanEV}"></span></li>
+        <li>AWB (E/V): <span th:text="${cachingStatsData.awbEV}"></span></li>
+    </ul>
+    <h3>Serving Stats</h3>
+    <ul>
+        <li>PNG Requests (# / last ms): <span th:text="${servingStatsData.pngRequests}"></span></li>
+        <li>UTF Grid Requests (# / last ms): <span th:text="${servingStatsData.utfGridRequests}"></span></li>
+    </ul>
+    <h3>Status</h3>
+    <p th:text="${progressData.progressText}"></p>
+</body>
+</html>

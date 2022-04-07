@@ -33,6 +33,11 @@ public class ConnectionState {
     }
 
 
+    public boolean hasSelectedConnection() {
+        return this.selectedConnectionProperties != null;
+    }
+
+
     public SqlConnectionProperties getSelectedConnectionProperties() {
         if (this.selectedConnectionProperties == null) {
             throw new IllegalArgumentException("no connection selected");
