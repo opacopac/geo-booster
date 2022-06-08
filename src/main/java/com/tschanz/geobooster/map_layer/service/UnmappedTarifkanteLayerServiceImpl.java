@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 
@@ -21,6 +22,10 @@ public class UnmappedTarifkanteLayerServiceImpl implements UnmappedTarifkanteLay
 
     @Override
     public Collection<TarifkanteVersion> searchObjects(UnmappedTarifkanteLayerRequest request) {
+        if (!request.getVerwaltungVersionIds().isEmpty()) {
+            return Collections.emptyList();
+        }
+
         var tkVersions = this.tarifkanteRepo.searchByExtent(request.getBbox());
 
         return tkVersions.stream()
