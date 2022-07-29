@@ -19,6 +19,7 @@ public enum VerkehrsmittelTyp {
 
 
     public static Collection<VerkehrsmittelTyp> ANY = Arrays.asList(BAHN, BUS, SCHIFF, SEILBAHN, TRAM, FUSSWEG);
+    public static Collection<VerkehrsmittelTyp> ANY_EXCEPT_FUSSWEG = Arrays.asList(BAHN, BUS, SCHIFF, SEILBAHN, TRAM);
     public static Collection<VerkehrsmittelTyp> FUSSWEG_ONLY = Collections.singletonList(FUSSWEG);
 
 

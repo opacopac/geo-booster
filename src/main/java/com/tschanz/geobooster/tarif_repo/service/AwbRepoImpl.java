@@ -128,7 +128,7 @@ public class AwbRepoImpl implements AwbRepo {
 
         return vksByExtent.stream()
             .filter(vkV -> VersioningHelper.isVersionInTimespan(vkV, date))
-            .filter(vkV -> vkV.hasOneOfVerwaltungAndVmTypes(VerkehrsmittelTyp.ANY, awbVerwaltungIdMap))
+            .filter(vkV -> vkV.hasOneOfVerwaltungAndVmTypes(VerkehrsmittelTyp.ANY_EXCEPT_FUSSWEG, awbVerwaltungIdMap))
             .collect(Collectors.toList());
     }
 
