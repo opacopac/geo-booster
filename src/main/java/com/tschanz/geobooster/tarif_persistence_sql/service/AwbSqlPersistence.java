@@ -90,16 +90,16 @@ public class AwbSqlPersistence implements AwbPersistence {
 
 
     private Collection<AwbVersion> readVersions(Collection<Long> versionIds) {
-        var includeVkMap = this.readIncludeVkMap(versionIds);
-        var excludeVkMap = this.readExcludeVkMap(versionIds);
+        var includeVkaMap = this.readIncludeVkaMap(versionIds);
+        var excludeVkaMap = this.readExcludeVkaMap(versionIds);
         var includeTkMap = this.readIncludeTkMap(versionIds);
         var excludeTkMap = this.readExcludeTkMap(versionIds);
         var includeZpMap = this.readIncludeZpMap(versionIds);
         var includeRgaMap = this.readIncludeRgaMap(versionIds);
         var mapping = new SqlAwbVersionMapping(
             versionIds,
-            includeVkMap,
-            excludeVkMap,
+            includeVkaMap,
+            excludeVkaMap,
             includeTkMap,
             excludeTkMap,
             includeZpMap,
@@ -117,16 +117,16 @@ public class AwbSqlPersistence implements AwbPersistence {
     }
 
 
-    private Map<Long, Collection<Long>> readIncludeVkMap(Collection<Long> awbVersionIds) {
-        var mapping = new SqlAwbIncVkMapping(awbVersionIds);
+    private Map<Long, Collection<Long>> readIncludeVkaMap(Collection<Long> awbVersionIds) {
+        var mapping = new SqlAwbIncVkaMapping(awbVersionIds);
         var excludeVks = this.sqlReader.read(mapping);
 
         return ArrayHelper.create1toNLookupMap(excludeVks, Tuple2::getFirst, Tuple2::getSecond);
     }
 
 
-    private Map<Long, Collection<Long>> readExcludeVkMap(Collection<Long> awbVersionIds) {
-        var mapping = new SqlAwbExcVkMapping(awbVersionIds);
+    private Map<Long, Collection<Long>> readExcludeVkaMap(Collection<Long> awbVersionIds) {
+        var mapping = new SqlAwbExcVkaMapping(awbVersionIds);
         var excludeVks = this.sqlReader.read(mapping);
 
         return ArrayHelper.create1toNLookupMap(excludeVks, Tuple2::getFirst, Tuple2::getSecond);

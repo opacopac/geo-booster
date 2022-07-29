@@ -21,8 +21,8 @@ public class SqlAwbVersionMapping implements SqlStandardMapping<AwbVersion, SqlL
     public final static String TABLE_NAME = "T_ANWBER_V";
 
     private final Collection<Long> versionIds;
-    private final Map<Long, Collection<Long>> includeVkMap;
-    private final Map<Long, Collection<Long>> excludeVkMap;
+    private final Map<Long, Collection<Long>> includeVkaMap;
+    private final Map<Long, Collection<Long>> excludeVkaMap;
     private final Map<Long, Collection<Long>> includeTkMap;
     private final Map<Long, Collection<Long>> excludeTkMap;
     private final Map<Long, Collection<Long>> includeZpMap;
@@ -76,8 +76,8 @@ public class SqlAwbVersionMapping implements SqlStandardMapping<AwbVersion, SqlL
             elementId,
             gueltigVon,
             gueltigBis,
-            this.includeVkMap.getOrDefault(id, Collections.emptyList()),
-            this.excludeVkMap.getOrDefault(id, Collections.emptyList()),
+            this.includeVkaMap.getOrDefault(id, Collections.emptyList()),
+            this.excludeVkaMap.getOrDefault(id, Collections.emptyList()),
             this.includeTkMap.getOrDefault(id, Collections.emptyList()),
             this.excludeTkMap.getOrDefault(id, Collections.emptyList()),
             this.includeZpMap.getOrDefault(id, Collections.emptyList()),

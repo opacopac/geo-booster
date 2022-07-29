@@ -12,7 +12,7 @@ import java.util.Collection;
 
 
 @RequiredArgsConstructor
-public class SqlAwbIncVkMapping implements SqlStandardMapping<Tuple2<Long, Long>, SqlLongFilter, Long> {
+public class SqlAwbExcVkaMapping implements SqlStandardMapping<Tuple2<Long, Long>, SqlLongFilter, Long> {
     private final static String COL_ID_ANWBER_V = "ID_ANWBER_V";
     private final static String COL_ID_KANTEN_AUSPRAEGUNG_E = "ID_KANTEN_AUSPRAEGUNG_E";
 
@@ -21,13 +21,13 @@ public class SqlAwbIncVkMapping implements SqlStandardMapping<Tuple2<Long, Long>
 
     @Override
     public String getTable() {
-        return "T_ANWBER_X_INCLUDE_KANTEN";
+        return "T_ANWBER_X_EXCLUDE_KANTEN";
     }
 
 
     @Override
     public String[] getSelectFields() {
-        return new String[] { COL_ID_ANWBER_V, COL_ID_KANTEN_AUSPRAEGUNG_E };
+        return new String[] {COL_ID_ANWBER_V, COL_ID_KANTEN_AUSPRAEGUNG_E};
     }
 
 
