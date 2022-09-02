@@ -30,6 +30,7 @@ public class UtfGridHaltestelleConverter {
             Arrays.asList(
                 new Tuple2<>("id", "HALTESTELLEN." + hstVersion.getId()),
                 new Tuple2<>("ID", hstVersion.getId()),
+                new Tuple2<>("ID_ELEMENT", hstVersion.getElementId()),
                 new Tuple2<>("UIC_CODE", hstE.getUicCode()),
                 new Tuple2<>("NAME", hstVersion.getName()),
                 new Tuple2<>("LAT", (float) latLon.getLatitude()),
