@@ -8,6 +8,7 @@ import com.tschanz.geobooster.netz.model.VerkehrsmittelTyp;
 import com.tschanz.geobooster.persistence_sql.model.SqlLongFilter;
 import com.tschanz.geobooster.persistence_sql.model.SqlStandardMapping;
 import com.tschanz.geobooster.persistence_sql.service.SqlHelper;
+import com.tschanz.geobooster.versioning.model.Pflegestatus;
 import com.tschanz.geobooster.versioning.service.VersioningHelper;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlHasIdMapping;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlVersionMapping;
@@ -85,6 +86,7 @@ public class SqlVerkehrskanteVersionMapping implements SqlStandardMapping<Verkeh
             gueltigVon,
             gueltigBis,
             terminiertPer,
+            Pflegestatus.PRODUKTIV,
             this.getVerwaltungIds(elementId, gueltigBis),
             this.getVmBitmask(elementId, gueltigBis)
         );

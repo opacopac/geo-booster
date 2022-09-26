@@ -3,6 +3,7 @@ package com.tschanz.geobooster.zonen_persistence_sql.model;
 import com.google.gson.stream.JsonReader;
 import com.tschanz.geobooster.persistence_sql.model.SqlLongFilter;
 import com.tschanz.geobooster.persistence_sql.model.SqlStandardMapping;
+import com.tschanz.geobooster.versioning.model.Pflegestatus;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlHasIdMapping;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlVersionMapping;
 import com.tschanz.geobooster.zonen.model.ZonenplanVersion;
@@ -45,7 +46,8 @@ public class SqlZonenplanVersionMapping implements SqlStandardMapping<ZonenplanV
             SqlHasIdMapping.getId(row),
             SqlVersionMapping.getElementId(row),
             SqlVersionMapping.getGueltigVon(row),
-            SqlVersionMapping.getGueltigBis(row)
+            SqlVersionMapping.getGueltigBis(row),
+            Pflegestatus.PRODUKTIV
         );
     }
 
@@ -56,7 +58,8 @@ public class SqlZonenplanVersionMapping implements SqlStandardMapping<ZonenplanV
             SqlHasIdMapping.getIdFromJsonAgg(reader),
             SqlVersionMapping.getElementIdFromJsonAgg(reader),
             SqlVersionMapping.getGueltigVonFromJsonAgg(reader),
-            SqlVersionMapping.getGueltigBisFromJsonAgg(reader)
+            SqlVersionMapping.getGueltigBisFromJsonAgg(reader),
+            Pflegestatus.PRODUKTIV
         );
     }
 }

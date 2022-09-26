@@ -5,6 +5,7 @@ import com.tschanz.geobooster.persistence_sql.model.SqlLongFilter;
 import com.tschanz.geobooster.persistence_sql.model.SqlStandardMapping;
 import com.tschanz.geobooster.persistence_sql.service.SqlHelper;
 import com.tschanz.geobooster.util.service.ArrayHelper;
+import com.tschanz.geobooster.versioning.model.Pflegestatus;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlHasIdMapping;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlVersionMapping;
 import com.tschanz.geobooster.zonen.model.ZoneVersion;
@@ -80,6 +81,7 @@ public class SqlZoneVersionMapping implements SqlStandardMapping<ZoneVersion, Sq
             elementId,
             gueltigVon,
             gueltigBis,
+            Pflegestatus.PRODUKTIV,
             ursprungsZone
         );
     }

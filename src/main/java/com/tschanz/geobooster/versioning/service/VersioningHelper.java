@@ -5,10 +5,7 @@ import com.tschanz.geobooster.versioning.model.HasId;
 import com.tschanz.geobooster.versioning.model.Version;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -47,7 +44,7 @@ public class VersioningHelper {
     public static <T extends Version> T filterSingleVersion(Collection<T> versions, LocalDate date) {
         return versions.stream()
             .filter(version -> isVersionInTimespan(version, date))
-            .findFirst()
+            .min(Comparator.comparingInt(v -> v.getPflegestatus().getSortOrder()))
             .orElse(null);
     }
 }

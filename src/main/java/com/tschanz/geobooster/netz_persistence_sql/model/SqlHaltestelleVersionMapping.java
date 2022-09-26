@@ -7,6 +7,7 @@ import com.tschanz.geobooster.netz.model.HaltestelleVersion;
 import com.tschanz.geobooster.persistence_sql.model.SqlLongFilter;
 import com.tschanz.geobooster.persistence_sql.model.SqlStandardMapping;
 import com.tschanz.geobooster.util.service.ArrayHelper;
+import com.tschanz.geobooster.versioning.model.Pflegestatus;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlHasIdMapping;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlVersionMapping;
 import lombok.SneakyThrows;
@@ -48,6 +49,7 @@ public class SqlHaltestelleVersionMapping implements SqlStandardMapping<Halteste
             SqlVersionMapping.getElementId(row),
             SqlVersionMapping.getGueltigVon(row),
             SqlVersionMapping.getGueltigBis(row),
+            Pflegestatus.PRODUKTIV,
             row.getString(COL_NAME),
             CoordinateConverter.convertToEpsg3857(
                 new Epsg4326Coordinate(row.getFloat(COL_LNG), row.getFloat(COL_LAT))
@@ -64,6 +66,7 @@ public class SqlHaltestelleVersionMapping implements SqlStandardMapping<Halteste
             SqlVersionMapping.getElementIdFromJsonAgg(reader),
             SqlVersionMapping.getGueltigVonFromJsonAgg(reader),
             SqlVersionMapping.getGueltigBisFromJsonAgg(reader),
+            Pflegestatus.PRODUKTIV,
             reader.nextString(),
             CoordinateConverter.convertToEpsg3857(
                 new Epsg4326Coordinate(reader.nextDouble(), reader.nextDouble())

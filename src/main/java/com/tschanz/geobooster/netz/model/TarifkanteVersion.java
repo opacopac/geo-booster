@@ -1,5 +1,6 @@
 package com.tschanz.geobooster.netz.model;
 
+import com.tschanz.geobooster.versioning.model.Pflegestatus;
 import com.tschanz.geobooster.versioning.model.Version;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,5 +19,6 @@ public class TarifkanteVersion implements Version {
     private final LocalDate gueltigVon;
     private final LocalDate gueltigBis;
     private final LocalDate terminiertPer;
+    private final Pflegestatus pflegestatus;
     private Collection<Long> verkehrskanteIds;
 }

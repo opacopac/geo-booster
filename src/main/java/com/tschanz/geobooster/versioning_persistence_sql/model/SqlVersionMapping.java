@@ -3,6 +3,7 @@ package com.tschanz.geobooster.versioning_persistence_sql.model;
 import com.google.gson.stream.JsonReader;
 import com.tschanz.geobooster.persistence_sql.service.SqlHelper;
 import com.tschanz.geobooster.util.service.ArrayHelper;
+import com.tschanz.geobooster.versioning.model.Pflegestatus;
 import com.tschanz.geobooster.versioning_persistence.service.FlyWeightDateFactory;
 import lombok.SneakyThrows;
 
@@ -15,7 +16,9 @@ public class SqlVersionMapping {
     public final static String COL_GUELTIGVON = "GUELTIG_VON";
     public final static String COL_GUELTIGBIS = "GUELTIG_BIS";
     public final static String COL_TERMINIERT_PER = "TERMINIERT_PER";
+    public final static String COL_PFLEGESTATUS = "PFLEGEZYKLUS";
     public final static String[] SELECT_COLS = {SqlHasIdMapping.COL_ID, COL_IDELEMENT, COL_GUELTIGVON, COL_GUELTIGBIS};
+    public final static String[] SELECT_COLS_W_PFLEGESTATUS = ArrayHelper.appendTo(SELECT_COLS, COL_PFLEGESTATUS);
     public final static String[] SELECT_COLS_W_TERM_PER = ArrayHelper.appendTo(SELECT_COLS, COL_TERMINIERT_PER);
 
 
@@ -49,6 +52,12 @@ public class SqlVersionMapping {
 
 
     @SneakyThrows
+    public static Pflegestatus getPflegestatus(ResultSet row) {
+        return Pflegestatus.valueOf(row.getString(COL_PFLEGESTATUS));
+    }
+
+
+    @SneakyThrows
     public static long getElementIdFromJsonAgg(JsonReader reader) {
         return reader.nextLong();
     }
@@ -63,5 +72,11 @@ public class SqlVersionMapping {
     @SneakyThrows
     public static LocalDate getGueltigBisFromJsonAgg(JsonReader reader) {
         return SqlHelper.parseLocalDateOrNullfromJsonAgg(reader);
+    }
+
+
+    @SneakyThrows
+    public static Pflegestatus getPflegestatusFromJsonAgg(JsonReader reader) {
+        return Pflegestatus.valueOf(reader.nextString());
     }
 }

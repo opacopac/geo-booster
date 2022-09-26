@@ -4,6 +4,7 @@ import com.google.gson.stream.JsonReader;
 import com.tschanz.geobooster.persistence_sql.model.SqlLongFilter;
 import com.tschanz.geobooster.persistence_sql.model.SqlStandardMapping;
 import com.tschanz.geobooster.rtm.model.RgKorridorVersion;
+import com.tschanz.geobooster.versioning.model.Pflegestatus;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlHasIdMapping;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlVersionMapping;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class SqlRgKorridorVersionMapping implements SqlStandardMapping<RgKorrido
 
     @Override
     public String[] getSelectFields() {
-        return SqlVersionMapping.SELECT_COLS;
+        return SqlVersionMapping.SELECT_COLS_W_PFLEGESTATUS;
     }
 
 
@@ -49,7 +50,8 @@ public class SqlRgKorridorVersionMapping implements SqlStandardMapping<RgKorrido
             SqlHasIdMapping.getId(row),
             SqlVersionMapping.getElementId(row),
             SqlVersionMapping.getGueltigVon(row),
-            SqlVersionMapping.getGueltigBis(row)
+            SqlVersionMapping.getGueltigBis(row),
+            SqlVersionMapping.getPflegestatus(row)
         );
     }
 
@@ -60,7 +62,8 @@ public class SqlRgKorridorVersionMapping implements SqlStandardMapping<RgKorrido
             SqlHasIdMapping.getIdFromJsonAgg(reader),
             SqlVersionMapping.getElementIdFromJsonAgg(reader),
             SqlVersionMapping.getGueltigVonFromJsonAgg(reader),
-            SqlVersionMapping.getGueltigBisFromJsonAgg(reader)
+            SqlVersionMapping.getGueltigBisFromJsonAgg(reader),
+            SqlVersionMapping.getPflegestatusFromJsonAgg(reader)
         );
     }
 
@@ -69,7 +72,8 @@ public class SqlRgKorridorVersionMapping implements SqlStandardMapping<RgKorrido
         long id,
         long elementId,
         LocalDate gueltigVon,
-        LocalDate gueltigBis
+        LocalDate gueltigBis,
+        Pflegestatus pflegestatus
     ) {
         var tkIds = this.korrTkMap.getOrDefault(id, Collections.emptyList());
         return new RgKorridorVersion(
@@ -77,6 +81,7 @@ public class SqlRgKorridorVersionMapping implements SqlStandardMapping<RgKorrido
             elementId,
             gueltigVon,
             gueltigBis,
+            pflegestatus,
             tkIds
         );
     }

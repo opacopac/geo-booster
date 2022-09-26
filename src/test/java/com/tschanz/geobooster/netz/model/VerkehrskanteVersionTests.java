@@ -1,5 +1,6 @@
 package com.tschanz.geobooster.netz.model;
 
+import com.tschanz.geobooster.versioning.model.Pflegestatus;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -17,7 +18,7 @@ class VerkehrskanteVersionTests {
     @Test
     void test_hasOneOfVmTypes_single() {
         var vkVmTypes = VerkehrsmittelTyp.getBitMask(Arrays.asList(VerkehrsmittelTyp.BAHN, VerkehrsmittelTyp.BUS));
-        var vkV = new VerkehrskanteVersion(0, 0, LocalDate.now(), LocalDate.now(), null, Collections.emptyList(), vkVmTypes);
+        var vkV = new VerkehrskanteVersion(0, 0, LocalDate.now(), LocalDate.now(), null, Pflegestatus.PRODUKTIV, Collections.emptyList(), vkVmTypes);
 
         var empty = new HashMap<Long, Long>();
         var result1 = vkV.hasOneOfVerwaltungAndVmTypes(Collections.singletonList(VerkehrsmittelTyp.BAHN), empty);
@@ -33,7 +34,7 @@ class VerkehrskanteVersionTests {
     @Test
     void test_hasOneOfVmTypes_multi() {
         var vkVmTypes = VerkehrsmittelTyp.getBitMask(Arrays.asList(VerkehrsmittelTyp.BAHN, VerkehrsmittelTyp.BUS));
-        var vkV = new VerkehrskanteVersion(0, 0, LocalDate.now(), LocalDate.now(), null, Collections.emptyList(), vkVmTypes);
+        var vkV = new VerkehrskanteVersion(0, 0, LocalDate.now(), LocalDate.now(), null, Pflegestatus.PRODUKTIV, Collections.emptyList(), vkVmTypes);
 
         var empty = new HashMap<Long, Long>();
         var result1 = vkV.hasOneOfVerwaltungAndVmTypes(Arrays.asList(VerkehrsmittelTyp.BAHN, VerkehrsmittelTyp.SCHIFF), empty);

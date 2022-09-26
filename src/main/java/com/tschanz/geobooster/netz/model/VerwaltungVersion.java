@@ -1,5 +1,6 @@
 package com.tschanz.geobooster.netz.model;
 
+import com.tschanz.geobooster.versioning.model.Pflegestatus;
 import com.tschanz.geobooster.versioning.model.Version;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -14,4 +15,5 @@ public class VerwaltungVersion implements Version {
     private final long elementId;
     private final LocalDate gueltigVon;
     private final LocalDate gueltigBis;
+    private final Pflegestatus pflegestatus;
 }

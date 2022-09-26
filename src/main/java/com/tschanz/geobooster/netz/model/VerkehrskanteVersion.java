@@ -1,5 +1,6 @@
 package com.tschanz.geobooster.netz.model;
 
+import com.tschanz.geobooster.versioning.model.Pflegestatus;
 import com.tschanz.geobooster.versioning.model.Version;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ public class VerkehrskanteVersion implements Version {
     private final LocalDate gueltigVon;
     private final LocalDate gueltigBis;
     private final LocalDate terminiertPer;
+    private final Pflegestatus pflegestatus;
     private final Collection<Long> verwaltungIds;
     private final byte vmTypeBitmask;
 

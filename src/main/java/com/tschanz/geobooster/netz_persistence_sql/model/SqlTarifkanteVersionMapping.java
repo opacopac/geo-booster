@@ -5,6 +5,7 @@ import com.tschanz.geobooster.netz.model.TarifkanteVersion;
 import com.tschanz.geobooster.persistence_sql.model.SqlLongFilter;
 import com.tschanz.geobooster.persistence_sql.model.SqlStandardMapping;
 import com.tschanz.geobooster.persistence_sql.service.SqlHelper;
+import com.tschanz.geobooster.versioning.model.Pflegestatus;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlHasIdMapping;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlVersionMapping;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +49,7 @@ public class SqlTarifkanteVersionMapping implements SqlStandardMapping<Tarifkant
             SqlVersionMapping.getGueltigVon(row),
             SqlVersionMapping.getGueltigBis(row),
             SqlVersionMapping.getTerminiertPer(row),
+            Pflegestatus.PRODUKTIV,
             Collections.emptyList()
         );
     }
@@ -61,6 +63,7 @@ public class SqlTarifkanteVersionMapping implements SqlStandardMapping<Tarifkant
             SqlVersionMapping.getGueltigVonFromJsonAgg(reader),
             SqlVersionMapping.getGueltigBisFromJsonAgg(reader),
             SqlHelper.parseLocalDateOrNullfromJsonAgg(reader),
+            Pflegestatus.PRODUKTIV,
             Collections.emptyList()
         );
     }

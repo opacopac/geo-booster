@@ -4,6 +4,7 @@ import com.google.gson.stream.JsonReader;
 import com.tschanz.geobooster.persistence_sql.model.SqlLongFilter;
 import com.tschanz.geobooster.persistence_sql.model.SqlStandardMapping;
 import com.tschanz.geobooster.tarif.model.AwbVersion;
+import com.tschanz.geobooster.versioning.model.Pflegestatus;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlHasIdMapping;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlVersionMapping;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +38,7 @@ public class SqlAwbVersionMapping implements SqlStandardMapping<AwbVersion, SqlL
 
     @Override
     public String[] getSelectFields() {
-        return SqlVersionMapping.SELECT_COLS;
+        return SqlVersionMapping.SELECT_COLS_W_PFLEGESTATUS;
     }
 
 
@@ -54,7 +55,8 @@ public class SqlAwbVersionMapping implements SqlStandardMapping<AwbVersion, SqlL
             SqlHasIdMapping.getId(row),
             SqlVersionMapping.getElementId(row),
             SqlVersionMapping.getGueltigVon(row),
-            SqlVersionMapping.getGueltigBis(row)
+            SqlVersionMapping.getGueltigBis(row),
+            SqlVersionMapping.getPflegestatus(row)
         );
     }
 
@@ -65,17 +67,19 @@ public class SqlAwbVersionMapping implements SqlStandardMapping<AwbVersion, SqlL
             SqlHasIdMapping.getIdFromJsonAgg(reader),
             SqlVersionMapping.getElementIdFromJsonAgg(reader),
             SqlVersionMapping.getGueltigVonFromJsonAgg(reader),
-            SqlVersionMapping.getGueltigBisFromJsonAgg(reader)
+            SqlVersionMapping.getGueltigBisFromJsonAgg(reader),
+            SqlVersionMapping.getPflegestatusFromJsonAgg(reader)
         );
     }
 
 
-    private AwbVersion createAwbVersion(long id, long elementId, LocalDate gueltigVon, LocalDate gueltigBis) {
+    private AwbVersion createAwbVersion(long id, long elementId, LocalDate gueltigVon, LocalDate gueltigBis, Pflegestatus pflegestatus) {
         return new AwbVersion(
             id,
             elementId,
             gueltigVon,
             gueltigBis,
+            pflegestatus,
             this.includeVkaMap.getOrDefault(id, Collections.emptyList()),
             this.excludeVkaMap.getOrDefault(id, Collections.emptyList()),
             this.includeTkMap.getOrDefault(id, Collections.emptyList()),

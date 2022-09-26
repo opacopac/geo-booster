@@ -28,7 +28,7 @@ public class SqlRgAuspraegungVersionMapping implements SqlStandardMapping<RgAusp
 
     @Override
     public String[] getSelectFields() {
-        return SqlVersionMapping.SELECT_COLS;
+        return SqlVersionMapping.SELECT_COLS_W_PFLEGESTATUS;
     }
 
 
@@ -45,7 +45,8 @@ public class SqlRgAuspraegungVersionMapping implements SqlStandardMapping<RgAusp
             SqlHasIdMapping.getId(row),
             SqlVersionMapping.getElementId(row),
             SqlVersionMapping.getGueltigVon(row),
-            SqlVersionMapping.getGueltigBis(row)
+            SqlVersionMapping.getGueltigBis(row),
+            SqlVersionMapping.getPflegestatus(row)
         );
     }
 
@@ -56,7 +57,8 @@ public class SqlRgAuspraegungVersionMapping implements SqlStandardMapping<RgAusp
             SqlHasIdMapping.getIdFromJsonAgg(reader),
             SqlVersionMapping.getElementIdFromJsonAgg(reader),
             SqlVersionMapping.getGueltigVonFromJsonAgg(reader),
-            SqlVersionMapping.getGueltigBisFromJsonAgg(reader)
+            SqlVersionMapping.getGueltigBisFromJsonAgg(reader),
+            SqlVersionMapping.getPflegestatusFromJsonAgg(reader)
         );
     }
 }

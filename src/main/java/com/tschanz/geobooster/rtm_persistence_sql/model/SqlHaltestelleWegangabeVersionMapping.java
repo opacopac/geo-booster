@@ -4,6 +4,7 @@ import com.google.gson.stream.JsonReader;
 import com.tschanz.geobooster.persistence_sql.model.SqlLongFilter;
 import com.tschanz.geobooster.persistence_sql.model.SqlStandardMapping;
 import com.tschanz.geobooster.rtm.model.HaltestelleWegangabeVersion;
+import com.tschanz.geobooster.versioning.model.Pflegestatus;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlHasIdMapping;
 import com.tschanz.geobooster.versioning_persistence_sql.model.SqlVersionMapping;
 import lombok.RequiredArgsConstructor;
@@ -45,7 +46,8 @@ public class SqlHaltestelleWegangabeVersionMapping implements SqlStandardMapping
             SqlHasIdMapping.getId(row),
             SqlVersionMapping.getElementId(row),
             SqlVersionMapping.getGueltigVon(row),
-            SqlVersionMapping.getGueltigBis(row)
+            SqlVersionMapping.getGueltigBis(row),
+            Pflegestatus.PRODUKTIV
         );
     }
 
@@ -56,7 +58,8 @@ public class SqlHaltestelleWegangabeVersionMapping implements SqlStandardMapping
             SqlHasIdMapping.getIdFromJsonAgg(reader),
             SqlVersionMapping.getElementIdFromJsonAgg(reader),
             SqlVersionMapping.getGueltigVonFromJsonAgg(reader),
-            SqlVersionMapping.getGueltigBisFromJsonAgg(reader)
+            SqlVersionMapping.getGueltigBisFromJsonAgg(reader),
+            Pflegestatus.PRODUKTIV
         );
     }
 }
