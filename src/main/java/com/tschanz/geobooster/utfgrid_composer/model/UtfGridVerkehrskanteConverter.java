@@ -35,7 +35,6 @@ public class UtfGridVerkehrskanteConverter {
             KanteBlackStyle.WIDTH.getWidth(zoomLevel),
             Arrays.asList(
                 new Tuple2<>("id", "VERKEHRSKANTEN." + vkVersion.getId()),
-                //new Tuple2<>("ID", vkVersion.getId()),
                 new Tuple2<>("HS1_ID", hst1V.getId()),
                 new Tuple2<>("HS1_UIC_CODE", hst1E.getUicCode()),
                 new Tuple2<>("HS1_NAME", hst1V.getName()),
