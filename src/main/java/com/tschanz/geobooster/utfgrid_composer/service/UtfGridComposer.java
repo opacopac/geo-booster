@@ -46,8 +46,8 @@ public class UtfGridComposer {
 
         var minLineLength = this.getMinLineLength(request.getBbox(), request.getWidth());
         var lineItems = Stream.concat(
-            mapLayers.getTarifkanteVersions().stream().map(tkV -> this.utfGridTkConverter.toUtfGrid(tkV, zoomLevel, mapLayerStyles, isUnmappedTk)),
-            mapLayers.getVerkehrskanteVersions().stream().map(vkV -> this.utfGridVkConverter.toUtfGrid(vkV, zoomLevel, mapLayerStyles))
+            mapLayers.getTarifkanteVersions().stream().map(tkV -> this.utfGridTkConverter.toUtfGrid(tkV, zoomLevel, request.getDate(), isUnmappedTk)),
+            mapLayers.getVerkehrskanteVersions().stream().map(vkV -> this.utfGridVkConverter.toUtfGrid(vkV, zoomLevel, request.getDate()))
         )
             .filter(lineItem -> minLineLength == 0 || this.hasMinLength(lineItem, minLineLength))
             .collect(Collectors.toList());
