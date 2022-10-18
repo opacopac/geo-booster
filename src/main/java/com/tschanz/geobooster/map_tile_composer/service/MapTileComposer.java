@@ -46,8 +46,8 @@ public class MapTileComposer {
 
         var minLineLength = this.getMinLineLength(request.getBbox(), request.getWidth());
         var mapTileLines = Stream.concat(
-            mapObjects.getTarifkanteVersions().stream().map(tkV -> this.tkConverter.toMapTile(tkV, zoomLevel, mapLayerStyles)),
-            mapObjects.getVerkehrskanteVersions().stream().map(vkV -> this.vkConverter.toMapTile(vkV, zoomLevel, mapLayerStyles))
+            mapObjects.getTarifkanteVersions().stream().map(tkV -> this.tkConverter.toMapTile(tkV, zoomLevel, request.getDate(), mapLayerStyles)),
+            mapObjects.getVerkehrskanteVersions().stream().map(vkV -> this.vkConverter.toMapTile(vkV, zoomLevel, request.getDate(), mapLayerStyles))
         )
             .filter(mtl -> minLineLength == 0 || this.hasMinLength(mtl, minLineLength))
             .collect(Collectors.toList());
