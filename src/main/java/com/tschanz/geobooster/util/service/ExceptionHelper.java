@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 
 public class ExceptionHelper {
-    public static String getErrorText(Exception e, String delimiter) {
+    public static String getErrorText(Throwable e, String delimiter) {
         var causes = new ArrayList<String>();
         causes.add(e.getMessage());
         var parentCause = e.getCause();

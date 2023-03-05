@@ -14,6 +14,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.CompletableFuture;
+
 
 @Service
 @RequiredArgsConstructor
@@ -46,30 +48,35 @@ public class ConnectionActions {
 
     public void loadDr() {
         new Thread(() -> {
-            try {
-                this.gbState.getProgressState().updateIsInProgress(true);
-                this.betreiberRepo.loadAll();
-                this.verwaltungRepo.loadAll();
-                this.haltestelleRepo.loadAll();
-                this.verkehrskanteRepo.loadAll();
-                this.tarifkanteRepo.loadAll();
-                this.hstWegangabeRepo.loadAll();
-                this.rgKorridorRepo.loadAll();
-                this.rgAuspraegungRepo.loadAll();
-                this.zoneRepo.loadAll();
-                this.zonenplanRepo.loadAll();
-                this.awbRepo.loadAll();
+            this.gbState.getProgressState().updateIsInProgress(true);
+
+            CompletableFuture<Void> allFutures = CompletableFuture.allOf(
+                CompletableFuture.runAsync(betreiberRepo::loadAll),
+                CompletableFuture.runAsync(verwaltungRepo::loadAll),
+                CompletableFuture.runAsync(haltestelleRepo::loadAll),
+                CompletableFuture.runAsync(verkehrskanteRepo::loadAll),
+                CompletableFuture.runAsync(tarifkanteRepo::loadAll),
+                CompletableFuture.runAsync(hstWegangabeRepo::loadAll),
+                CompletableFuture.runAsync(rgKorridorRepo::loadAll),
+                CompletableFuture.runAsync(rgAuspraegungRepo::loadAll),
+                CompletableFuture.runAsync(zoneRepo::loadAll),
+                CompletableFuture.runAsync(zonenplanRepo::loadAll),
+                CompletableFuture.runAsync(awbRepo::loadAll)
+            );
+
+            allFutures.thenRun(() -> {
                 this.gbState.getProgressState().updateProgressText("loading dr done");
                 this.gbState.getProgressState().updateIsInProgress(false);
-            } catch (Exception e) {
+            }).exceptionally(e -> {
                 logger.error(e);
                 this.gbState.getProgressState().updateProgressText(
                     String.format("ERROR loading dr: %s", ExceptionHelper.getErrorText(e, "\n")),
                     true
                 );
                 this.gbState.getProgressState().updateIsInProgress(false);
-            }
+
+                return null;
+            });
         }).start();
     }
-
 }
