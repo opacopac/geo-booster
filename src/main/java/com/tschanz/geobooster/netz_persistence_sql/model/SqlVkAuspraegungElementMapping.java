@@ -45,7 +45,7 @@ public class SqlVkAuspraegungElementMapping implements SqlStandardMapping<Verkeh
 
     @SneakyThrows
     @Override
-    public VerkehrskanteAuspraegung fromResultSet(ResultSet row) {
+    public VerkehrskanteAuspraegung mapRow(ResultSet row, int rowNum) {
         return new VerkehrskanteAuspraegung(
             SqlHasIdMapping.getId(row),
             row.getLong(COL_VK_E_ID),

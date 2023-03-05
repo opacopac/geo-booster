@@ -41,7 +41,7 @@ public class SqlZoneElementMapping implements SqlStandardMapping<Zone, SqlLongFi
 
     @Override
     @SneakyThrows
-    public Zone fromResultSet(ResultSet row) {
+    public Zone mapRow(ResultSet row, int rowNum) {
         return new Zone(
             SqlHasIdMapping.getId(row),
             row.getLong(COL_ID_ZONENPLAN)

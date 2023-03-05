@@ -39,7 +39,7 @@ public class SqlRgAuspraegungElementMapping implements SqlStandardMapping<RgAusp
 
     @Override
     @SneakyThrows
-    public RgAuspraegung fromResultSet(ResultSet row) {
+    public RgAuspraegung mapRow(ResultSet row, int rowNum) {
         return new RgAuspraegung(
             SqlHasIdMapping.getId(row),
             row.getLong(COL_ID_RELATIONSGEBIET_E)

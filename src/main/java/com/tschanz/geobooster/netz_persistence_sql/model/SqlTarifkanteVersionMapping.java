@@ -42,7 +42,7 @@ public class SqlTarifkanteVersionMapping implements SqlStandardMapping<Tarifkant
 
 
     @SneakyThrows
-    public TarifkanteVersion fromResultSet(ResultSet row) {
+    public TarifkanteVersion mapRow(ResultSet row, int rowNum) {
         return new TarifkanteVersion(
             SqlHasIdMapping.getId(row),
             SqlVersionMapping.getElementId(row),

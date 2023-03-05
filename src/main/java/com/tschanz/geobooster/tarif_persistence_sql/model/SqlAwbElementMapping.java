@@ -36,7 +36,7 @@ public class SqlAwbElementMapping implements SqlStandardMapping<Awb, SqlLongFilt
 
     @Override
     @SneakyThrows
-    public Awb fromResultSet(ResultSet row) {
+    public Awb mapRow(ResultSet row, int rowNum) {
         return new Awb(
             SqlHasIdMapping.getId(row)
         );

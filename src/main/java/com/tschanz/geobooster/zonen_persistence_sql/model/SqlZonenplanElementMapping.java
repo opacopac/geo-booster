@@ -37,7 +37,7 @@ public class SqlZonenplanElementMapping implements SqlStandardMapping<Zonenplan,
 
     @Override
     @SneakyThrows
-    public Zonenplan fromResultSet(ResultSet row) {
+    public Zonenplan mapRow(ResultSet row, int rowNum) {
         return new Zonenplan(
             SqlHasIdMapping.getId(row)
         );

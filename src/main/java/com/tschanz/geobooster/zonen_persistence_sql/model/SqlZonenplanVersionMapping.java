@@ -41,7 +41,7 @@ public class SqlZonenplanVersionMapping implements SqlStandardMapping<ZonenplanV
 
     @SneakyThrows
     @Override
-    public ZonenplanVersion fromResultSet(ResultSet row) {
+    public ZonenplanVersion mapRow(ResultSet row, int rowNum) {
         return new ZonenplanVersion(
             SqlHasIdMapping.getId(row),
             SqlVersionMapping.getElementId(row),

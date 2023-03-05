@@ -41,7 +41,7 @@ public class SqlHaltestelleWegangabeElementMapping implements SqlStandardMapping
 
     @Override
     @SneakyThrows
-    public HaltestelleWegangabe fromResultSet(ResultSet row) {
+    public HaltestelleWegangabe mapRow(ResultSet row, int rowNum) {
         return new HaltestelleWegangabe(
             SqlHasIdMapping.getId(row),
             row.getInt(COL_CODE)

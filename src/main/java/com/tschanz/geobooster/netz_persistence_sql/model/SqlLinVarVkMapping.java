@@ -30,7 +30,7 @@ public class SqlLinVarVkMapping implements SqlGenericResultsetMapping<Long> {
 
     @SneakyThrows
     @Override
-    public Long fromResultSet(ResultSet row) {
+    public Long mapRow(ResultSet row, int rowNumber) {
         return row.getLong(COL_ID);
     }
 }

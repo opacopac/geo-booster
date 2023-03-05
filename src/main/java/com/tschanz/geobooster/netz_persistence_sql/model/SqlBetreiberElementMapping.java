@@ -41,7 +41,7 @@ public class SqlBetreiberElementMapping implements SqlStandardMapping<Betreiber,
 
     @Override
     @SneakyThrows
-    public Betreiber fromResultSet(ResultSet row) {
+    public Betreiber mapRow(ResultSet row, int rowNum) {
         return new Betreiber(
             SqlHasIdMapping.getId(row),
             row.getString(COL_NAME),

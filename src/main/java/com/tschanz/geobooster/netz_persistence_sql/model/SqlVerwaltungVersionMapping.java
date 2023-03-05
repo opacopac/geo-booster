@@ -34,7 +34,7 @@ public class SqlVerwaltungVersionMapping implements SqlStandardMapping<Verwaltun
 
 
     @SneakyThrows
-    public VerwaltungVersion fromResultSet(ResultSet row) {
+    public VerwaltungVersion mapRow(ResultSet row, int rowNum) {
         return new VerwaltungVersion(
             SqlHasIdMapping.getId(row),
             SqlVersionMapping.getElementId(row),

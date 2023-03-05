@@ -7,7 +7,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -16,7 +15,7 @@ import java.util.List;
 public class SqlGenericResultsetReader {
     private static final Logger logger = LogManager.getLogger(SqlGenericResultsetReader.class);
 
-    private final SqlConnectionFactory connectionFactory;
+    private final SqlJdbcTemplateFactory dataSourceFactory;
 
 
     @SneakyThrows
@@ -24,18 +23,8 @@ public class SqlGenericResultsetReader {
         var query = mapping.getSelectQuery();
         logger.info(String.format("executing query '%s'", query));
 
-        var entries = new ArrayList<T>();
-        var connection = connectionFactory.getConnection();
-
-        if (connection.getStatement().execute(query)) {
-            while (connection.getStatement().getResultSet().next()) {
-                var resultSet = connection.getStatement().getResultSet();
-                var entry = mapping.fromResultSet(resultSet);
-                entries.add(entry);
-            }
-        }
-        connection.closeResultsetAndStatement();
-
+        var jdbcTemplate = dataSourceFactory.getJdbcTemplate();
+        var entries = jdbcTemplate.query(query, mapping);
         logger.info(String.format("%d entries read", entries.size()));
 
         return entries;

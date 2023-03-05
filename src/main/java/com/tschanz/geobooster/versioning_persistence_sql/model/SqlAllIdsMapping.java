@@ -36,7 +36,7 @@ public class SqlAllIdsMapping implements SqlStandardMapping<Long, SqlLongFilter,
 
     @Override
     @SneakyThrows
-    public Long fromResultSet(ResultSet row) {
+    public Long mapRow(ResultSet row, int rowNum) {
         return SqlHasIdMapping.getId(row);
     }
 

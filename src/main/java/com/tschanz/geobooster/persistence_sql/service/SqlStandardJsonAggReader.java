@@ -7,8 +7,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
+import java.sql.Clob;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -22,7 +26,7 @@ public class SqlStandardJsonAggReader {
     private static final Logger logger = LogManager.getLogger(SqlStandardJsonAggReader.class);
     private static final String COL_CLOB = "JSONAGGCLOB";
 
-    private final SqlConnectionFactory connectionFactory;
+    private final SqlJdbcTemplateFactory jdbcTemplateFactory;
 
 
     @SneakyThrows
@@ -31,14 +35,13 @@ public class SqlStandardJsonAggReader {
         logger.info(String.format("executing query '%s'", query));
 
         var entries = new ArrayList<T>();
-        var connection = connectionFactory.getConnection();
-        if (connection.getStatement().execute(query)) {
-            connection.getStatement().getResultSet().next();
-            var resultSet = connection.getStatement().getResultSet();
-            var clob = resultSet.getClob(COL_CLOB);
-            if (clob == null) {
-                return Collections.emptyList();
-            }
+        var jdbcTemplate = jdbcTemplateFactory.getJdbcTemplate();
+        var clobs = jdbcTemplate.query(query, new ClobResultsetMapper());
+
+        if (clobs.size() != 1 || clobs.get(0) == null) {
+            return Collections.emptyList();
+        } else {
+            var clob = clobs.get(0);
             var jsonStream = clob.getCharacterStream();
 
             JsonReader reader = new JsonReader(jsonStream);
@@ -52,11 +55,18 @@ public class SqlStandardJsonAggReader {
             reader.endArray();
             reader.close();
         }
-        connection.closeResultsetAndStatement();
 
         logger.info(String.format("%d entries read", entries.size()));
 
         return entries;
+    }
+
+
+    private static class ClobResultsetMapper implements RowMapper<Clob> {
+        @Override
+        public Clob mapRow(ResultSet resultSet, int rowNum) throws SQLException {
+            return resultSet.getClob(COL_CLOB);
+        }
     }
 
 

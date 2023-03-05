@@ -39,7 +39,7 @@ public class SqlTarifkanteElementMapping implements SqlStandardMapping<Tarifkant
 
 
     @SneakyThrows
-    public Tarifkante fromResultSet(ResultSet row) {
+    public Tarifkante mapRow(ResultSet row, int rowNum) {
         return new Tarifkante(
             SqlHasIdMapping.getId(row),
             row.getLong(COL_HST1),

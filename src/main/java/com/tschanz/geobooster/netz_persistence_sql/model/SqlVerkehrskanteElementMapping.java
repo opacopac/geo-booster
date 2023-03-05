@@ -41,7 +41,7 @@ public class SqlVerkehrskanteElementMapping implements SqlStandardMapping<Verkeh
 
     @Override
     @SneakyThrows
-    public Verkehrskante fromResultSet(ResultSet row) {
+    public Verkehrskante mapRow(ResultSet row, int rowNum) {
         return new Verkehrskante(
             SqlHasIdMapping.getId(row),
             row.getLong(COL_HST1),

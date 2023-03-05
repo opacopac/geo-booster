@@ -35,7 +35,7 @@ public class SqlBetreiberVersionMapping implements SqlStandardMapping<BetreiberV
 
     @Override
     @SneakyThrows
-    public BetreiberVersion fromResultSet(ResultSet row) {
+    public BetreiberVersion mapRow(ResultSet row, int rowNum) {
         return new BetreiberVersion(
             SqlHasIdMapping.getId(row),
             SqlVersionMapping.getElementId(row),

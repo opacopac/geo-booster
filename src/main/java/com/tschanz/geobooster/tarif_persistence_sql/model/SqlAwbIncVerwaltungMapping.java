@@ -42,7 +42,7 @@ public class SqlAwbIncVerwaltungMapping implements SqlStandardMapping<AwbIncVerw
 
     @Override
     @SneakyThrows
-    public AwbIncVerwaltung fromResultSet(ResultSet row) {
+    public AwbIncVerwaltung mapRow(ResultSet row, int rowNum) {
         return new AwbIncVerwaltung(
             SqlHasIdMapping.getId(row),
             row.getLong(COL_ID_ANWBER_V),

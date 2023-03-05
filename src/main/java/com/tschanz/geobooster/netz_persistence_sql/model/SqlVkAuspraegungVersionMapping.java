@@ -35,7 +35,7 @@ public class SqlVkAuspraegungVersionMapping implements SqlStandardMapping<Verkeh
 
     @Override
     @SneakyThrows
-    public VerkehrskanteAuspraegungVersion fromResultSet(ResultSet row) {
+    public VerkehrskanteAuspraegungVersion mapRow(ResultSet row, int rowNum) {
         return new VerkehrskanteAuspraegungVersion(
             SqlHasIdMapping.getId(row),
             SqlVersionMapping.getElementId(row),

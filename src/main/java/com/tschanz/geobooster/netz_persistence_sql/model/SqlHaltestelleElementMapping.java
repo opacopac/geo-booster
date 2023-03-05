@@ -39,7 +39,7 @@ public class SqlHaltestelleElementMapping implements SqlStandardMapping<Halteste
 
     @Override
     @SneakyThrows
-    public Haltestelle fromResultSet(ResultSet row) {
+    public Haltestelle mapRow(ResultSet row, int rowNum) {
         return new Haltestelle(
             SqlHasIdMapping.getId(row),
             row.getInt(COL_UIC)

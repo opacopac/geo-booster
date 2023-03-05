@@ -39,7 +39,7 @@ public class SqlAwbIncTkMapping implements SqlStandardMapping<Tuple2<Long, Long>
 
     @Override
     @SneakyThrows
-    public Tuple2<Long, Long> fromResultSet(ResultSet row) {
+    public Tuple2<Long, Long> mapRow(ResultSet row, int rowNum) {
         return new Tuple2<>(
             row.getLong(COL_ID_ANWBER_V),
             row.getLong(COL_ID_TARIF_KANTE_E)

@@ -25,7 +25,7 @@ public class SqlRowCountMapping implements SqlGenericResultsetMapping<Long> {
 
     @Override
     @SneakyThrows
-    public Long fromResultSet(ResultSet row) {
+    public Long mapRow(ResultSet row, int rowNumber) {
         return row.getLong(COL_COUNT);
     }
 }

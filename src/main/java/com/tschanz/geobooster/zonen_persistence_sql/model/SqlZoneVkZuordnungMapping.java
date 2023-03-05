@@ -39,7 +39,7 @@ public class SqlZoneVkZuordnungMapping implements SqlStandardMapping<ZoneVkZuord
 
 
     @SneakyThrows
-    public ZoneVkZuordnung fromResultSet(ResultSet row) {
+    public ZoneVkZuordnung mapRow(ResultSet row, int rowNum) {
         return new ZoneVkZuordnung(
             SqlHasIdMapping.getId(row),
             row.getLong(COL_ID_ZONE_VERSION),

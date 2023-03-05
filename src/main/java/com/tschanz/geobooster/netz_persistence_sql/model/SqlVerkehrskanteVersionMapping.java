@@ -49,7 +49,7 @@ public class SqlVerkehrskanteVersionMapping implements SqlStandardMapping<Verkeh
 
     @Override
     @SneakyThrows
-    public VerkehrskanteVersion fromResultSet(ResultSet row) {
+    public VerkehrskanteVersion mapRow(ResultSet row, int rowNum) {
         return this.createVerkehrskanteVersion(
             SqlHasIdMapping.getId(row),
             SqlVersionMapping.getElementId(row),

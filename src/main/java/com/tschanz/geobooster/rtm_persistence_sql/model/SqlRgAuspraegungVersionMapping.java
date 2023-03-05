@@ -40,7 +40,7 @@ public class SqlRgAuspraegungVersionMapping implements SqlStandardMapping<RgAusp
 
     @SneakyThrows
     @Override
-    public RgAuspraegungVersion fromResultSet(ResultSet row) {
+    public RgAuspraegungVersion mapRow(ResultSet row, int rowNum) {
         return new RgAuspraegungVersion(
             SqlHasIdMapping.getId(row),
             SqlVersionMapping.getElementId(row),

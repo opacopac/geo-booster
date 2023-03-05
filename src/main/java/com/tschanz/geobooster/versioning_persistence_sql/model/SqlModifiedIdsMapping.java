@@ -45,7 +45,7 @@ public class SqlModifiedIdsMapping implements SqlGenericResultsetMapping<Long> {
 
     @Override
     @SneakyThrows
-    public Long fromResultSet(ResultSet row) {
+    public Long mapRow(ResultSet row, int rowNumber) {
         return SqlHasIdMapping.getId(row);
     }
 

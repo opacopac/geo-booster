@@ -41,7 +41,7 @@ public class SqlHaltestelleWegangabeVersionMapping implements SqlStandardMapping
 
     @SneakyThrows
     @Override
-    public HaltestelleWegangabeVersion fromResultSet(ResultSet row) {
+    public HaltestelleWegangabeVersion mapRow(ResultSet row, int rowNum) {
         return new HaltestelleWegangabeVersion(
             SqlHasIdMapping.getId(row),
             SqlVersionMapping.getElementId(row),

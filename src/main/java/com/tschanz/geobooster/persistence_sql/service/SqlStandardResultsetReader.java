@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class SqlStandardResultsetReader {
     private static final Logger logger = LogManager.getLogger(SqlStandardResultsetReader.class);
 
-    private final SqlConnectionFactory connectionFactory;
+    private final SqlJdbcTemplateFactory jdbcTemplateFactory;
 
 
     @SneakyThrows
@@ -27,17 +27,9 @@ public class SqlStandardResultsetReader {
         var query = this.createQuery(mapping);
         logger.info(String.format("executing query '%s'", query));
 
-        var entries = new ArrayList<T>();
-        var connection = connectionFactory.getConnection();
+        var jdbcTemplate = jdbcTemplateFactory.getJdbcTemplate();
+        var entries = jdbcTemplate.query(query, mapping);
 
-        if (connection.getStatement().execute(query)) {
-            while (connection.getStatement().getResultSet().next()) {
-                var resultSet = connection.getStatement().getResultSet();
-                var entry = mapping.fromResultSet(resultSet);
-                entries.add(entry);
-            }
-        }
-        connection.closeResultsetAndStatement();
 
         logger.info(String.format("%d entries read", entries.size()));
 

@@ -43,7 +43,7 @@ public class SqlHaltestelleVersionMapping implements SqlStandardMapping<Halteste
 
     @Override
     @SneakyThrows
-    public HaltestelleVersion fromResultSet(ResultSet row) {
+    public HaltestelleVersion mapRow(ResultSet row, int rowNum) {
         return new HaltestelleVersion(
             SqlHasIdMapping.getId(row),
             SqlVersionMapping.getElementId(row),

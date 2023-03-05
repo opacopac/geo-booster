@@ -50,7 +50,7 @@ public class SqlAwbVersionMapping implements SqlStandardMapping<AwbVersion, SqlL
 
     @Override
     @SneakyThrows
-    public AwbVersion fromResultSet(ResultSet row) {
+    public AwbVersion mapRow(ResultSet row, int rowNum) {
         return this.createAwbVersion(
             SqlHasIdMapping.getId(row),
             SqlVersionMapping.getElementId(row),

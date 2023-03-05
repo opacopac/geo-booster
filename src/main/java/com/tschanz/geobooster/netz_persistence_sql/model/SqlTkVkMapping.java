@@ -40,7 +40,7 @@ public class SqlTkVkMapping implements SqlStandardMapping<Tuple2<Long, Long>, Sq
 
     @Override
     @SneakyThrows
-    public Tuple2<Long, Long> fromResultSet(ResultSet row) {
+    public Tuple2<Long, Long> mapRow(ResultSet row, int rowNum) {
         return new Tuple2<>(
             row.getLong(COL_ID_TARIFKANTE_V),
             row.getLong(COL_ID_VERKEHRS_KANTE_E)

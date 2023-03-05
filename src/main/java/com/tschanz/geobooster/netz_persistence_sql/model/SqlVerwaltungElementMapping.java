@@ -44,7 +44,7 @@ public class SqlVerwaltungElementMapping implements SqlStandardMapping<Verwaltun
 
     @Override
     @SneakyThrows
-    public Verwaltung fromResultSet(ResultSet row) {
+    public Verwaltung mapRow(ResultSet row, int rowNum) {
         return new Verwaltung(
             SqlHasIdMapping.getId(row),
             row.getString(COL_CODE),

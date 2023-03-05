@@ -38,7 +38,7 @@ public class SqlRgKorridorTkIdsMapping implements SqlStandardMapping<Tuple2<Long
 
     @Override
     @SneakyThrows
-    public Tuple2<Long, Long> fromResultSet(ResultSet row) {
+    public Tuple2<Long, Long> mapRow(ResultSet row, int rowNum) {
         return new Tuple2<>(
             row.getLong(COL_ID_RELATIONSKORRIDOR_V),
             row.getLong(COL_ID_TARIFKANTE_E)

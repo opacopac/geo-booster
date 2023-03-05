@@ -39,7 +39,7 @@ public class SqlRgKorridorElementMapping implements SqlStandardMapping<RgKorrido
 
     @Override
     @SneakyThrows
-    public RgKorridor fromResultSet(ResultSet row) {
+    public RgKorridor mapRow(ResultSet row, int rowNum) {
         return new RgKorridor(
             SqlHasIdMapping.getId(row),
             row.getLong(COL_ID_RELATIONSGEBIET_E)

@@ -45,7 +45,7 @@ public class SqlRgKorridorVersionMapping implements SqlStandardMapping<RgKorrido
 
     @SneakyThrows
     @Override
-    public RgKorridorVersion fromResultSet(ResultSet row) {
+    public RgKorridorVersion mapRow(ResultSet row, int rowNum) {
         return this.createRgKorridorVersion(
             SqlHasIdMapping.getId(row),
             SqlVersionMapping.getElementId(row),
