@@ -6,8 +6,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 
+import java.sql.SQLRecoverableException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -23,17 +26,23 @@ public class SqlStandardResultsetReader {
 
 
     @SneakyThrows
+    @Retryable(value = SQLRecoverableException.class, maxAttempts = 5, backoff = @Backoff(delay = 3000))
     public <T, F extends SqlFilter<K>, K> List<T> read(SqlStandardResultsetMapping<T, F, K> mapping) {
         var query = this.createQuery(mapping);
         logger.info(String.format("executing query '%s'", query));
 
-        var jdbcTemplate = jdbcTemplateFactory.getJdbcTemplate();
-        var entries = jdbcTemplate.query(query, mapping);
+        try {
+            var jdbcTemplate = jdbcTemplateFactory.getJdbcTemplate();
+            var entries = jdbcTemplate.query(query, mapping);
+            logger.info(String.format("SUCCESS %d entries read for query '%s'", entries.size(), query));
 
+            return entries;
+        } catch (Exception e) {
+            logger.error(String.format("ERROR while executing query '%s'", query));
+            logger.error(e);
 
-        logger.info(String.format("%d entries read", entries.size()));
-
-        return entries;
+            throw e;
+        }
     }
 
 

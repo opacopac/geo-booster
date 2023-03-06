@@ -8,11 +8,14 @@ import lombok.SneakyThrows;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 
 import java.sql.Clob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLRecoverableException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -30,35 +33,43 @@ public class SqlStandardJsonAggReader {
 
 
     @SneakyThrows
+    @Retryable(value = SQLRecoverableException.class, maxAttempts = 5, backoff = @Backoff(delay = 3000))
     public <T, F extends SqlFilter<K>, K> List<T> read(SqlStandardJsonAggMapping<T, F, K> jsonAggMapping) {
         var query = this.createQuery(jsonAggMapping);
         logger.info(String.format("executing query '%s'", query));
 
-        var entries = new ArrayList<T>();
-        var jdbcTemplate = jdbcTemplateFactory.getJdbcTemplate();
-        var clobs = jdbcTemplate.query(query, new ClobResultsetMapper());
+        try {
+            var entries = new ArrayList<T>();
+            var jdbcTemplate = jdbcTemplateFactory.getJdbcTemplate();
+            var clobs = jdbcTemplate.query(query, new ClobResultsetMapper());
 
-        if (clobs.size() != 1 || clobs.get(0) == null) {
-            return Collections.emptyList();
-        } else {
-            var clob = clobs.get(0);
-            var jsonStream = clob.getCharacterStream();
+            if (clobs.size() != 1 || clobs.get(0) == null) {
+                return Collections.emptyList();
+            } else {
+                var clob = clobs.get(0);
+                var jsonStream = clob.getCharacterStream();
 
-            JsonReader reader = new JsonReader(jsonStream);
-            reader.beginArray();
-            while (reader.hasNext()) {
+                JsonReader reader = new JsonReader(jsonStream);
                 reader.beginArray();
-                var entry = jsonAggMapping.fromJsonAgg(reader);
-                entries.add(entry);
+                while (reader.hasNext()) {
+                    reader.beginArray();
+                    var entry = jsonAggMapping.fromJsonAgg(reader);
+                    entries.add(entry);
+                    reader.endArray();
+                }
                 reader.endArray();
+                reader.close();
             }
-            reader.endArray();
-            reader.close();
+
+            logger.info(String.format("SUCCESS %d entries read for query '%s'", entries.size(), query));
+
+            return entries;
+        } catch (Exception e) {
+            logger.error(String.format("ERROR while executing query '%s'", query));
+            logger.error(e);
+
+            throw e;
         }
-
-        logger.info(String.format("%d entries read", entries.size()));
-
-        return entries;
     }
 
 
