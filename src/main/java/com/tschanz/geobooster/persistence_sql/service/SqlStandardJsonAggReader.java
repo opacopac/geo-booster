@@ -33,7 +33,7 @@ public class SqlStandardJsonAggReader {
 
 
     @SneakyThrows
-    @Retryable(value = SQLRecoverableException.class, maxAttempts = 5, backoff = @Backoff(delay = 3000))
+    @Retryable(value = SQLRecoverableException.class, maxAttempts = 10, backoff = @Backoff(delay = 3000))
     public <T, F extends SqlFilter<K>, K> List<T> read(SqlStandardJsonAggMapping<T, F, K> jsonAggMapping) {
         var query = this.createQuery(jsonAggMapping);
         logger.info(String.format("executing query '%s'", query));

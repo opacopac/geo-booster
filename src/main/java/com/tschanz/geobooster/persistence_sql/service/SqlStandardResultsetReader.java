@@ -26,7 +26,7 @@ public class SqlStandardResultsetReader {
 
 
     @SneakyThrows
-    @Retryable(value = SQLRecoverableException.class, maxAttempts = 5, backoff = @Backoff(delay = 3000))
+    @Retryable(value = SQLRecoverableException.class, maxAttempts = 10, backoff = @Backoff(delay = 3000))
     public <T, F extends SqlFilter<K>, K> List<T> read(SqlStandardResultsetMapping<T, F, K> mapping) {
         var query = this.createQuery(mapping);
         logger.info(String.format("executing query '%s'", query));

@@ -22,7 +22,7 @@ public class SqlGenericResultsetReader {
 
 
     @SneakyThrows
-    @Retryable(value = SQLRecoverableException.class, maxAttempts = 5, backoff = @Backoff(delay = 3000))
+    @Retryable(value = SQLRecoverableException.class, maxAttempts = 10, backoff = @Backoff(delay = 3000))
     public <T> List<T> read(SqlGenericResultsetMapping<T> mapping) {
         var query = mapping.getSelectQuery();
         logger.info(String.format("executing query '%s'", query));
