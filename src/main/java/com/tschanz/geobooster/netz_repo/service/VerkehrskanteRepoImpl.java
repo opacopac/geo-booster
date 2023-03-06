@@ -37,24 +37,35 @@ public class VerkehrskanteRepoImpl implements VerkehrskanteRepo {
     private final ProgressState progressState;
     private final VerkehrskanteRepoState verkehrskanteRepoState;
 
+    private Collection<Verkehrskante> elements;
+    private Collection<VerkehrskanteVersion> versions;
     private VersionedObjectMap<Verkehrskante, VerkehrskanteVersion> versionedObjectMap;
     private AreaQuadTree<VerkehrskanteVersion> versionQuadTree;
 
 
     @Override
-    public void loadAll() {
+    public void loadData() {
         this.verkehrskanteRepoState.updateIsLoading(true);
 
         this.progressState.updateProgressText("loading verkehrskanten...");
-        var elements = this.vkPersistenceRepo.readAllElements();
-        this.verkehrskanteRepoState.updateLoadedElementCount(elements.size());
+        this.elements = this.vkPersistenceRepo.readAllElements();
+        this.verkehrskanteRepoState.updateLoadedElementCount(this.elements.size());
 
         this.progressState.updateProgressText("loading verkehrskante versions...");
-        var versions = this.vkPersistenceRepo.readAllVersions();
-        this.verkehrskanteRepoState.updateLoadedVersionCount(versions.size());
+        this.versions = this.vkPersistenceRepo.readAllVersions();
+        this.verkehrskanteRepoState.updateLoadedVersionCount(this.versions.size());
+
+        this.progressState.updateProgressText("loading verkehrskante done");
+        this.verkehrskanteRepoState.updateIsLoading(false);
+    }
+
+
+    @Override
+    public void initRepo() {
+        this.verkehrskanteRepoState.updateIsLoading(true);
 
         this.progressState.updateProgressText("initializing verkehrskante repo...");
-        this.versionedObjectMap = new VersionedObjectMap<>(elements, versions);
+        this.versionedObjectMap = new VersionedObjectMap<>(this.elements, this.versions);
 
         this.versionQuadTree = new AreaQuadTree<>(
             QuadTreeConfig.MAX_TREE_DEPTH,
@@ -70,14 +81,17 @@ public class VerkehrskanteRepoImpl implements VerkehrskanteRepo {
                 var hst2V = this.getEndHaltestelleVersion(vkV);
                 if (hst1V != null && hst2V != null) {
                     this.versionQuadTree.addItem(
-                        new AreaQuadTreeItem<>(this.getQuadTreeExtent(hst1V.getCoordinate(), hst2V.getCoordinate()), vkV)
+                            new AreaQuadTreeItem<>(this.getQuadTreeExtent(hst1V.getCoordinate(), hst2V.getCoordinate()), vkV)
                     );
                 } else {
                     logger.warn(String.format("missing haltestelle version for VK version %s", vkV.getId()));
                 }
             });
 
-        this.progressState.updateProgressText("loading verkehrskante done");
+        this.elements.clear();
+        this.versions.clear();
+
+        this.progressState.updateProgressText("initializing verkehrskante done");
         this.verkehrskanteRepoState.updateIsLoading(false);
     }
 

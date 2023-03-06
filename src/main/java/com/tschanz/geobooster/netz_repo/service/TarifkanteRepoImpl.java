@@ -42,29 +42,44 @@ public class TarifkanteRepoImpl implements TarifkanteRepo {
     private final TarifkanteRepoState tarifkanteRepoState;
     private final ConnectionState connectionState;
 
+    private Collection<Tarifkante> elements;
+    private Collection<TarifkanteVersion> versions;
     private VersionedObjectMap<Tarifkante, TarifkanteVersion> versionedObjectMap;
     private AreaQuadTree<TarifkanteVersion> versionQuadTree;
     private final DebounceTimer debounceTimer = new DebounceTimer(5);
 
 
     @Override
-    public void loadAll() {
+    public void loadData() {
         this.tarifkanteRepoState.updateIsLoading(true);
 
         this.progressState.updateProgressText("loading tarifkanten...");
-        var elements = this.tkPersistenceRepo.readAllElements();
-        this.tarifkanteRepoState.updateLoadedElementCount(elements.size());
+        this.elements = this.tkPersistenceRepo.readAllElements();
+        this.tarifkanteRepoState.updateLoadedElementCount(this.elements.size());
 
         this.progressState.updateProgressText("loading tarifkante versions...");
-        var versions = this.tkPersistenceRepo.readAllVersions();
-        this.tarifkanteRepoState.updateLoadedVersionCount(versions.size());
-
-        this.progressState.updateProgressText("initializing tarifkante repo...");
-        this.versionedObjectMap = new VersionedObjectMap<>(elements, versions);
-        this.versionQuadTree = this.createQuadTree(this.versionedObjectMap);
+        this.versions = this.tkPersistenceRepo.readAllVersions();
+        this.tarifkanteRepoState.updateLoadedVersionCount(this.versions.size());
 
         this.debounceTimer.touch();
         this.progressState.updateProgressText("loading tarifkanten done");
+        this.tarifkanteRepoState.updateIsLoading(false);
+    }
+
+
+    @Override
+    public void initRepo() {
+        this.tarifkanteRepoState.updateIsLoading(true);
+
+        this.progressState.updateProgressText("initializing tarifkante repo...");
+        this.versionedObjectMap = new VersionedObjectMap<>(this.elements, this.versions);
+        this.versionQuadTree = this.createQuadTree(this.versionedObjectMap);
+
+        this.elements.clear();
+        this.versions.clear();
+
+        this.debounceTimer.touch();
+        this.progressState.updateProgressText("initializing tarifkanten done");
         this.tarifkanteRepoState.updateIsLoading(false);
     }
 

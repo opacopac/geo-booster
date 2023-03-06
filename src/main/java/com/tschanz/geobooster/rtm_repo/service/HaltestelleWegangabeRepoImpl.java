@@ -36,29 +36,43 @@ public class HaltestelleWegangabeRepoImpl implements HaltestelleWegangabeRepo {
     private final HaltestelleWegangabeRepoState hstWegangabeRepoState;
     private final DebounceTimer debounceTimer = new DebounceTimer(5);
 
+    private Collection<HaltestelleWegangabe> elements;
+    private Collection<HaltestelleWegangabeVersion> versions;
     private VersionedObjectMap<HaltestelleWegangabe, HaltestelleWegangabeVersion> versionedObjectMap;
     private QuadTree<HaltestelleWegangabeVersion> versionQuadTree;
 
 
     @Override
-    public void loadAll() {
+    public void loadData() {
         this.hstWegangabeRepoState.updateIsLoading(true);
 
         this.progressState.updateProgressText("loading haltestelle wegangaben...");
-        var elements = this.hstWegangabePersistence.readAllElements();
-        this.hstWegangabeRepoState.updateLoadedElementCount(elements.size());
+        this.elements = this.hstWegangabePersistence.readAllElements();
+        this.hstWegangabeRepoState.updateLoadedElementCount(this.elements.size());
 
         this.progressState.updateProgressText("loading haltestelle wegangabe versions...");
-        var versions = this.hstWegangabePersistence.readAllVersions();
-        this.hstWegangabeRepoState.updateLoadedVersionCount(versions.size());
-
-        this.progressState.updateProgressText("initializing haltestelle wegangaben repo...");
-        this.versionedObjectMap = new VersionedObjectMap<>(elements, versions);
-
-        this.versionQuadTree = new QuadTree<>(QuadTreeConfig.MAX_TREE_DEPTH);
-        this.versionQuadTree.build(versions, this::getHaltestelleCoordinate);
+        this.versions = this.hstWegangabePersistence.readAllVersions();
+        this.hstWegangabeRepoState.updateLoadedVersionCount(this.versions.size());
 
         this.progressState.updateProgressText("loading haltestelle wegangaben done");
+        this.hstWegangabeRepoState.updateIsLoading(false);
+    }
+
+
+    @Override
+    public void initRepo() {
+        this.hstWegangabeRepoState.updateIsLoading(true);
+
+        this.progressState.updateProgressText("initializing haltestelle wegangaben repo...");
+        this.versionedObjectMap = new VersionedObjectMap<>(this.elements, this.versions);
+
+        this.versionQuadTree = new QuadTree<>(QuadTreeConfig.MAX_TREE_DEPTH);
+        this.versionQuadTree.build(this.versions, this::getHaltestelleCoordinate);
+
+        this.elements.clear();
+        this.versions.clear();
+
+        this.progressState.updateProgressText("initializing haltestelle wegangaben done");
         this.hstWegangabeRepoState.updateIsLoading(false);
     }
 

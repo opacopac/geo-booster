@@ -42,32 +42,49 @@ public class AwbRepoImpl implements AwbRepo {
     private final ZonenplanRepo zonenplanRepo;
     private final VerkehrskanteRepo vkRepo;
 
+    private Collection<Awb> elements;
+    private Collection<AwbVersion> versions;
+    private Collection<AwbIncVerwaltung> awbIncVerw;
     private VersionedObjectMap<Awb, AwbVersion> versionedObjectMap;
     private Map<Long, Collection<AwbIncVerwaltung>> awbIncVerwaltungenByAwbVIdMap;
     private final DebounceTimer debounceTimer = new DebounceTimer(5);
 
 
     @Override
-    public void loadAll() {
+    public void loadData() {
         this.awbRepoState.updateIsLoading(true);
 
         this.progressState.updateProgressText("loading awbs...");
-        var elements = this.awbPersistence.readAllElements();
+        this.elements = this.awbPersistence.readAllElements();
         this.awbRepoState.updateLoadedElementCount(elements.size());
 
         this.progressState.updateProgressText("loading awb versions...");
-        var versions = this.awbPersistence.readAllVersions();
+        this.versions = this.awbPersistence.readAllVersions();
         this.awbRepoState.updateLoadedVersionCount(versions.size());
 
         this.progressState.updateProgressText("loading awb inc verwaltung...");
-        var awbIncVerw = this.awbPersistence.readAllAwbIncVerwaltungen();
-
-        this.progressState.updateProgressText("initializing awb repo...");
-        this.versionedObjectMap = new VersionedObjectMap<>(elements, versions);
-        this.awbIncVerwaltungenByAwbVIdMap = ArrayHelper.create1toNLookupMap(awbIncVerw, AwbIncVerwaltung::getAwbVersionId, k -> k);
+        this.awbIncVerw = this.awbPersistence.readAllAwbIncVerwaltungen();
 
         this.debounceTimer.touch();
         this.progressState.updateProgressText("loading awbs done");
+        this.awbRepoState.updateIsLoading(false);
+    }
+
+
+    @Override
+    public void initRepo() {
+        this.awbRepoState.updateIsLoading(true);
+
+        this.progressState.updateProgressText("initializing awb repo...");
+        this.versionedObjectMap = new VersionedObjectMap<>(this.elements, this.versions);
+        this.awbIncVerwaltungenByAwbVIdMap = ArrayHelper.create1toNLookupMap(this.awbIncVerw, AwbIncVerwaltung::getAwbVersionId, k -> k);
+
+        this.elements.clear();
+        this.versions.clear();
+        this.awbIncVerw.clear();
+
+        this.debounceTimer.touch();
+        this.progressState.updateProgressText("initializing awbs done");
         this.awbRepoState.updateIsLoading(false);
     }
 

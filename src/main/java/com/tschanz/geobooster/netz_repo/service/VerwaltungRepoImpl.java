@@ -17,29 +17,43 @@ import java.util.Collection;
 @Service
 @RequiredArgsConstructor
 public class VerwaltungRepoImpl implements VerwaltungRepo {
-    private VersionedObjectMap<Verwaltung, VerwaltungVersion> versionedObjectMap;
-
     private final VerwaltungPersistence verwaltungPersistence;
     private final ProgressState progressState;
     private final VerwaltungRepoState verwaltungRepoState;
 
+    private Collection<Verwaltung> elements;
+    private Collection<VerwaltungVersion> versions;
+    private VersionedObjectMap<Verwaltung, VerwaltungVersion> versionedObjectMap;
+
 
     @Override
-    public void loadAll() {
+    public void loadData() {
         this.verwaltungRepoState.updateIsLoading(true);
 
         this.progressState.updateProgressText("loading verwaltung...");
-        var elements = this.verwaltungPersistence.readAllElements();
-        this.verwaltungRepoState.updateLoadedElementCount(elements.size());
+        this.elements = this.verwaltungPersistence.readAllElements();
+        this.verwaltungRepoState.updateLoadedElementCount(this.elements.size());
 
         this.progressState.updateProgressText("loading verwaltung versions...");
-        var versions = this.verwaltungPersistence.readAllVersions();
-        this.verwaltungRepoState.updateLoadedVersionCount(versions.size());
-
-        this.progressState.updateProgressText("initializing verwaltung repo...");
-        this.versionedObjectMap = new VersionedObjectMap<>(elements, versions);
+        this.versions = this.verwaltungPersistence.readAllVersions();
+        this.verwaltungRepoState.updateLoadedVersionCount(this.versions.size());
 
         this.progressState.updateProgressText("loading verwaltung done");
+        this.verwaltungRepoState.updateIsLoading(false);
+    }
+
+
+    @Override
+    public void initRepo() {
+        this.verwaltungRepoState.updateIsLoading(true);
+
+        this.progressState.updateProgressText("initializing verwaltung repo...");
+        this.versionedObjectMap = new VersionedObjectMap<>(this.elements, this.versions);
+
+        this.elements.clear();
+        this.versions.clear();
+
+        this.progressState.updateProgressText("initializing verwaltung done");
         this.verwaltungRepoState.updateIsLoading(false);
     }
 

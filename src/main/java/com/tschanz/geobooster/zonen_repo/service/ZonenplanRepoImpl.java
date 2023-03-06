@@ -33,27 +33,42 @@ public class ZonenplanRepoImpl implements ZonenplanRepo {
     private final ProgressState progressState;
     private final ZonenplanRepoState zonenplanRepoState;
 
+    private Collection<Zonenplan> elements;
+    private Collection<ZonenplanVersion> versions;
     private VersionedObjectMap<Zonenplan, ZonenplanVersion> versionedObjectMap;
     private final DebounceTimer debounceTimer = new DebounceTimer(5);
 
 
     @Override
-    public void loadAll() {
+    public void loadData() {
         this.zonenplanRepoState.updateIsLoading(true);
 
         this.progressState.updateProgressText("loading zonenplan...");
-        var elements = this.zonenplanPersistence.readAllElements();
-        this.zonenplanRepoState.updateLoadedElementCount(elements.size());
+        this.elements = this.zonenplanPersistence.readAllElements();
+        this.zonenplanRepoState.updateLoadedElementCount(this.elements.size());
 
         this.progressState.updateProgressText("loading zonenplan versions...");
-        var versions = this.zonenplanPersistence.readAllVersions();
-        this.zonenplanRepoState.updateLoadedVersionCount(versions.size());
-
-        this.progressState.updateProgressText("initializing zonenplan repo...");
-        this.versionedObjectMap = new VersionedObjectMap<>(elements, versions);
+        this.versions = this.zonenplanPersistence.readAllVersions();
+        this.zonenplanRepoState.updateLoadedVersionCount(this.versions.size());
 
         this.debounceTimer.touch();
         this.progressState.updateProgressText("loading zonenplan done");
+        this.zonenplanRepoState.updateIsLoading(false);
+    }
+
+
+    @Override
+    public void initRepo() {
+        this.zonenplanRepoState.updateIsLoading(true);
+
+        this.progressState.updateProgressText("initializing zonenplan repo...");
+        this.versionedObjectMap = new VersionedObjectMap<>(this.elements, this.versions);
+
+        this.elements.clear();
+        this.versions.clear();
+
+        this.debounceTimer.touch();
+        this.progressState.updateProgressText("initializing zonenplan done");
         this.zonenplanRepoState.updateIsLoading(false);
     }
 

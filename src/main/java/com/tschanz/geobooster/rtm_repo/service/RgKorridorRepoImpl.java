@@ -27,26 +27,40 @@ public class RgKorridorRepoImpl implements RgKorridorRepo {
     private final ProgressState progressState;
     private final RgKorridorRepoState rgKorridorRepoState;
 
+    private Collection<RgKorridor> elements;
+    private Collection<RgKorridorVersion> versions;
     private VersionedObjectMap<RgKorridor, RgKorridorVersion> versionedObjectMap;
     private final DebounceTimer debounceTimer = new DebounceTimer(5);
 
 
     @Override
-    public void loadAll() {
+    public void loadData() {
         this.rgKorridorRepoState.updateIsLoading(true);
 
         this.progressState.updateProgressText("loading rg korridore...");
-        var elements = this.rgKorridorPersistence.readAllElements();
-        this.rgKorridorRepoState.updateLoadedElementCount(elements.size());
+        this.elements = this.rgKorridorPersistence.readAllElements();
+        this.rgKorridorRepoState.updateLoadedElementCount(this.elements.size());
 
         this.progressState.updateProgressText("loading rg korridor versions...");
-        var versions = this.rgKorridorPersistence.readAllVersions();
-        this.rgKorridorRepoState.updateLoadedVersionCount(versions.size());
-
-        this.progressState.updateProgressText("initializing rg korridor repo...");
-        this.versionedObjectMap = new VersionedObjectMap<>(elements, versions);
+        this.versions = this.rgKorridorPersistence.readAllVersions();
+        this.rgKorridorRepoState.updateLoadedVersionCount(this.versions.size());
 
         this.progressState.updateProgressText("loading rg korridore done");
+        this.rgKorridorRepoState.updateIsLoading(false);
+    }
+
+
+    @Override
+    public void initRepo() {
+        this.rgKorridorRepoState.updateIsLoading(true);
+
+        this.progressState.updateProgressText("initializing rg korridor repo...");
+        this.versionedObjectMap = new VersionedObjectMap<>(this.elements, this.versions);
+
+        this.elements.clear();
+        this.versions.clear();
+
+        this.progressState.updateProgressText("initializing rg korridore done");
         this.rgKorridorRepoState.updateIsLoading(false);
     }
 

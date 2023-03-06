@@ -20,25 +20,39 @@ public class BetreiberRepoImpl implements BetreiberRepo {
     private final ProgressState progressState;
     private final BetreiberRepoState betreiberRepoState;
 
+    private Collection<Betreiber> elements;
+    private Collection<BetreiberVersion> versions;
     private VersionedObjectMap<Betreiber, BetreiberVersion> versionedObjectMap;
 
 
     @Override
-    public void loadAll() {
+    public void loadData() {
         this.betreiberRepoState.updateIsLoading(true);
 
         this.progressState.updateProgressText("loading betreiber...");
-        var elements = this.betreiberPersistence.readAllElements();
+        this.elements = this.betreiberPersistence.readAllElements();
         this.betreiberRepoState.updateLoadedElementCount(elements.size());
 
         this.progressState.updateProgressText("loading betreiber versions...");
-        var versions = this.betreiberPersistence.readAllVersions();
+        this.versions = this.betreiberPersistence.readAllVersions();
         this.betreiberRepoState.updateLoadedVersionCount(versions.size());
 
-        this.progressState.updateProgressText("initializing betreiber repo...");
-        this.versionedObjectMap = new VersionedObjectMap<>(elements, versions);
-
         this.progressState.updateProgressText("loading betreiber done");
+        this.betreiberRepoState.updateIsLoading(false);
+    }
+
+
+    @Override
+    public void initRepo() {
+        this.betreiberRepoState.updateIsLoading(true);
+
+        this.progressState.updateProgressText("initializing betreiber repo...");
+        this.versionedObjectMap = new VersionedObjectMap<>(this.elements, this.versions);
+
+        this.elements.clear();
+        this.versions.clear();
+
+        this.progressState.updateProgressText("initializing betreiber done");
         this.betreiberRepoState.updateIsLoading(false);
     }
 

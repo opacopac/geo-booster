@@ -51,20 +51,32 @@ public class ConnectionActions {
             this.gbState.getProgressState().updateIsInProgress(true);
 
             CompletableFuture<Void> allFutures = CompletableFuture.allOf(
-                CompletableFuture.runAsync(betreiberRepo::loadAll),
-                CompletableFuture.runAsync(verwaltungRepo::loadAll),
-                CompletableFuture.runAsync(haltestelleRepo::loadAll),
-                CompletableFuture.runAsync(verkehrskanteRepo::loadAll),
-                CompletableFuture.runAsync(tarifkanteRepo::loadAll),
-                CompletableFuture.runAsync(hstWegangabeRepo::loadAll),
-                CompletableFuture.runAsync(rgKorridorRepo::loadAll),
-                CompletableFuture.runAsync(rgAuspraegungRepo::loadAll),
-                CompletableFuture.runAsync(zoneRepo::loadAll),
-                CompletableFuture.runAsync(zonenplanRepo::loadAll),
-                CompletableFuture.runAsync(awbRepo::loadAll)
+                CompletableFuture.runAsync(this.betreiberRepo::loadData),
+                CompletableFuture.runAsync(this.verwaltungRepo::loadData),
+                CompletableFuture.runAsync(this.haltestelleRepo::loadData),
+                CompletableFuture.runAsync(this.verkehrskanteRepo::loadData),
+                CompletableFuture.runAsync(this.tarifkanteRepo::loadData),
+                CompletableFuture.runAsync(this.hstWegangabeRepo::loadData),
+                CompletableFuture.runAsync(this.rgKorridorRepo::loadData),
+                CompletableFuture.runAsync(this.rgAuspraegungRepo::loadData),
+                CompletableFuture.runAsync(this.zoneRepo::loadData),
+                CompletableFuture.runAsync(this.zonenplanRepo::loadData),
+                CompletableFuture.runAsync(this.awbRepo::loadData)
             );
 
             allFutures.thenRun(() -> {
+                this.betreiberRepo.initRepo();
+                this.verwaltungRepo.initRepo();
+                this.haltestelleRepo.initRepo();
+                this.verkehrskanteRepo.initRepo();
+                this.tarifkanteRepo.initRepo();
+                this.hstWegangabeRepo.initRepo();
+                this.rgKorridorRepo.initRepo();
+                this.rgAuspraegungRepo.initRepo();
+                this.zoneRepo.initRepo();
+                this.zonenplanRepo.initRepo();
+                this.awbRepo.initRepo();
+
                 this.gbState.getProgressState().updateProgressText("loading dr done");
                 this.gbState.getProgressState().updateIsInProgress(false);
             }).exceptionally(e -> {

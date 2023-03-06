@@ -5,7 +5,9 @@ import java.util.Collection;
 
 
 public interface VersionedObjectRepo<E, V> {
-    void loadAll();
+    void loadData();
+
+    void initRepo();
 
     E getElement(long id);
 

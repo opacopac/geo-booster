@@ -30,32 +30,46 @@ public class HaltestelleRepoImpl implements HaltestelleRepo {
     private final ProgressState progressState;
     private final HaltestelleRepoState haltestelleRepoState;
 
+    private Collection<Haltestelle> elements;
+    private Collection<HaltestelleVersion> versions;
     private VersionedObjectMap<Haltestelle, HaltestelleVersion> versionedObjectMap;
     private QuadTree<HaltestelleVersion> versionQuadTree;
     private Map<Integer, Haltestelle> uicLookupMap;
 
 
     @Override
-    public void loadAll() {
+    public void loadData() {
         this.haltestelleRepoState.updateIsLoading(true);
 
         this.progressState.updateProgressText("loading haltestellen...");
-        var elements = this.hstPersistenceRepo.readAllElements();
-        this.haltestelleRepoState.updateLoadedElementCount(elements.size());
+        this.elements = this.hstPersistenceRepo.readAllElements();
+        this.haltestelleRepoState.updateLoadedElementCount(this.elements.size());
 
         this.progressState.updateProgressText("loading haltestelle versions...");
-        var versions = this.hstPersistenceRepo.readAllVersions();
-        this.haltestelleRepoState.updateLoadedVersionCount(versions.size());
-
-        this.progressState.updateProgressText("initializing haltestelle repo...");
-        this.versionedObjectMap = new VersionedObjectMap<>(elements, versions);
-
-        this.versionQuadTree = new QuadTree<>(QuadTreeConfig.MAX_TREE_DEPTH);
-        this.versionQuadTree.build(versions, HaltestelleVersion::getCoordinate);
-
-        this.uicLookupMap = ArrayHelper.create1to1LookupMap(elements, Haltestelle::getUicCode, k -> k);
+        this.versions = this.hstPersistenceRepo.readAllVersions();
+        this.haltestelleRepoState.updateLoadedVersionCount(this.versions.size());
 
         this.progressState.updateProgressText("loading haltestellen done");
+        this.haltestelleRepoState.updateIsLoading(false);
+    }
+
+
+    @Override
+    public void initRepo() {
+        this.haltestelleRepoState.updateIsLoading(true);
+
+        this.progressState.updateProgressText("initializing haltestelle repo...");
+        this.versionedObjectMap = new VersionedObjectMap<>(this.elements, this.versions);
+
+        this.versionQuadTree = new QuadTree<>(QuadTreeConfig.MAX_TREE_DEPTH);
+        this.versionQuadTree.build(this.versions, HaltestelleVersion::getCoordinate);
+
+        this.uicLookupMap = ArrayHelper.create1to1LookupMap(this.elements, Haltestelle::getUicCode, k -> k);
+
+        this.elements.clear();
+        this.versions.clear();
+
+        this.progressState.updateProgressText("initializing haltestellen done");
         this.haltestelleRepoState.updateIsLoading(false);
     }
 

@@ -33,26 +33,40 @@ public class RgAuspraegungRepoImpl implements RgAuspraegungRepo {
     private final ProgressState progressState;
     private final RgAuspraegungRepoState rgAuspraegungRepoState;
 
+    private Collection<RgAuspraegung> elements;
+    private Collection<RgAuspraegungVersion> versions;
     private VersionedObjectMap<RgAuspraegung, RgAuspraegungVersion> versionedObjectMap;
     private final DebounceTimer debounceTimer = new DebounceTimer(5);
 
 
     @Override
-    public void loadAll() {
+    public void loadData() {
         this.rgAuspraegungRepoState.updateIsLoading(true);
 
         this.progressState.updateProgressText("loading rg auspraegungen...");
-        var elements = this.rgAuspraegungPersistence.readAllElements();
-        this.rgAuspraegungRepoState.updateLoadedElementCount(elements.size());
+        this.elements = this.rgAuspraegungPersistence.readAllElements();
+        this.rgAuspraegungRepoState.updateLoadedElementCount(this.elements.size());
 
         this.progressState.updateProgressText("loading rg auspraegung versions...");
-        var versions = this.rgAuspraegungPersistence.readAllVersions();
-        this.rgAuspraegungRepoState.updateLoadedVersionCount(versions.size());
-
-        this.progressState.updateProgressText("initializing rg auspraegung repo...");
-        this.versionedObjectMap = new VersionedObjectMap<>(elements, versions);
+        this.versions = this.rgAuspraegungPersistence.readAllVersions();
+        this.rgAuspraegungRepoState.updateLoadedVersionCount(this.versions.size());
 
         this.progressState.updateProgressText("loading rg auspraegungen done");
+        this.rgAuspraegungRepoState.updateIsLoading(false);
+    }
+
+
+    @Override
+    public void initRepo() {
+        this.rgAuspraegungRepoState.updateIsLoading(true);
+
+        this.progressState.updateProgressText("initializing rg auspraegung repo...");
+        this.versionedObjectMap = new VersionedObjectMap<>(this.elements, this.versions);
+
+        this.elements.clear();
+        this.versions.clear();
+
+        this.progressState.updateProgressText("initializing rg auspraegungen done");
         this.rgAuspraegungRepoState.updateIsLoading(false);
     }
 

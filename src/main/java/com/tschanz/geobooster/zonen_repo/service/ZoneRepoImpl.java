@@ -36,32 +36,49 @@ public class ZoneRepoImpl implements ZoneRepo {
     private final ProgressState progressState;
     private final ZoneRepoState zoneRepoState;
 
+    private Collection<Zone> elements;
+    private Collection<ZoneVersion> versions;
+    private Collection<ZoneVkZuordnung> zoneVkZuordnungen;
     private VersionedObjectMap<Zone, ZoneVersion> versionedObjectMap;
     private Map<Long, Collection<ZoneVkZuordnung>> zoneVkZuordnungenByZoneVIdMap;
     private final DebounceTimer debounceTimer = new DebounceTimer(5);
 
 
     @Override
-    public void loadAll() {
+    public void loadData() {
         this.zoneRepoState.updateIsLoading(true);
 
         this.progressState.updateProgressText("loading zonen...");
-        var elements = this.zonePersistence.readAllElements();
-        this.zoneRepoState.updateLoadedElementCount(elements.size());
+        this.elements = this.zonePersistence.readAllElements();
+        this.zoneRepoState.updateLoadedElementCount(this.elements.size());
 
         this.progressState.updateProgressText("loading zone versions...");
-        var versions = this.zonePersistence.readAllVersions();
-        this.zoneRepoState.updateLoadedVersionCount(versions.size());
+        this.versions = this.zonePersistence.readAllVersions();
+        this.zoneRepoState.updateLoadedVersionCount(this.versions.size());
 
         this.progressState.updateProgressText("loading zone vk zuordnungen...");
-        var zoneVkZuordnungen = this.zonePersistence.readAllZoneVkZuordnung();
-
-        this.progressState.updateProgressText("initializing zone repo...");
-        this.versionedObjectMap = new VersionedObjectMap<>(elements, versions);
-        this.zoneVkZuordnungenByZoneVIdMap = ArrayHelper.create1toNLookupMap(zoneVkZuordnungen, ZoneVkZuordnung::getZoneVersionId, k -> k);
+        this.zoneVkZuordnungen = this.zonePersistence.readAllZoneVkZuordnung();
 
         this.debounceTimer.touch();
         this.progressState.updateProgressText("loading zonen done");
+        this.zoneRepoState.updateIsLoading(false);
+    }
+
+
+    @Override
+    public void initRepo() {
+        this.zoneRepoState.updateIsLoading(true);
+
+        this.progressState.updateProgressText("initializing zone repo...");
+        this.versionedObjectMap = new VersionedObjectMap<>(this.elements, this.versions);
+        this.zoneVkZuordnungenByZoneVIdMap = ArrayHelper.create1toNLookupMap(this.zoneVkZuordnungen, ZoneVkZuordnung::getZoneVersionId, k -> k);
+
+        this.elements.clear();
+        this.versions.clear();
+        this.zoneVkZuordnungen.clear();
+
+        this.debounceTimer.touch();
+        this.progressState.updateProgressText("initializing zonen done");
         this.zoneRepoState.updateIsLoading(false);
     }
 
