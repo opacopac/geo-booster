@@ -94,7 +94,13 @@ public class SqlVerkehrskanteVersionMapping implements SqlStandardMapping<Verkeh
 
 
     private Collection<Long> getVerwaltungIds(long vkEId, LocalDate date) {
-        return this.vkVkasMap.get(vkEId).stream()
+        var vkas = this.vkVkasMap.get(vkEId);
+        if (vkas == null) {
+            return Collections.emptyList();
+        }
+
+        return vkas
+            .stream()
             .filter(vka -> this.hasValidVkaVersion(vka.getId(), date))
             .map(VerkehrskanteAuspraegung::getVerwaltungId)
             .collect(Collectors.toList());
@@ -102,7 +108,13 @@ public class SqlVerkehrskanteVersionMapping implements SqlStandardMapping<Verkeh
 
 
     private byte getVmBitmask(long vkEId, LocalDate date) {
-        var vmTypes = this.vkVkasMap.get(vkEId).stream()
+        var vkas = this.vkVkasMap.get(vkEId);
+        if (vkas == null) {
+            return VerkehrsmittelTyp.getBitMask(Collections.emptyList());
+        }
+
+        var vmTypes = vkas
+            .stream()
             .filter(vka -> this.hasValidVkaVersion(vka.getId(), date))
             .map(VerkehrskanteAuspraegung::getVerkehrsmittelTyp)
             .collect(Collectors.toList());
@@ -117,7 +129,8 @@ public class SqlVerkehrskanteVersionMapping implements SqlStandardMapping<Verkeh
             return false;
         }
 
-        return vkaVersions.stream()
+        return vkaVersions
+            .stream()
             .anyMatch(vkaV -> VersioningHelper.isVersionInTimespan(vkaV, date));
     }
 }
