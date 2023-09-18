@@ -15,6 +15,8 @@ import com.tschanz.geobooster.quadtree.model.QuadTreeCoordinate;
 import com.tschanz.geobooster.quadtree.model.QuadTreeExtent;
 import com.tschanz.geobooster.util.service.DebounceTimer;
 import com.tschanz.geobooster.versioning_repo.model.VersionedObjectMap;
+import io.reactivex.subjects.PublishSubject;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.Synchronized;
@@ -47,6 +49,11 @@ public class TarifkanteRepoImpl implements TarifkanteRepo {
     private VersionedObjectMap<Tarifkante, TarifkanteVersion> versionedObjectMap;
     private AreaQuadTree<TarifkanteVersion> versionQuadTree;
     private final DebounceTimer debounceTimer = new DebounceTimer(5);
+
+    @Getter
+    private final PublishSubject<Boolean> tkUpdateSubject = PublishSubject.create();
+
+
 
 
     @Override
@@ -277,12 +284,14 @@ public class TarifkanteRepoImpl implements TarifkanteRepo {
                     this.versionQuadTree.addItem(item);
                 }
             });
+
+            this.tkUpdateSubject.onNext(true);
         }
 
         if (!changes.getDeletedVersionIds().isEmpty()) {
-            changes.getDeletedVersionIds().forEach(vId -> {
-                this.versionQuadTree.removeItem(vId);
-            });
+            changes.getDeletedVersionIds().forEach(vId -> this.versionQuadTree.removeItem(vId));
+
+            this.tkUpdateSubject.onNext(true);
         }
     }
 }

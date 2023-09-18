@@ -7,7 +7,6 @@ import com.tschanz.geobooster.netz.model.VerkehrskanteVersion;
 import com.tschanz.geobooster.netz_persistence.service.LinieVariantePersistence;
 import com.tschanz.geobooster.netz_repo.model.LinieVarianteRepoState;
 import com.tschanz.geobooster.netz_repo.model.ProgressState;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -18,7 +17,6 @@ import java.util.stream.Collectors;
 
 
 @Service
-@RequiredArgsConstructor
 public class LinieVarianteRepoImpl implements LinieVarianteRepo {
     private final VerkehrskanteRepo verkehrskanteRepo;
     private final TarifkanteRepo tarifkanteRepo;
@@ -27,6 +25,23 @@ public class LinieVarianteRepoImpl implements LinieVarianteRepo {
     private final LinieVarianteRepoState linieVarianteRepoState;
     private final Map<Collection<Long>, Collection<Long>> linienVariantenVkIdCache = new HashMap<>();
     private final Map<Collection<Long>, Collection<Long>> linienVariantenTkIdCache = new HashMap<>();
+
+
+    public LinieVarianteRepoImpl(
+        VerkehrskanteRepo verkehrskanteRepo,
+        TarifkanteRepo tarifkanteRepo,
+        LinieVariantePersistence linieVariantePersistence,
+        ProgressState progressState,
+        LinieVarianteRepoState linieVarianteRepoState
+    ) {
+        this.verkehrskanteRepo = verkehrskanteRepo;
+        this.tarifkanteRepo = tarifkanteRepo;
+        this.linieVariantePersistence = linieVariantePersistence;
+        this.progressState = progressState;
+        this.linieVarianteRepoState = linieVarianteRepoState;
+
+        this.tarifkanteRepo.getTkUpdateSubject().subscribe(s -> this.invalidateTkCache());
+    }
 
 
     @Override
@@ -49,12 +64,11 @@ public class LinieVarianteRepoImpl implements LinieVarianteRepo {
 
         return vkIds.stream()
             .map(vkId -> this.verkehrskanteRepo.getElementVersionAtDate(vkId, date))
-            .filter(vkV -> {
-                return Extent.fromCoords(
+            .filter(vkV -> Extent.fromCoords(
                     this.verkehrskanteRepo.getStartCoordinate(vkV),
                     this.verkehrskanteRepo.getEndCoordinate(vkV)
-                ).isExtentIntersecting(extent);
-            })
+                ).isExtentIntersecting(extent)
+            )
             .collect(Collectors.toList());
     }
 
@@ -79,12 +93,16 @@ public class LinieVarianteRepoImpl implements LinieVarianteRepo {
 
         return tkIds.stream()
             .map(tkId -> this.tarifkanteRepo.getElementVersionAtDate(tkId, date))
-            .filter(tkV -> {
-                return Extent.fromCoords(
+            .filter(tkV -> Extent.fromCoords(
                     this.tarifkanteRepo.getStartCoordinate(tkV),
                     this.tarifkanteRepo.getEndCoordinate(tkV)
-                ).isExtentIntersecting(extent);
-            })
+                ).isExtentIntersecting(extent)
+            )
             .collect(Collectors.toList());
+    }
+
+
+    private void invalidateTkCache() {
+        this.linienVariantenTkIdCache.clear();
     }
 }

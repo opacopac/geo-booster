@@ -4,6 +4,7 @@ import com.tschanz.geobooster.geofeature.model.Epsg3857Coordinate;
 import com.tschanz.geobooster.geofeature.model.Extent;
 import com.tschanz.geobooster.netz.model.*;
 import com.tschanz.geobooster.versioning_repo.service.VersionedObjectRepo;
+import io.reactivex.subjects.PublishSubject;
 
 import java.util.Collection;
 import java.util.List;
@@ -26,4 +27,6 @@ public interface TarifkanteRepo extends VersionedObjectRepo<Tarifkante, Tarifkan
     Epsg3857Coordinate getEndCoordinate(TarifkanteVersion tkVersion);
 
     boolean hasOneOfVerwaltungAndVmTypes(TarifkanteVersion tkVersion, Collection<VerkehrsmittelTyp> vmTypes, Map<Long, Long> verwaltungIdMap);
+
+    PublishSubject<Boolean> getTkUpdateSubject();
 }
