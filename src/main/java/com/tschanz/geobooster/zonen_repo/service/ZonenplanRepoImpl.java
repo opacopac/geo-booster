@@ -104,19 +104,9 @@ public class ZonenplanRepoImpl implements ZonenplanRepo {
 
 
     @Override
-    public ZonenplanVersion getElementVersionAtDate(long elementId, LocalDate date) {
-        if (this.connectionState.isTrackChanges()) {
-            this.updateWhenChanged();
-        }
-
-        return this.versionedObjectMap.getElementVersionAtDate(elementId, date);
-    }
-
-
-    @Override
     public Collection<VerkehrskanteVersion> searchZpVerkehrskanten(long zonenplanId, LocalDate date, Extent<Epsg3857Coordinate> bbox) {
         var zoneVs = this.zoneRepo.getVersionsByZonenplanId(zonenplanId, date);
-        var vkVs = zoneVs.stream()
+        return zoneVs.stream()
             .flatMap(zV -> {
                 if (zV.getUrsprungsZoneId() != 0) {
                     var uzV = this.zoneRepo.getElementVersionAtDate(zV.getUrsprungsZoneId(), date);
@@ -129,8 +119,6 @@ public class ZonenplanRepoImpl implements ZonenplanRepo {
             })
             .flatMap(zV -> this.zoneRepo.searchZoneVersionVks(zV.getId(), date, bbox).stream())
             .collect(Collectors.toList());
-
-        return vkVs;
     }
 
 

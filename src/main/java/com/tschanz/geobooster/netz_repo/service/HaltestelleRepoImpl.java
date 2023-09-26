@@ -12,6 +12,7 @@ import com.tschanz.geobooster.netz_repo.model.QuadTreeConfig;
 import com.tschanz.geobooster.quadtree.model.QuadTree;
 import com.tschanz.geobooster.quadtree.model.QuadTreeItem;
 import com.tschanz.geobooster.util.service.ArrayHelper;
+import com.tschanz.geobooster.versioning.model.Pflegestatus;
 import com.tschanz.geobooster.versioning_repo.model.VersionedObjectMap;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -108,6 +109,6 @@ public class HaltestelleRepoImpl implements HaltestelleRepo {
 
     @Override
     public HaltestelleVersion getElementVersionAtDate(long elementId, LocalDate date) {
-        return this.versionedObjectMap.getElementVersionAtDate(elementId, date);
+        return this.versionedObjectMap.getElementVersionAtDate(elementId, date, Pflegestatus.PRODUKTIV);
     }
 }

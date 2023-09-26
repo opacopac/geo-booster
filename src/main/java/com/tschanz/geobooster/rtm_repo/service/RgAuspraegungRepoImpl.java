@@ -11,6 +11,7 @@ import com.tschanz.geobooster.rtm.model.RgAuspraegungVersion;
 import com.tschanz.geobooster.rtm_persistence.service.RgAuspraegungPersistence;
 import com.tschanz.geobooster.rtm_repo.model.RgAuspraegungRepoState;
 import com.tschanz.geobooster.util.service.DebounceTimer;
+import com.tschanz.geobooster.versioning.model.Pflegestatus;
 import com.tschanz.geobooster.versioning_repo.model.VersionedObjectMap;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -102,19 +103,9 @@ public class RgAuspraegungRepoImpl implements RgAuspraegungRepo {
 
 
     @Override
-    public RgAuspraegungVersion getElementVersionAtDate(long elementId, LocalDate date) {
-        if (this.connectionState.isTrackChanges()) {
-            this.updateWhenChanged();
-        }
-
-        return this.versionedObjectMap.getElementVersionAtDate(elementId, date);
-    }
-
-
-    @Override
-    public Collection<TarifkanteVersion> searchRgaTarifkanten(long rgaId, LocalDate date, Extent<Epsg3857Coordinate> bbox) {
+    public Collection<TarifkanteVersion> searchRgaTarifkanten(long rgaId, LocalDate date, Pflegestatus minStatus, Extent<Epsg3857Coordinate> bbox) {
         var rgaE = this.getElement(rgaId);
-        var tkVs = this.rgKorridorRepo.getVersionsByRgId(rgaE.getRelationsgebietId(), date).stream()
+        var tkVs = this.rgKorridorRepo.getVersionsByRgId(rgaE.getRelationsgebietId(), date, minStatus).stream()
             .flatMap(korrV -> korrV.getTarifkantenIds().stream())
             .map(tkEId -> this.tkRepo.getElementVersionAtDate(tkEId, date))
             .filter(Objects::nonNull)

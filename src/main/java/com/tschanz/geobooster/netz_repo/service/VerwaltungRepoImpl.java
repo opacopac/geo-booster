@@ -10,7 +10,6 @@ import com.tschanz.geobooster.versioning_repo.model.VersionedObjectMap;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.Collection;
 
 
@@ -73,11 +72,5 @@ public class VerwaltungRepoImpl implements VerwaltungRepo {
     @Override
     public Collection<VerwaltungVersion> getElementVersions(long elementId) {
         return this.versionedObjectMap.getElementVersions(elementId);
-    }
-
-
-    @Override
-    public VerwaltungVersion getElementVersionAtDate(long elementId, LocalDate date) {
-        return this.versionedObjectMap.getElementVersionAtDate(elementId, date);
     }
 }

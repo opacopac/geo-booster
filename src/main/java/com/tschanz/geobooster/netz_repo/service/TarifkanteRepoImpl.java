@@ -14,6 +14,7 @@ import com.tschanz.geobooster.quadtree.model.AreaQuadTreeItem;
 import com.tschanz.geobooster.quadtree.model.QuadTreeCoordinate;
 import com.tschanz.geobooster.quadtree.model.QuadTreeExtent;
 import com.tschanz.geobooster.util.service.DebounceTimer;
+import com.tschanz.geobooster.versioning.model.Pflegestatus;
 import com.tschanz.geobooster.versioning_repo.model.VersionedObjectMap;
 import io.reactivex.subjects.PublishSubject;
 import lombok.Getter;
@@ -127,7 +128,7 @@ public class TarifkanteRepoImpl implements TarifkanteRepo {
             this.updateWhenChanged();
         }
 
-        return this.versionedObjectMap.getElementVersionAtDate(elementId, date);
+        return this.versionedObjectMap.getElementVersionAtDate(elementId, date, Pflegestatus.PRODUKTIV);
     }
 
 

@@ -2,6 +2,7 @@ package com.tschanz.geobooster.versioning.service;
 
 import com.tschanz.geobooster.util.service.DateHelper;
 import com.tschanz.geobooster.versioning.model.HasId;
+import com.tschanz.geobooster.versioning.model.Pflegestatus;
 import com.tschanz.geobooster.versioning.model.Version;
 
 import java.time.LocalDate;
@@ -36,15 +37,16 @@ public class VersioningHelper {
 
     public static <T extends Version> Collection<T> filterVersions(Collection<T> versions, LocalDate date) {
         return versions.stream()
-            .filter(version -> isVersionInTimespan(version, date))
+            .filter(v -> isVersionInTimespan(v, date))
             .collect(Collectors.toList());
     }
 
 
-    public static <T extends Version> T filterSingleVersion(Collection<T> versions, LocalDate date) {
+    public static <T extends Version> T filterSingleVersion(Collection<T> versions, LocalDate date, Pflegestatus minStatus) {
         return versions.stream()
-            .filter(version -> isVersionInTimespan(version, date))
-            .min(Comparator.comparingInt(v -> v.getPflegestatus().getSortOrder()))
+            .filter(v -> isVersionInTimespan(v, date))
+            .filter(v -> v.getPflegestatus().getSortOrder() >= minStatus.getSortOrder())
+            .min(Comparator.comparingInt(v -> v.getPflegestatus().getSortOrder())) // return version with lowest pflegestatus
             .orElse(null);
     }
 }

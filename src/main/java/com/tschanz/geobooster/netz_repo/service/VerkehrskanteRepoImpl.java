@@ -15,6 +15,7 @@ import com.tschanz.geobooster.quadtree.model.AreaQuadTree;
 import com.tschanz.geobooster.quadtree.model.AreaQuadTreeItem;
 import com.tschanz.geobooster.quadtree.model.QuadTreeCoordinate;
 import com.tschanz.geobooster.quadtree.model.QuadTreeExtent;
+import com.tschanz.geobooster.versioning.model.Pflegestatus;
 import com.tschanz.geobooster.versioning_repo.model.VersionedObjectMap;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -116,7 +117,7 @@ public class VerkehrskanteRepoImpl implements VerkehrskanteRepo {
 
     @Override
     public VerkehrskanteVersion getElementVersionAtDate(long elementId, LocalDate date) {
-        return this.versionedObjectMap.getElementVersionAtDate(elementId, date);
+        return this.versionedObjectMap.getElementVersionAtDate(elementId, date, Pflegestatus.PRODUKTIV);
     }
 
 

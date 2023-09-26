@@ -12,6 +12,8 @@ import java.util.Collection;
 
 
 public interface ZoneRepo extends VersionedObjectRepo<Zone, ZoneVersion> {
+    ZoneVersion getElementVersionAtDate(long elementId, LocalDate date);
+
     Collection<Zone> getElementsByZonenplanId(long zonenplanId);
 
     Collection<ZoneVersion> getVersionsByZonenplanId(long zonenplanId, LocalDate date);

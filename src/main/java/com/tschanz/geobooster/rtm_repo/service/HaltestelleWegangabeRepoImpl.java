@@ -20,7 +20,6 @@ import lombok.SneakyThrows;
 import lombok.Synchronized;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -137,16 +136,6 @@ public class HaltestelleWegangabeRepoImpl implements HaltestelleWegangabeRepo {
         }
 
         return this.versionedObjectMap.getElementVersions(elementId);
-    }
-
-
-    @Override
-    public HaltestelleWegangabeVersion getElementVersionAtDate(long elementId, LocalDate date) {
-        if (this.connectionState.isTrackChanges()) {
-            this.updateWhenChanged();
-        }
-
-        return this.versionedObjectMap.getElementVersionAtDate(elementId, date);
     }
 
 

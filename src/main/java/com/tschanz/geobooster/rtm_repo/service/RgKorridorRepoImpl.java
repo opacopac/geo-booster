@@ -7,6 +7,7 @@ import com.tschanz.geobooster.rtm.model.RgKorridorVersion;
 import com.tschanz.geobooster.rtm_persistence.service.RgKorridorPersistence;
 import com.tschanz.geobooster.rtm_repo.model.RgKorridorRepoState;
 import com.tschanz.geobooster.util.service.DebounceTimer;
+import com.tschanz.geobooster.versioning.model.Pflegestatus;
 import com.tschanz.geobooster.versioning_repo.model.VersionedObjectMap;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -96,12 +97,12 @@ public class RgKorridorRepoImpl implements RgKorridorRepo {
 
 
     @Override
-    public RgKorridorVersion getElementVersionAtDate(long elementId, LocalDate date) {
+    public RgKorridorVersion getElementVersionAtDate(long elementId, LocalDate date, Pflegestatus minStatus) {
         if (this.connectionState.isTrackChanges()) {
             this.updateWhenChanged();
         }
 
-        return this.versionedObjectMap.getElementVersionAtDate(elementId, date);
+        return this.versionedObjectMap.getElementVersionAtDate(elementId, date, minStatus);
     }
 
 
@@ -114,11 +115,11 @@ public class RgKorridorRepoImpl implements RgKorridorRepo {
 
 
     @Override
-    public Collection<RgKorridorVersion> getVersionsByRgId(long relationsgebietId, LocalDate date) {
+    public Collection<RgKorridorVersion> getVersionsByRgId(long relationsgebietId, LocalDate date, Pflegestatus minStatus) {
         var rgKorridorEs = this.getElementsByRgId(relationsgebietId);
 
         return rgKorridorEs.stream()
-            .map(zE -> this.getElementVersionAtDate(zE.getId(), date))
+            .map(zE -> this.getElementVersionAtDate(zE.getId(), date, minStatus))
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
     }

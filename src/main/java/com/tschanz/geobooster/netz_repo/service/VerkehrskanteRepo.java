@@ -8,10 +8,13 @@ import com.tschanz.geobooster.netz.model.Verkehrskante;
 import com.tschanz.geobooster.netz.model.VerkehrskanteVersion;
 import com.tschanz.geobooster.versioning_repo.service.VersionedObjectRepo;
 
+import java.time.LocalDate;
 import java.util.List;
 
 
 public interface VerkehrskanteRepo extends VersionedObjectRepo<Verkehrskante, VerkehrskanteVersion> {
+    VerkehrskanteVersion getElementVersionAtDate(long elementId, LocalDate date);
+
     List<VerkehrskanteVersion> searchByExtent(Extent<Epsg3857Coordinate> extent);
 
     Haltestelle getStartHaltestelle(VerkehrskanteVersion vkVersion);

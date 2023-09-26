@@ -1,6 +1,7 @@
 package com.tschanz.geobooster.versioning_repo.model;
 
 import com.tschanz.geobooster.versioning.model.Element;
+import com.tschanz.geobooster.versioning.model.Pflegestatus;
 import com.tschanz.geobooster.versioning.model.Version;
 import com.tschanz.geobooster.versioning.service.VersioningHelper;
 import com.tschanz.geobooster.versioning_persistence.model.ElementVersionChanges;
@@ -84,17 +85,17 @@ public class VersionedObjectMap<E extends Element, V extends Version> {
 
 
     public List<V> getElementVersions(long elementId) {
-        var elementVersionIds = this.elementVersionIds.get(elementId);
+        var vIds = this.elementVersionIds.get(elementId);
 
-        return elementVersionIds == null ? Collections.emptyList() : elementVersionIds
+        return vIds == null ? Collections.emptyList() : vIds
             .stream()
             .map(this::getVersion)
             .collect(Collectors.toList());
     }
 
 
-    public V getElementVersionAtDate(long elementId, LocalDate date) {
-        return VersioningHelper.filterSingleVersion(this.getElementVersions(elementId), date);
+    public V getElementVersionAtDate(long elementId, LocalDate date, Pflegestatus minStatus) {
+        return VersioningHelper.filterSingleVersion(this.getElementVersions(elementId), date, minStatus);
     }
 
 

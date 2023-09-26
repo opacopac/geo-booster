@@ -120,16 +120,6 @@ public class AwbRepoImpl implements AwbRepo {
 
 
     @Override
-    public AwbVersion getElementVersionAtDate(long elementId, LocalDate date) {
-        if (this.connectionState.isTrackChanges()) {
-            this.updateWhenChanged();
-        }
-
-        return this.versionedObjectMap.getElementVersionAtDate(elementId, date);
-    }
-
-
-    @Override
     public Collection<VerkehrskanteVersion> searchVerwaltungKanten(AwbVersion awbVersion, LocalDate date, Extent<Epsg3857Coordinate> bbox) {
         if (this.connectionState.isTrackChanges()) {
             this.updateWhenChanged();
@@ -157,12 +147,10 @@ public class AwbRepoImpl implements AwbRepo {
         }
 
         var rgaIds = awbVersion.getIncludeRgaIds();
-        var tkVs = rgaIds == null ? Collections.<TarifkanteVersion>emptyList() : rgaIds.stream()
-            .flatMap(rgaId -> this.rgAuspraegungRepo.searchRgaTarifkanten(rgaId, date, bbox).stream())
+        return rgaIds == null ? Collections.<TarifkanteVersion>emptyList() : rgaIds.stream()
+            .flatMap(rgaId -> this.rgAuspraegungRepo.searchRgaTarifkanten(rgaId, date, awbVersion.getPflegestatus(), bbox).stream())
             .distinct()
             .collect(Collectors.toList());
-
-        return tkVs;
     }
 
 
@@ -173,12 +161,10 @@ public class AwbRepoImpl implements AwbRepo {
         }
 
         var zpIds = awbVersion.getIncludeZonenplanIds();
-        var vkVs = zpIds == null ? Collections.<VerkehrskanteVersion>emptyList() : zpIds.stream()
+        return zpIds == null ? Collections.<VerkehrskanteVersion>emptyList() : zpIds.stream()
             .flatMap(zpId -> this.zonenplanRepo.searchZpVerkehrskanten(zpId, date, bbox).stream())
             .distinct()
             .collect(Collectors.toList());
-
-        return vkVs;
     }
 
 

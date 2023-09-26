@@ -8,6 +8,7 @@ import com.tschanz.geobooster.netz_repo.service.VerkehrskanteRepo;
 import com.tschanz.geobooster.persistence_sql.model.ConnectionState;
 import com.tschanz.geobooster.util.service.ArrayHelper;
 import com.tschanz.geobooster.util.service.DebounceTimer;
+import com.tschanz.geobooster.versioning.model.Pflegestatus;
 import com.tschanz.geobooster.versioning_repo.model.VersionedObjectMap;
 import com.tschanz.geobooster.zonen.model.Zone;
 import com.tschanz.geobooster.zonen.model.ZoneVersion;
@@ -119,7 +120,7 @@ public class ZoneRepoImpl implements ZoneRepo {
             this.updateWhenChanged();
         }
 
-        return this.versionedObjectMap.getElementVersionAtDate(elementId, date);
+        return this.versionedObjectMap.getElementVersionAtDate(elementId, date, Pflegestatus.PRODUKTIV);
     }
 
 
@@ -164,7 +165,7 @@ public class ZoneRepoImpl implements ZoneRepo {
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
 
-        var filteredZpVkVs = vkVs.stream()
+        return vkVs.stream()
             .filter(vkV -> {
                 var vkExtent = Extent.fromCoords(
                     this.vkRepo.getStartCoordinate(vkV),
@@ -174,8 +175,6 @@ public class ZoneRepoImpl implements ZoneRepo {
                 return vkExtent.isExtentIntersecting(bbox);
             })
             .collect(Collectors.toList());
-
-        return filteredZpVkVs;
     }
 
 
